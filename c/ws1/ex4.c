@@ -1,33 +1,46 @@
 #include <stdio.h>
-#include <stdlib.h>
+/********************************
+*   Author     :      Shieber   *
 
-long double PowTen(int exp)
+*   Reviewer   :      Yuval     *
+
+*   Version    :      Sent      *   
+
+*   Input      :      exp       *
+
+*   Output     :      10^exp    *
+
+********************************/
+
+double PowTen(int exp)
 {
-    //initializing base and result
-    long double res = 1;
-    float base = 10;
+    /* initializing base, result and index */
+    double res = 1.0;
+    float base = 10.0F;
+    int index = 0;
     
     if (exp < 0)
     {
     exp = -exp;
-    //if exp is negative use root instead of power
-    base = 1/base;
+    /* if exp is negative multiply by 1/base */
+    base = 1.0F/base;
     }
     
-    int index = 0;
-    
-    for (index; index < exp; index++)
+    for (index = 0; index < exp; ++index)
     {
         res = res * base;
     }
     
     return res;
 }
-    
-int main (int argc, char *argv[])
+
+/*
+
+int main ()
 {
-    int exp = atoi(argv[1]);
-    //printf ("%d", atoi(argv[1]));
-    printf ("10^%d = %Le.\n", exp, PowTen(exp));
+    int exp = 10;
+    printf ("10^%d = %f.\n", exp, PowTen(exp));
     return 0;
 }
+*/
+
