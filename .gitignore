@@ -1,0 +1,7 @@
+## ignore all files
+*
+!/**/
+!*.c
+!*.h
+!.gitignore
+![Mm]akfile
