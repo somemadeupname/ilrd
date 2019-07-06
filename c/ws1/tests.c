@@ -3,6 +3,13 @@
 void PrintHelloFromHex();
 double PowTen(int exp);
 long FlipInt (int n);
+void SwapInt (int *a, int *b);
+
+/***************************************
+
+*       Tests Functions                *
+
+****************************************/
 
 void TestPowTen(double expected_result, int exp)
     {
@@ -42,6 +49,27 @@ void TestFlipInt(long expected_result, int n)
         }
     }
 
+void TestSwapInt(int a, int b)
+    {
+        int old_a = a;
+        int old_b = b;
+        SwapInt(&a,&b);
+        if (old_a != b || old_b != a)
+        {
+            printf("\033[1;31m");
+            printf ("ex6 Error: ");
+            printf("\033[0m\n");
+        }
+        else
+        {
+            printf("\033[1;32m");
+            printf ("ex6 Success! ");
+            printf("\033[0m");
+            printf("Values successfully swapped!\n");
+        }
+    }
+    
+
 int main ()
 {
     /*           ex 3 test      */
@@ -58,6 +86,11 @@ int main ()
     
     TestFlipInt(23, 32);
     TestFlipInt(-2301, -1032);
+    
+    /*           ex 6 tests      */
+    
+    TestSwapInt(3,5);
+    
     
     
     return 0;
