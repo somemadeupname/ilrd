@@ -3,6 +3,9 @@
 #include <string.h>
 #include <strings.h> /* strcasecmp */
 #include "ws2.h"
+#include <stdlib.h> /* free */
+
+
 
 void TestStrcpy(char *dest, const char *src)
     {
@@ -67,6 +70,69 @@ int TestStrcasecmp(const char * str1, const char * str2)
         }
         return Strcasecmp(str1,str2);
 	}
+
+char * TestStrchr(const char *s, int c)
+    {
+        printf ("s = %s\n", s);
+        printf ("c = %c\n",c);                    
+       
+        
+        if (strchr(s,c) != Strchr(s,c))
+        {
+            printf("\033[1;31m");
+            printf ("Strchr Error! ");
+            printf("\033[0m\n");
+        }
+        else
+        {
+            printf("\033[1;32m");
+            printf ("Strcasecmp Success! ");
+            printf("\033[0m\n");
+        }
+        
+        return Strchr(s,c);
+	}
+	
+char *TestStrdup(const char *s)
+	{
+        printf ("s = %s\n", s);
+       	/*
+        if (! ( strcmp(Strdup(s), strdup(s)) ))
+        {
+            printf("\033[1;31m");
+            printf ("Strdup Error! ");
+            printf("\033[0m\n");
+        }
+        else
+        {
+            printf("\033[1;32m");
+            printf ("Strdup Success! ");
+            printf("\033[0m\n");
+        }
+        */
+        return Strdup(s);
+	}
+
+char *TestStrcat(char *dest1, const char *src1, char *dest2, const char *src2)
+	{
+		printf ("dest = %s\n", *dest1);
+		printf ("src = %s\n", *src1);		
+		if (!strcmp ( Strcat(dest1,src1) , strcat(dest2,src2) ))
+			{
+            printf("\033[1;31m");
+            printf ("Strcat Error! ");
+            printf("\033[0m\n");
+        	}
+        else
+        	{
+            printf("\033[1;32m");
+            printf ("Strcat Success! ");
+            printf("\033[0m\n");
+        	}
+        
+    	return dest2;
+	}
+			
       
 int main()
 {
@@ -82,8 +148,15 @@ int main()
     char* src = "youare";
     
     char str5[] = "cAsE Sendddd";
-    char str6[] = "cas esendd";    
+    char str6[] = "cas esendd"; 
     
+   	char* s1 = "hello";
+	int c1 = 'l';
+	char* str7 = "yellow";
+	/*char* dest_strdup = Strdup(str7);*/
+	
+	char str8[12] = {'a','a','a','a','a',' ','\0','\0','\0','\0','\0','\0'};	
+	char str9[12] = {'a','a','a','a','a','a','\0','\0','\0','\0','\0','\0'};	
     
     printf ("############## Strlen ##############\n");
      
@@ -116,12 +189,44 @@ int main()
     
     
     printf ("############## TestStrcasecmp ##############\n");
-    
+    /*
     TestStrcasecmp(str5,str6);
             
     printf("Strcasecmp(str5,str6)=%d\n", Strcasecmp(str5,str6));
-    printf("strcasecmp(str5,str6)=%d\n", strcasecmp(str5,str6));       
-               
+    printf("strcasecmp(str5,str6)=%d\n", strcasecmp(str5,str6));
+    */
+    
+    printf ("############## TestStrchr ##############\n");           
+	
+	TestStrchr("hello",'l');
+	TestStrchr("",'\0');
+	TestStrchr("what's up doc",'u');
+	if ( !TestStrchr("what's up doc",'z') )
+		{
+		printf("null. it's not there!\n");
+		}
+	
+    printf ("############## TestStrdup ##############\n");
+    /*
+	
+	printf("dest_strdup = %s.\n", dest_strdup);
+	free(dest_strdup);
+	printf("dest_strdup = %s.\n", dest_strdup);	
+	*/
+    printf ("############## TestStrcat ##############\n");	
+	
+	printf ("%s\n", Strcat(str8, "hello "));
+	printf ("str8 = %s\n", str8);		
+	printf ("%s\n", Strcat(str8, "there"));	
+	printf ("str8 = %s\n", str8);	
+	
+    printf ("############## TestStrncat ##############\n");	
+	
+	printf ("%s\n", Strncat(str9, "heallo ", 4));
+	printf ("str9 = %s\n", str9);		
+	printf ("%s\n", Strncat(str9, "there", 2));	
+	printf ("str9 = %s\n", str9);		
+			               
     return 0;
 }
 

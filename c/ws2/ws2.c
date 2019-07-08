@@ -1,9 +1,10 @@
 #include <stdio.h> 		/* printf */
 #include <assert.h> 	/* assert */
-#include <stdlib.h> 	/* abs*/
+#include <stdlib.h> 	/* abs malloc */
 #include <string.h>	
 #include <ctype.h> 		/* isalpha */
 #include "ws2.h"
+
 
 #define CASE_DIFFERENCE 32 /* should be in header */
 #define EMPTY_CHAR '\0'
@@ -121,26 +122,13 @@ int Strcasecmp(const char *s1, const char *s2)
     	
 	
 	while ( *s1 != EMPTY_CHAR || *s2 != EMPTY_CHAR )
-		{
-/*
-		printf("index=%d\n", (index++));
-		printf("(*s1)=%d\n", (*s1));
-		printf("(*s2)=%d\n", (*s2));
-		printf("(s1)=%s\n", (s1));
-		printf("(s2)=%s\n", (s2));		
-		printf("isalpha(*s1)=%d\n", isalpha(*s1));
-		printf("isalpha(*s2)=%d\n", isalpha(*s2));	
-*/
-														
-			
+		{									
 		if ( isalpha(*s1) && isalpha(*s2) )
 			{
 				compare_char = *s1 - *s2;
 
 				printf("compare_char=%d\n", compare_char);			
 				
-				
-					
 				if ( 0 == compare_char || CASE_DIFFERENCE == abs(compare_char) )
 					{
 						++s1;
@@ -152,11 +140,87 @@ int Strcasecmp(const char *s1, const char *s2)
 				++s1;
 				++s2;
 			}
-		else /* one alphabet one isn't */
+		else if ( !isalpha(*s1)	)
+			/* one alphabet one isn't */
 			{
 			break;
 			}
 		}
-	return *s1 - *s2;
+	return *s2 - *s1;
 	}
+
+char *Strchr(const char *s, int c)
+{	
+	char* c_position = NULL;
+	assert(s != NULL);
+	
+	/* if c and s start with empty char */
+	if (EMPTY_CHAR == *s && EMPTY_CHAR == c)
+		{
+			c_position = (char*) s;
+		}
+	
+	while (*s != c && *s != EMPTY_CHAR)
+		{
+			s++;
+		}
+	
+	if ( c == *s )
+		{
+			c_position = (char*) s;
+		}
+	return c_position;
+}
+
+char *Strdup(const char *s)
+	{
+
+		int string_size = (int) (Strlen(s) + 1); /*adding 1 for the empty char */
+
+		char* dest = (char*) malloc (string_size * sizeof(char));
+		
+		assert(s != NULL);
+		
+		return Strcpy (dest, s);
+	}
+
+char *Strcat(char *dest, const char *src)
+	{
+		return Strcpy ( (dest + (int) Strlen(dest)), src);
+	}
+
+char *Strncat(char *dest, const char *src, size_t n)
+
+	{
+		return Strncpy ( (dest + (int) Strlen(dest)), src, n);
+	}
+
+char *Strstr(const char *haystack, const char *needle)
+	{
+		/*getting the substring size*/
+		int sub_str_size = (int) Strlen(needle);
+		int position = 0;
+		char* needle_pos = (char*) needle;
+		char* haystack_pos = (char*) haystack;
+		
+		assert(haystack != NULL);
+		assert(needle != NULL);
+				
+		while ( *haystack != EMPTY_CHAR )
+			{
+				for (position; position < sub_str_size && *haystack != EMPTY_CHAR; ++needle_pos )
+					{
+						
+
+
+
+
+
+
+
+
+
+
+
+
 
