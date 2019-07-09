@@ -132,6 +132,24 @@ char *TestStrcat(char *dest1, const char *src1, char *dest2, const char *src2)
         
     	return dest2;
 	}
+
+void TestStrstr(const char *haystack, const char *needle)
+	{
+		printf ("haystack = %s\n", haystack);
+		printf ("needle = %s\n", needle);		
+		if (!strcmp ( Strstr(haystack,needle) , strstr(haystack,needle) ))
+		{
+            printf("\033[1;31m");
+            printf ("Strstr Error! ");
+            printf("\033[0m\n");
+    	}
+        else
+    	{
+            printf("\033[1;32m");
+            printf ("Strstr Success! ");
+            printf("\033[0m\n");
+    	}
+	}
 			
       
 int main()
@@ -146,9 +164,6 @@ int main()
     
     char dest[8];
     char* src = "youare";
-    
-    char str5[] = "cAsE Sendddd";
-    char str6[] = "cas esendd"; 
     
    	char* s1 = "hello";
 	int c1 = 'l';
@@ -190,10 +205,10 @@ int main()
     
     printf ("############## TestStrcasecmp ##############\n");
     
-    TestStrcasecmp(str5,str6);
+    /*TestStrcasecmp(str5,str6);*/
             
-    printf("Strcasecmp(str5,str6)=%d\n", Strcasecmp(str5,str6));
-    printf("strcasecmp(str5,str6)=%d\n", strcasecmp(str5,str6));
+    printf("Strcasecmp(\"cAsE Sendddd\",\"cas esendd\")=%d\n", Strcasecmp("Ab","Ac"));
+    printf("strcasecmp(\"cAsE Sendddd\",\"cas esendd\")=%d\n", strcasecmp("Ab","Ac"));
     
     
     printf ("############## TestStrchr ##############\n");           
@@ -231,10 +246,12 @@ int main()
 	printf ("str9 = %s\n", str9);
 	
     printf ("############## TestStrstr ##############\n");
-
-	printf ("Strstr(\"hello\", \" \") = %s\n", Strstr("hello", "o"));
-    
-			               
+	
+	TestStrstr("Hello", "lo");
+	TestStrstr("Hello", "o");
+	TestStrstr("Hello", "");	                
+	TestStrstr("Hell o", "Hell");
+		
     return 0;
 }
 
