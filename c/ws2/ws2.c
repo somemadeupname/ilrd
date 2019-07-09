@@ -65,6 +65,23 @@ int Strcmp(const char* str1, const char* str2)
     return (*str1)-(*str2); /*calculate the diff in ascii */
 }
 
+int Strncmp(const char *s1, const char *s2, size_t n)
+{
+    int num = 0;
+    
+    while ( (*str1 != '\0') && (*str2 != '\0') && num < n)
+    {
+        if ( *(str1) != *(str2) )
+        {
+            break;
+        }
+        ++str1;
+    	++str2;
+    	++num;
+    }
+    return (*str1)-(*str2); /*calculate the diff in ascii */
+}
+
 char* Strcpy(char *dest, const char *src)
 {
 	char* dest_start = dest;
@@ -177,17 +194,26 @@ char *Strncat(char *dest, const char *src, size_t n)
 
 char *Strstr(const char *haystack, const char *needle)
 {
+	char* cur_hay = (char*) haystack;
+	int ne_size = (int) Strlen(needle);
+	char* cur_nee = (char*) cur_nee;
+	int hey_index = 0;
+	for (hey_index; hey_index != EMPTY_CHAR; ++hey_index)
+	{	
+		if ( !Strncmp(const char *s1, const char *s2, size_t n)
+	
+	/*
 	int ne_size = (int) Strlen(needle);
 	int matched_chars = 0;
 	char* cur_hay = (char*) haystack;
 	char* nee = (char*) needle;
 	char* result = NULL;
-	/*int i = 0;*/
+	int i = 0;
 	
 	assert(haystack != NULL);
 	assert(needle != NULL);
 	
-	/*printf("i = %d\n", i++);*/
+	printf("i = %d\n", i++);
 	
 	while ( *cur_hay != EMPTY_CHAR || matched_chars < ne_size )
 	{
@@ -221,6 +247,7 @@ char *Strstr(const char *haystack, const char *needle)
 		result = cur_hay;
 	}
 	return result;
+	*/
 }
 			
 

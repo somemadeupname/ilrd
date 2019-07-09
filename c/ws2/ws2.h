@@ -12,3 +12,5 @@ char *Strdup(const char *s);
 char *Strcat(char *dest, const char *src);
 char *Strncat(char *dest, const char *src, size_t n);
 char *Strstr(const char *haystack, const char *needle);
+int Strncmp(const char *s1, const char *s2, size_t n);
+
