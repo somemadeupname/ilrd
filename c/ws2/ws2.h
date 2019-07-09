@@ -11,3 +11,4 @@ char *Strchr(const char *s, int c);
 char *Strdup(const char *s);
 char *Strcat(char *dest, const char *src);
 char *Strncat(char *dest, const char *src, size_t n);
+char *Strstr(const char *haystack, const char *needle);

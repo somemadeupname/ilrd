@@ -153,7 +153,7 @@ int main()
    	char* s1 = "hello";
 	int c1 = 'l';
 	char* str7 = "yellow";
-	/*char* dest_strdup = Strdup(str7);*/
+	char* dest_strdup = Strdup(str7);
 	
 	char str8[12] = {'a','a','a','a','a',' ','\0','\0','\0','\0','\0','\0'};	
 	char str9[12] = {'a','a','a','a','a','a','\0','\0','\0','\0','\0','\0'};	
@@ -189,15 +189,17 @@ int main()
     
     
     printf ("############## TestStrcasecmp ##############\n");
-    /*
+    
     TestStrcasecmp(str5,str6);
             
     printf("Strcasecmp(str5,str6)=%d\n", Strcasecmp(str5,str6));
     printf("strcasecmp(str5,str6)=%d\n", strcasecmp(str5,str6));
-    */
+    
     
     printf ("############## TestStrchr ##############\n");           
 	
+	
+
 	TestStrchr("hello",'l');
 	TestStrchr("",'\0');
 	TestStrchr("what's up doc",'u');
@@ -207,12 +209,13 @@ int main()
 		}
 	
     printf ("############## TestStrdup ##############\n");
-    /*
+    
 	
 	printf("dest_strdup = %s.\n", dest_strdup);
 	free(dest_strdup);
-	printf("dest_strdup = %s.\n", dest_strdup);	
-	*/
+	/*dest_srtdup = NULL;*/
+	
+	
     printf ("############## TestStrcat ##############\n");	
 	
 	printf ("%s\n", Strcat(str8, "hello "));
@@ -225,7 +228,12 @@ int main()
 	printf ("%s\n", Strncat(str9, "heallo ", 4));
 	printf ("str9 = %s\n", str9);		
 	printf ("%s\n", Strncat(str9, "there", 2));	
-	printf ("str9 = %s\n", str9);		
+	printf ("str9 = %s\n", str9);
+	
+    printf ("############## TestStrstr ##############\n");
+
+	printf ("Strstr(\"hello\", \" \") = %s\n", Strstr("hello", "o"));
+    
 			               
     return 0;
 }

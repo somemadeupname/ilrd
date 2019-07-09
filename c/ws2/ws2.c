@@ -73,11 +73,11 @@ char* Strcpy(char *dest, const char *src)
 	assert (src != NULL);
 
 	while (*src != '\0')
-		{
+	{
 		*dest = *src;
 		++src;
 		++dest;
-		}
+	}
 	/*append empty char to dest */
 	*dest = '\0';
 	
@@ -117,12 +117,13 @@ int Strcasecmp(const char *s1, const char *s2)
 	int compare_char = *s1 - *s2;
 
 	/*NULL checks*/
-	assert (dest != NULL);
-    assert (src != NULL);
+	assert (s1 != NULL);
+    assert (s2 != NULL);
     	
 	
 	while ( *s1 != EMPTY_CHAR || *s2 != EMPTY_CHAR )
-		{									
+		{
+		/*break*/						
 		if ( isalpha(*s1) && isalpha(*s2) )
 			{
 				compare_char = *s1 - *s2;
@@ -202,14 +203,36 @@ char *Strstr(const char *haystack, const char *needle)
 		int position = 0;
 		char* needle_pos = (char*) needle;
 		char* haystack_pos = (char*) haystack;
+		char* result = NULL;
 		
 		assert(haystack != NULL);
 		assert(needle != NULL);
 				
 		while ( *haystack != EMPTY_CHAR )
 			{
-				for (position; position < sub_str_size && *haystack != EMPTY_CHAR; ++needle_pos )
+				while ( position < sub_str_size && *haystack_pos != EMPTY_CHAR )
 					{
+						if (*needle_pos != *haystack_pos)
+							{
+								/* return needle pointer to the
+								start for the next compare iteration*/	
+								char* needle_pos = (char*) needle;
+								break;
+							}
+						else
+							{
+								++needle_pos;
+								++haystack_pos;
+							}
+					}
+					
+					if ( position == sub_str_size )
+						{
+							result = haystack_pos;
+						}
+				}
+			return result;
+		}
 						
 
 
