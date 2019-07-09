@@ -137,7 +137,9 @@ void TestStrstr(const char *haystack, const char *needle)
 	{
 		printf ("haystack = %s\n", haystack);
 		printf ("needle = %s\n", needle);		
-		if (!strcmp ( Strstr(haystack,needle) , strstr(haystack,needle) ))
+		printf ("Strstr(haystack,needle) = %s\n", Strstr(haystack,needle));
+		printf ("strstr(haystack,needle) = %s\n", strstr(haystack,needle));		
+		if (!strcmp ( (Strstr(haystack,needle)) , (strstr(haystack,needle)) ))
 		{
             printf("\033[1;31m");
             printf ("Strstr Error! ");

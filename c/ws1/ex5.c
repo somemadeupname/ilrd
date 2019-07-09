@@ -11,13 +11,13 @@
 
 *   Version    :      Sent      *   
 
-*   Input      :      n         *
+*   Input      :      int n     *
 
 *   Output     :      n reversed*
 
 ********************************/
 
-long FlipInt (int n)
+long FlipInt(int n)
 {
     int sign = POSITIVE;
     int res = 0;
@@ -25,13 +25,13 @@ long FlipInt (int n)
     
     if (n < 0)
     {
-    sign = NEGATIVE;
-    /* if n<0 make n positive */
-    n = -n;
+    	sign = NEGATIVE;
+    	/* if n<0 make n positive */
+    	n = -n;
     }
     
     
-    while (n != 0)
+    while (0 != n)
     {
         res *= BASE;
         digit = n%BASE;
