@@ -250,10 +250,14 @@ int main()
     printf ("############## TestStrstr ##############\n");
 	
 	TestStrstr("Hello", "lo");
-	TestStrstr("Hello", "o");
 	TestStrstr("Hello", "");	                
 	TestStrstr("Hell o", "Hell");
-		
+
+    printf ("############## SevenBoom ##############\n");
+    
+    SevenBoom(1,100);
+	SevenBoom(-100,-1);    
+    
     return 0;
 }
 

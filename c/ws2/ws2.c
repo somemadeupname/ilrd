@@ -8,6 +8,11 @@
 
 #define CASE_DIFFERENCE 32 /* should be in header */
 #define EMPTY_CHAR '\0'
+#define WANTED_DIGIT 7
+#define BASE 10
+#define DIVIDES_WITH_NO_REMAINDER(n) ( (n % WANTED_DIGIT) ? 0 : 1 )
+#define FALSE 0
+#define TRUE 1
 
 
 /**************** Strlen*****************
@@ -216,55 +221,44 @@ char *Strstr(const char *haystack, const char *needle)
 	
 	return NULL;
 }
-	/*
-	int ne_size = (int) Strlen(needle);
-	int matched_chars = 0;
-	char* cur_hay = (char*) haystack;
-	char* nee = (char*) needle;
-	char* result = NULL;
-	int i = 0;
+
+int HasDigit (int num)
+{
+	int digit = 0;
 	
-	assert(haystack != NULL);
-	assert(needle != NULL);
-	
-	printf("i = %d\n", i++);
-	
-	while ( *cur_hay != EMPTY_CHAR || matched_chars < ne_size )
+	if (num == 0)
 	{
-		
-		if ( *cur_hay == *nee )
+		return FALSE;
+	}
+
+	while ( num != 0 )
+	{
+		digit = num % BASE;
+		if ( digit == WANTED_DIGIT )
 		{
-			if ( matched_chars == ne_size)
-			{	
-				return cur_hay;
-			}
-			++cur_hay;
-			++nee;
-			++matched_chars;
+			return TRUE;
 		}
-		else if ( *cur_hay != *nee && matched_chars != 0 )
+		num /= BASE;
+	}
+	return FALSE;
+}
+
+void SevenBoom(int from, int to)
+{
+	int cur_num = from;
+	
+	for (cur_num = from; cur_num < to; ++cur_num)
+	{
+		if ( HasDigit(abs(cur_num)) || DIVIDES_WITH_NO_REMAINDER(abs(cur_num)) )
 		{
-			cur_hay -= matched_chars;
-			matched_chars = 0;
+			printf("BOOM\n");
 		}
-			
 		else
 		{
-			++cur_hay;
-			nee = (char*) needle;
-			matched_chars = 0;
+			printf("%d\n", cur_num);
 		}
 	}
-	
-	if (matched_chars == ne_size)
-	{
-		result = cur_hay;
-	}
-	return result;
-	
 }
-	*/		
-
 
 
 
