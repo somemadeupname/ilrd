@@ -2,7 +2,7 @@
 #include <stddef.h>
 #include <string.h>
 #include <strings.h> /* strcasecmp */
-#include "ws2.h"
+#include "ws2_str.h"
 #include <stdlib.h> /* free */
 
 
@@ -32,7 +32,7 @@ void TestStrcpy(char *dest, const char *src)
 void TestStrncpy(char * dest, const char * src, size_t n)
     {
     	printf ("dest = %s\n", dest);
-        printf ("src = %s\n",src);                    
+        printf ("src = %s\n", src);                    
     	printf ("n = %d\n", (int) n);
                     
         if (strncpy(dest,src, n) != Strncpy(dest,src,n))
@@ -164,7 +164,7 @@ int main()
     char str3[] = {'\0'};
     char str4[] = {'a','\0'};
     
-    char dest[8];
+    char dest[8] = "hello ";
     char* src = "youare";
     
    	char* s1 = "hello";
@@ -195,24 +195,32 @@ int main()
     
     printf ("############## TestStrcpy ##############\n");
     
-    
+    /*
     TestStrcpy(dest,src);
-    
+    */
     
     printf ("############## TestStrncpy ##############\n");
     
     
-    TestStrncpy(dest,"hi",4);
+    TestStrncpy(dest,"iii",3);
+    TestStrncpy(dest,"ccc",2);
+    TestStrncpy(dest,"bbbb",3);        
     
     
     printf ("############## TestStrcasecmp ##############\n");
     
-    /*TestStrcasecmp(str5,str6);*/
-            
+    /*TestStrcasecmp(str5,str6);
+     
     printf("Strcasecmp(\"cAsE Sendddd\",\"cas esendd\")=%d\n", Strcasecmp("Ab","Ac"));
     printf("strcasecmp(\"cAsE Sendddd\",\"cas esendd\")=%d\n", strcasecmp("Ab","Ac"));
-    
-    
+	printf("Strcasecmp(s1,s2) = %d\n", Strcasecmp("He@Lo, World!","he@lo, worLd!"));
+	printf("strcasecmp(s1,s2) = %d\n", strcasecmp("He@Lo, World!","he@lo, worLd!"));
+	printf("Strcasecmp(s1,s2) = %d\n", Strcasecmp("HelLo, aorld!","hEllo, worLd!"));	    
+	printf("strcasecmp(s1,s2) = %d\n", strcasecmp("HelLo, aorld!","hEllo, worLd!"));	    
+	printf("Strcasecmp(s1,s2) = %d\n", Strcasecmp("HelLo, zorld!","hEllo, worLd!"));
+	printf("strcasecmp(s1,s2) = %d\n", strcasecmp("HelLo, zorld!","hEllo, worLd!"));	
+    */
+	
     printf ("############## TestStrchr ##############\n");           
 	
 	
@@ -226,8 +234,9 @@ int main()
 		}
 	
     printf ("############## TestStrdup ##############\n");
-    
-	
+
+	printf("dest_strdup = %s.\n", dest_strdup);    
+	TestStrdup("yellow");
 	printf("dest_strdup = %s.\n", dest_strdup);
 	free(dest_strdup);
 	/*dest_srtdup = NULL;*/
@@ -254,10 +263,11 @@ int main()
 	TestStrstr("Hell o", "Hell");
 
     printf ("############## SevenBoom ##############\n");
-    
+    /*
     SevenBoom(1,100);
 	SevenBoom(-100,-1);    
-    
+    */
+
     return 0;
 }
 

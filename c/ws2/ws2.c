@@ -3,7 +3,7 @@
 #include <stdlib.h> 	/* abs malloc */
 #include <string.h>	
 #include <ctype.h> 		/* isalpha */
-#include "ws2.h"
+#include "ws2_str.h"
 
 
 #define CASE_DIFFERENCE 32 /* should be in header */
@@ -141,9 +141,7 @@ int Strcasecmp(const char *s1, const char *s2)
     assert (s2 != NULL);
     	
 	
-	while ( *s1 != EMPTY_CHAR
-	&& ((isalpha(*s1) && isalpha(*s2)) && CASE_DIFFERENCE == abs(*s1 - *s2))
-	|| 0 == abs(*s1 - *s2))
+	while ( *s1 != EMPTY_CHAR && ( tolower(*s1) == tolower(*s2) ) )
 	{
 		++s1;
 		++s2;
@@ -188,13 +186,19 @@ char *Strdup(const char *s)
 
 char *Strcat(char *dest, const char *src)
 	{
-		return Strcpy ( (dest + (int) Strlen(dest)), src);
+		char * dest_start = dest;
+		
+		Strcpy ( (dest + (int) Strlen(dest)), src);
+		
+		return dest_start;
 	}
 
 char *Strncat(char *dest, const char *src, size_t n)
 
 	{
-		return Strncpy ( (dest + (int) Strlen(dest)), src, n);
+		char * dest_start = dest;
+		Strncpy ( (dest + (int) Strlen(dest)), src, n);
+		return dest_start;
 	}
 
 char *Strstr(const char *haystack, const char *needle)
@@ -244,8 +248,9 @@ int HasDigit (int num)
 }
 
 void SevenBoom(int from, int to)
-{
+{	
 	int cur_num = from;
+	assert(from < to);
 	
 	for (cur_num = from; cur_num < to; ++cur_num)
 	{
