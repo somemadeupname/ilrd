@@ -242,7 +242,7 @@ int main()
 	
     printf ("############## TestStrncat ##############\n");	
 	
-	printf ("%s\n", Strncat(str9, "heallo ", 4));
+	printf ("%s\n", Strncat(str9, "heallo ", 3));
 	printf ("str9 = %s\n", str9);		
 	printf ("%s\n", Strncat(str9, "there", 2));	
 	printf ("str9 = %s\n", str9);
