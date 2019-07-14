@@ -1,14 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h> /* abs */
-#include <string.h>
+#include <string.h> /* strlen */
 #include <assert.h>
+#include <stdlib.h> /* atoi */
 #include "ws2_ex.h"
 
 #define WANTED_DIGIT 7
 #define BASE 10
 #define DIVIDES_WITH_NO_REMAINDER(n) ( (n % WANTED_DIGIT) ? 0 : 1 )
-#define FALSE 0
-#define TRUE 1
+#define TO_CHAR(n) (n + '0')
+#define TO_INT(n) (n - '0')
 
 /**********************
 * 
@@ -65,21 +66,22 @@ void SevenBoom(int from, int to)
 int IsPalindrome(const char *str)
 {
 
-	
 	int left = 0;
 	int right = 0;
-	int length = (int) strlen(str) - 1;
+	int length = 0;
 	
 	assert (str != NULL);
+
+	length = (int) strlen(str) - 1;	
 	
 	for (left = 0, right = length; left <= right; ++left, --right)
 	{
 		if ( *(str + left) != *(str + right) )
 		{
-			return 0;
+			return FALSE;
 		}
 	}
-	return 1;
+	return TRUE;
 }
 
 /**********************
@@ -96,12 +98,68 @@ void SwapPtrInt(int **left, int **right)
 	temp = *right;
 	*right = *left;
 	*left = temp;
-}			
+}
+
+void AddOneToNextDigitPlace (char *res)
+{
+	*res = '1';
+}
+
+void AddTwoDigits (const char *num1, const char *num2, char *res, int *save)
+{
+	int temp = 0;
+	temp = TO_INT(*num1) + TO_INT(*num2) + *save;
+	if ( temp > 10)
+	{
+		*res = TO_CHAR(temp%10);
+		*save = 1;
+	}
+	else
+	{
+		*res = TO_CHAR(temp);
+		*save = 0;
+	}
+}
 			
-			
-			
-			
-			
-			
+
+/**********************
+* 
+*
+***********************/
+char *BigNumbers (char * result, const char* num1, const char *num2)
+{
+	char *num1_cur = NULL;
+	char *num2_cur = NULL;
+	char *result_cur = NULL;
+	
+	size_t digit_place = 0;
+	int save = 0;
+	size_t result_len = 0;
+
+	assert(NULL != result);
+	assert(NULL != num1);
+	assert(NULL != num2);
+	
+	num1_cur = (char *) (num1 + strlen(num1) - 1);
+	num2_cur = (char *) (num2 + strlen(num2) - 1);
+	result_cur = (char *) (result + strlen(result) - 1);
+	result_len = strlen(result);
+	
+	while ( digit_place < result_len/* && (result != result_cur && 0 == save) */)
+	{		
+		AddTwoDigits (num1_cur, num2_cur, result_cur, &save);
+
+		if  (1 == save)
+		{	
+			AddOneToNextDigitPlace ((result_cur-1));
+		}
+		--num1_cur;
+		--num2_cur;
+		--result_cur;
+		++digit_place;		
+	}
+	return result;
+}
+	
 			
 	
