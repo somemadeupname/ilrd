@@ -262,12 +262,6 @@ int main()
 	TestStrstr("Hello", "");	                
 	TestStrstr("Hell o", "Hell");
 
-    printf ("############## SevenBoom ##############\n");
-    /*
-    SevenBoom(1,100);
-	SevenBoom(-100,-1);    
-    */
-
     return 0;
 }
 

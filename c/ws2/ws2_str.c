@@ -2,15 +2,11 @@
 #include <assert.h> 	/* assert */
 #include <stdlib.h> 	/* abs malloc */
 #include <string.h>	
-#include <ctype.h> 		/* isalpha */
+#include <ctype.h> 		/* to lower */
 #include "ws2_str.h"
 
 
-#define CASE_DIFFERENCE 32 /* should be in header */
 #define EMPTY_CHAR '\0'
-#define WANTED_DIGIT 7
-#define BASE 10
-#define DIVIDES_WITH_NO_REMAINDER(n) ( (n % WANTED_DIGIT) ? 0 : 1 )
 #define FALSE 0
 #define TRUE 1
 
@@ -100,7 +96,7 @@ char* Strcpy(char *dest, const char *src)
 		++src;
 		++dest;
 	}
-	/*append empty char to dest */
+	/*append empty char to end of dest */
 	*dest = '\0';
 	
 	return dest_start;
@@ -116,19 +112,19 @@ char* Strncpy(char *dest, const char *src, size_t n)
 	assert (src != NULL);
 
 	while (*src != '\0' && index < (int) n)
-		{
+	{
 		*dest = *src;
 		++src;
 		++dest;
 		++index;
-		}
+	}
 	
 	/*append empty chars to dest */
 	for (; index < (int) n; ++index)
-		{
+	{
 		*dest = '\0';
 		++dest;
-		}
+	}
 	
 	return dest_start;
 }
@@ -156,19 +152,19 @@ char *Strchr(const char *s, int c)
 	
 	/* if c and s start with empty char */
 	if (EMPTY_CHAR == *s && EMPTY_CHAR == c)
-		{
-			c_position = (char*) s;
-		}
-	
+	{
+		c_position = (char*) s;
+	}
+
 	while (*s != c && *s != EMPTY_CHAR)
-		{
-			s++;
-		}
+	{
+		s++;
+	}
 	
 	if ( c == *s )
-		{
-			c_position = (char*) s;
-		}
+	{
+		c_position = (char*) s;
+	}
 	return c_position;
 }
 
@@ -179,7 +175,7 @@ char *Strdup(const char *s)
 
 		char* dest = (char*) malloc (string_size * sizeof(char));
 		
-		assert(s != NULL);
+		assert(s != NULL); /*TODO change to if. should also work in release version*/
 		
 		return Strcpy (dest, s);
 	}
@@ -194,10 +190,10 @@ char *Strcat(char *dest, const char *src)
 	}
 
 char *Strncat(char *dest, const char *src, size_t n)
-
 	{
 		char * dest_start = dest;
 		Strncpy ( (dest + (int) Strlen(dest)), src, n);
+		/* TODO add null char in the end strlen(n) */		
 		return dest_start;
 	}
 
@@ -225,54 +221,3 @@ char *Strstr(const char *haystack, const char *needle)
 	
 	return NULL;
 }
-
-int HasDigit (int num)
-{
-	int digit = 0;
-	
-	if (num == 0)
-	{
-		return FALSE;
-	}
-
-	while ( num != 0 )
-	{
-		digit = num % BASE;
-		if ( digit == WANTED_DIGIT )
-		{
-			return TRUE;
-		}
-		num /= BASE;
-	}
-	return FALSE;
-}
-
-void SevenBoom(int from, int to)
-{	
-	int cur_num = from;
-	assert(from < to);
-	
-	for (cur_num = from; cur_num < to; ++cur_num)
-	{
-		if ( HasDigit(abs(cur_num)) || DIVIDES_WITH_NO_REMAINDER(abs(cur_num)) )
-		{
-			printf("BOOM\n");
-		}
-		else
-		{
-			printf("%d\n", cur_num);
-		}
-	}
-}
-
-
-
-
-
-
-
-
-
-
-
-
