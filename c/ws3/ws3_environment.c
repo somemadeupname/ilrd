@@ -95,7 +95,7 @@ void DestroyLowerEnv(char** lower_env)
 	size_t lower_env_size = GetEnvSize (lower_env) + 1;
 	char* lower_env_cur = *(lower_env + lower_env_size);
 	
-	while ( lower_env_cur != *lower_env )
+	while ( lower_-env_cur != *lower_env )
 	{
 		free(lower_env_cur); lower_env_cur = NULL;
 		--lower_env_cur;
