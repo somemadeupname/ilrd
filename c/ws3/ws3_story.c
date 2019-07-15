@@ -32,8 +32,12 @@ void Execute_Generals (int *generals, int starting_general, const int num_genera
 	int cur = starting_general;
 	int killed = 0;
 	
+	/*TODO*/
+	int num_iterations = 0;
+	
 	for (cur = starting_general; cur < num_generals; ++cur)
 	{
+		++num_iterations;
 		/*Print_Generals (generals, num_generals);*/
 		if ( kill && (1 == *(generals + cur) ) )
 		{
@@ -48,6 +52,7 @@ void Execute_Generals (int *generals, int starting_general, const int num_genera
 		
 		if ( num_generals - 1 == killed)
 		{
+			printf("num_iterations = %d\n", num_iterations);	
 			break; /*once all generals but one were killed */
 		}
 		else
@@ -93,7 +98,7 @@ int main(int argc, char *argv[])
 	
 	int last_general = -1;
 	
-	int* generals = (int*) malloc (sizeof(int) * num_generals);
+	int generals[] = (int*) malloc (sizeof(int) * num_generals);
 	
 	/*printf("starting_general = %d\n", starting_general);*/
 

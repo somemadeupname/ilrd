@@ -2,12 +2,13 @@
 #include <assert.h> 	/* assert */
 #include <stdlib.h> 	/* abs malloc */
 #include <string.h>	
-#include <ctype.h> 		/* isalpha */
-#include "ws2.h"
+#include <ctype.h> 		/* to lower */
+#include "ws2_str.h"
 
 
-#define CASE_DIFFERENCE 32 /* should be in header */
 #define EMPTY_CHAR '\0'
+#define FALSE 0
+#define TRUE 1
 
 
 /**************** Strlen*****************
@@ -95,7 +96,7 @@ char* Strcpy(char *dest, const char *src)
 		++src;
 		++dest;
 	}
-	/*append empty char to dest */
+	/*append empty char to end of dest */
 	*dest = '\0';
 	
 	return dest_start;
@@ -111,19 +112,19 @@ char* Strncpy(char *dest, const char *src, size_t n)
 	assert (src != NULL);
 
 	while (*src != '\0' && index < (int) n)
-		{
+	{
 		*dest = *src;
 		++src;
 		++dest;
 		++index;
-		}
+	}
 	
 	/*append empty chars to dest */
 	for (; index < (int) n; ++index)
-		{
+	{
 		*dest = '\0';
 		++dest;
-		}
+	}
 	
 	return dest_start;
 }
@@ -136,9 +137,7 @@ int Strcasecmp(const char *s1, const char *s2)
     assert (s2 != NULL);
     	
 	
-	while ( *s1 != EMPTY_CHAR
-	&& ((isalpha(*s1) && isalpha(*s2)) && CASE_DIFFERENCE == abs(*s1 - *s2))
-	|| 0 == abs(*s1 - *s2))
+	while ( *s1 != EMPTY_CHAR && ( tolower(*s1) == tolower(*s2) ) )
 	{
 		++s1;
 		++s2;
@@ -153,19 +152,19 @@ char *Strchr(const char *s, int c)
 	
 	/* if c and s start with empty char */
 	if (EMPTY_CHAR == *s && EMPTY_CHAR == c)
-		{
-			c_position = (char*) s;
-		}
-	
+	{
+		c_position = (char*) s;
+	}
+
 	while (*s != c && *s != EMPTY_CHAR)
-		{
-			s++;
-		}
+	{
+		s++;
+	}
 	
 	if ( c == *s )
-		{
-			c_position = (char*) s;
-		}
+	{
+		c_position = (char*) s;
+	}
 	return c_position;
 }
 
@@ -176,20 +175,26 @@ char *Strdup(const char *s)
 
 		char* dest = (char*) malloc (string_size * sizeof(char));
 		
-		assert(s != NULL);
+		assert(s != NULL); /*TODO change to if. should also work in release version*/
 		
 		return Strcpy (dest, s);
 	}
 
 char *Strcat(char *dest, const char *src)
 	{
-		return Strcpy ( (dest + (int) Strlen(dest)), src);
+		char * dest_start = dest;
+		
+		Strcpy ( (dest + (int) Strlen(dest)), src);
+		
+		return dest_start;
 	}
 
 char *Strncat(char *dest, const char *src, size_t n)
-
 	{
-		return Strncpy ( (dest + (int) Strlen(dest)), src, n);
+		char * dest_start = dest;
+		Strncpy ( (dest + (int) Strlen(dest)), src, n);
+		/* TODO add null char in the end strlen(n) */		
+		return dest_start;
 	}
 
 char *Strstr(const char *haystack, const char *needle)
@@ -216,64 +221,3 @@ char *Strstr(const char *haystack, const char *needle)
 	
 	return NULL;
 }
-	/*
-	int ne_size = (int) Strlen(needle);
-	int matched_chars = 0;
-	char* cur_hay = (char*) haystack;
-	char* nee = (char*) needle;
-	char* result = NULL;
-	int i = 0;
-	
-	assert(haystack != NULL);
-	assert(needle != NULL);
-	
-	printf("i = %d\n", i++);
-	
-	while ( *cur_hay != EMPTY_CHAR || matched_chars < ne_size )
-	{
-		
-		if ( *cur_hay == *nee )
-		{
-			if ( matched_chars == ne_size)
-			{	
-				return cur_hay;
-			}
-			++cur_hay;
-			++nee;
-			++matched_chars;
-		}
-		else if ( *cur_hay != *nee && matched_chars != 0 )
-		{
-			cur_hay -= matched_chars;
-			matched_chars = 0;
-		}
-			
-		else
-		{
-			++cur_hay;
-			nee = (char*) needle;
-			matched_chars = 0;
-		}
-	}
-	
-	if (matched_chars == ne_size)
-	{
-		result = cur_hay;
-	}
-	return result;
-	
-}
-	*/		
-
-
-
-
-
-
-
-
-
-
-
-
-
