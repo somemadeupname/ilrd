@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
 	
 	int last_general = -1;
 	
-	int* generals = (int*) malloc (sizeof(int) * num_generals);
+	int generals[] = (int*) malloc (sizeof(int) * num_generals);
 	
 	/*printf("starting_general = %d\n", starting_general);*/
 

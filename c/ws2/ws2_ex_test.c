@@ -56,7 +56,7 @@ void TestSwapPtrInt(int left, int right)
 void TestBigNumbers (char * result, const char* num1, const char *num2, const char *expected_result)
 {
 	BigNumbers(result, num1, num2);
-	printf("%s + %s =\n\t%s.", num1, num2, result);
+	printf("\n%s \n+\n%s\n----\n%s", num1, num2, result);
 	printf("\t expected: %s\n", expected_result);
 }
 
@@ -85,8 +85,8 @@ int main()
     printf("#################### BigNumbers Test ####################\n");
     
     
-    TestBigNumbers(no_save, "123", "456", "579");
-    TestBigNumbers(one_save, "171", "456", "627");   
+    /*TestBigNumbers(no_save, "123", "456", "579");*/
+/*    TestBigNumbers(one_save, "171", "456", "627");   */
     TestBigNumbers(res_more_digits_than_nums, "923", "456", "1379");
     /*TestBigNumbers(big_nums, "111111111", "1111111", "112222222");*/
         	
