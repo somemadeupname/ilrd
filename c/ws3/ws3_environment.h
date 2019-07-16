@@ -1,3 +1,6 @@
+#ifndef WS3_ENVIRONMENT_H
+#define WS3_ENVIRONMENT_H
+
 #include <stdio.h>
 #include <stdlib.h> /* malloc free*/
 #include <assert.h> /*assert*/
@@ -12,3 +15,5 @@ char** InitLowerEnv(char **env);
 char** InitEnvVars(char **lower_env, char **env, size_t *num_successful_allocs);
 void FillLowerEnv(char **lower_env, char **env);
 void DestroyLowerEnv(char** lower_env, size_t *num_successful_allocs);
+
+#endif
