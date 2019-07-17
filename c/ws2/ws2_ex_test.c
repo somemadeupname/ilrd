@@ -53,42 +53,79 @@ void TestSwapPtrInt(int left, int right)
     }
 }
 
-void TestBigNumbers (char * result, const char* num1, const char *num2, const char *expected_result)
+void TestBigNumbers (char * result, char* num1, char *num2, const char *expected_result)
 {
 	BigNumbers(result, num1, num2);
-	printf("\n%s \n+\n%s\n----\n%s", num1, num2, result);
-	printf("\t expected: %s\n", expected_result);
+	if (expected_result == result)
+	{
+		START_GREEN
+        printf ("Sucess!\n"); 
+        END_GREEN         
+		printf("\n%s \n+\n%s\n_____\n%s", num1, num2, result);
+		printf("\t expected: %s\n", expected_result);              
+
+    }
+    else
+    {
+		START_RED
+        printf ("Failed\n");
+        END_RED        
+		printf("\n%s \n+\n%s\n_____\n%s", num1, num2, result);
+		printf("\t expected: %s\n", expected_result);        
+
+    }
 }
 
 int main()
 {
-	char no_save[4] = {'0', '0', '0'};
-	char one_save[4] = {'0', '0', '0'};	
-	char res_more_digits_than_nums[5] = {'0', '0', '0', '0'};
-	/*char big_nums[9] = {'0', '0', '0', '0', '0', '0', '0', '0', '0'};*/
+	char result[100] = " ";
+			    /* no_save */
+    char num1[] = "123";
+    char num2[] = "456";
+    			/* one save */
+    char num3[] = "171";
+    char num4[] = "456";    			
+				/* more digits than numbers */
+    char num5[] = "923";
+    char num6[] = "456";    			
+    			/* big numbers */
+    char num7[] = "1111111";
+    char num8[] = "111111111";    
+    			/* big numbers 2 */		
+    char num9[] = "111111111";
+    char num10[] = "111111111";        				 
 	
 	/* IsPalindrome test */
-    /*
+    
     printf("#################### IsPalindrome Test ####################\n");	
 	TestIsPalindrome("ABBA");
 	TestIsPalindrome("ABA");
 	TestIsPalindrome("test");
 	TestIsPalindrome("");
-	*/
+	
 	/* SwapPtrInt test */
     /*
     printf("#################### SwapPtrInt Test ####################\n");	
-
+	
 	TestSwapPtrInt(1,2); 
 	TestSwapPtrInt(2,2);  
 	*/
     printf("#################### BigNumbers Test ####################\n");
     
-    
-    /*TestBigNumbers(no_save, "123", "456", "579");*/
-/*    TestBigNumbers(one_save, "171", "456", "627");   */
-    TestBigNumbers(res_more_digits_than_nums, "923", "456", "1379");
-    /*TestBigNumbers(big_nums, "111111111", "1111111", "112222222");*/
-        	
+			    /* no_save */
+    BigNumbers(result, num1, num2); /* 579 */
+    printf("%s <-> 579\n", result);
+    			/* one save */
+    BigNumbers(result, num3, num4); /* 627 */
+    printf("%s <-> 627\n", result);    
+				/* more digits than numbers */
+    BigNumbers(result, num5, num6); /* 1379 */
+    printf("%s <-> 1379\n", result);    
+    			/* big numbers */
+    BigNumbers(result, num7, num8); /* 112222222  */
+    printf("%s <-> 112222222\n", result);    
+    BigNumbers(result, num9, num10); /* 222222222 */
+    printf("%s <-> 222222222\n", result);    
+            	
 	return 0;
 }

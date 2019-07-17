@@ -1,10 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h> /* atoi */
-#include <assert.h>
-#include "ws3_story.h"
+#include <assert.h> /* assert */
 
 #define FIRST_GENERAL (-1)
 
+/* Forward Declarations of functions */
+
+void InitGenerals(int* generals, const size_t num_generals);
+void ExecuteGenerals(int *generals,
+					 const size_t starting_general,
+	   				 const size_t num_generals);
+int GetLastGeneral(const int *generals);
+													
+												
 /**************************************
 
 		coder: Shieber
@@ -22,13 +30,13 @@
 * initializes array to 1's 
 
 ****************************************/
-void InitGenerals(int* generals, const int num_generals)
+void InitGenerals(int* generals, const size_t num_generals)
 {
-	int gen_index = 0;
+	size_t gen_index = 0;
 	
 	for (gen_index = 0; gen_index < num_generals; ++gen_index )
 	{
-		*(generals + gen_index) = 1;
+		generals[gen_index] = 1;
 	}
 }
 #ifndef NDEBUG
@@ -42,13 +50,13 @@ FOR TESTING PURPOSES ONLY
 
 *******************************/
 
-void PrintGenerals(int *generals, const int num_generals)
+void PrintGenerals(int *generals, const size_t num_generals)
 {
-	int gen_index = 0;
+	size_t gen_index = 0;
 
 	for (gen_index = 0; gen_index < num_generals; ++gen_index)
 	{
-		printf("%d", *(generals + gen_index));
+		printf("%d", generals[gen_index]);
 	}
 	printf("\n");
 }
@@ -66,42 +74,37 @@ void PrintGenerals(int *generals, const int num_generals)
 
 ********************************************************************/
 
-void ExecuteGenerals(int *generals, int starting_general,
-														const int num_generals)
+void ExecuteGenerals(int *generals,const size_t starting_general,
+					 const size_t num_generals)
 {
-	int kill = 0; /*boolean to determine if the next action should be kill*/
-	int cur = starting_general;
-	int killed = 0; /*counter for how many generals were killed so far*/
+	int is_kill = 0; /*boolean to determine if the next action should be kill*/
+	int current = starting_general;
+	size_t killed_counter = 0; /*counter for how many generals were killed so far*/
 		
-	for (cur = starting_general; cur < num_generals; ++cur)
+	/*for (cur = starting_general; cur < num_generals; ++cur)*/
+	while (killed_counter < num_generals - 1)
 	{
 		/*if the current action is to kill and the next general is alive*/
-		if ( kill && (1 == *(generals + cur) ) )
+		if ( is_kill && (1 == generals[current] ) )
 		{
-			*(generals + cur) = 0;
-			kill = 0;
-			++killed;
+			generals[current] = 0;
+			is_kill = 0;
+			++killed_counter;
 		}
 		/*if current action is not to kill and current general is alive*/
-		else if ( !kill && 1 == *(generals + cur) )
+		else if ( !is_kill && 1 == generals[current] )
 		{
-			kill = 1;
+			is_kill = 1;
 		}
 		
-		if ( num_generals - 1 == killed) 
-		{ /*once all generals but one were killed */
-			break; 
-		}
-		else
+		if ( num_generals == (size_t) (current + 1) )
 		{
-			if ( num_generals == cur + 1)
-			{
 			/* when the end of the array is reached: set cur to the start
 			of the cirlce. Because it's incremended before the beginning of
 			the next iteration - set it to -1  */							
-				cur = FIRST_GENERAL; 
-			}
+			current = FIRST_GENERAL; 
 		}
+		++current;
 	}
 }
 /******************************
@@ -113,12 +116,12 @@ void ExecuteGenerals(int *generals, int starting_general,
 *******************************/
 int GetLastGeneral(const int *generals)
 {
-	int cur = 0;
-	while (1 != *(generals + cur) )
+	size_t cur = 0;
+	while (1 != generals[current] )
 	{
-		++cur;
+		++current;
 	}
-	return (cur + 1); /*+1 for the general, not the index*/
+	return (current + 1); /*+1 for the general, not the index*/
 }
 
 /********************************
@@ -135,14 +138,15 @@ int main(int argc, char *argv[])
 	int num_generals = 0;
 	int starting_general = 0;
 	
-	int last_general = -1; /*init before setting last general*/
+	int last_general = FIRST_GENERAL; /*init before setting last general*/
 	int *generals = NULL;
 	
 	/*make sure you got valid number of inputs  */
 	if (argc != 3) 	
 	{						
-		fprintf(stderr ,"Incorrect input. insert ./prog num_generals starting gen.\n");
-		return (-2);
+		fprintf(stderr ,"Incorrect input. insert\
+						./prog num_generals starting gen.\n");
+		return (1);
 	}
 	
 	/* convert string to int to get the number of generals*/
@@ -151,10 +155,10 @@ int main(int argc, char *argv[])
 	starting_general = atoi(argv[2]) - 1;
 	
 	/* make sure that starting general is within correct range */
-	if (num_generals < starting_general + 1 || starting_general < 1 )
+	if (num_generals < starting_general + 1 || starting_general < 0 )
 	{
 		printf("Starting general must be between 1 and %d.\n", num_generals);
-		return (-3);
+		return (1);
 	}
 	
 	generals = (int*) malloc (sizeof(int) * num_generals);				
@@ -162,14 +166,14 @@ int main(int argc, char *argv[])
 	if (NULL == generals)
 	{
 		printf("Malloc failed.\n");
-		return (-1);
+		return (1);
 	}		
 	
 	InitGenerals(generals, num_generals);
 	
 	ExecuteGenerals(generals, starting_general, num_generals);
 	
-	last_general = GetLastGeneral (generals);
+	last_general = GetLastGeneral(generals);
 	
 	printf("Number of generals is %d\a.\n", num_generals);
 	printf("Starting general is %d\a.\n", starting_general + 1);

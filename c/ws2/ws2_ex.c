@@ -5,11 +5,11 @@
 #include <stdlib.h> /* atoi */
 #include "ws2_ex.h"
 
+#define EMPTY_CHAR '\0'
 #define WANTED_DIGIT 7
 #define BASE 10
 #define DIVIDES_WITH_NO_REMAINDER(n) ( (n % WANTED_DIGIT) ? 0 : 1 )
 #define TO_CHAR(n) (n + '0')
-#define TO_INT(n) (n - '0')
 
 /**********************
 * 
@@ -47,8 +47,10 @@ void SevenBoom(int from, int to)
 	
 	for (cur_num = from; cur_num < to; ++cur_num)
 	{
-		/*abs for it to work with negative numbers. modulu is undefined for negatives. */
-		if ( HasDigit(abs(cur_num)) || DIVIDES_WITH_NO_REMAINDER(abs(cur_num)) )
+		/*abs for it to work with negative numbers.\
+		modulu is undefined for negatives. */
+		if ( HasDigit(abs(cur_num)) ||
+			 DIVIDES_WITH_NO_REMAINDER(abs(cur_num)) )
 		{
 			printf("BOOM\n");
 		}
@@ -91,7 +93,8 @@ int IsPalindrome(const char *str)
 void SwapPtrInt(int **left, int **right)
 {
 	int* temp = NULL;
-	assert (left != right); /*no need to do anything if left and right point to the same address*/
+	assert (left != right); /*no need to do anything if left
+							and right point to the same address*/
 	assert (NULL == left);
 	assert (NULL == right);
 	
@@ -100,66 +103,105 @@ void SwapPtrInt(int **left, int **right)
 	*left = temp;
 }
 
-void AddOneToNextDigitPlace (char *res)
+void ReverseString(char *str)
 {
-	*res = '1';
+	char temp = 0;
+	char *str_left = NULL;
+	char *str_right = NULL;
+	str_right = strlen(str) + str - 1;
+	str_left =  str;
+	
+	while (str_left < str_right) /* as long as the left
+								pointer doesn't meet the right */
+	{
+		temp = *str_right;
+		*str_right = *str_left;
+		*str_left = temp;		
+		++str_left;
+		--str_right;		
+	}
 }
 
-void AddTwoDigits (const char *num1, const char *num2, char *res, int *save)
+void BigNumbers (char *result, char *num1, char *num2)
 {
-	int temp = 0;
-	temp = TO_INT(*num1) + TO_INT(*num2) + *save;
-	if ( temp > 10)
+	int save = 0;
+	char *temp_result = result;
+	char *temp_num1 = num1;
+	char *temp_num2 = num2;	
+	
+	assert( NULL != result);
+	assert( NULL != num1);
+	assert( NULL != num2);		
+	
+	ReverseString(num1);
+	ReverseString(num2);
+	
+	/* when both numbers still have characters */
+	while ( EMPTY_CHAR != *num1 && EMPTY_CHAR != *num2 )
 	{
-		*res = TO_CHAR(temp%10);
-		*save = 1;
+		/* convert result to char by using -'0' */
+		*result = (*num1) + (*num2) + save - '0';
+		if (*result > '9')
+		{
+			save = 1;/* add 1 to the next addition*/
+			*result -= 10;
+		}
+		else
+		{
+			save = 0; /* no need to add 1 to next addition */	
+		}
+		++num1;
+		++num2;
+		++result;		
+	}
+	
+	if ( EMPTY_CHAR == *num1 )
+	{
+		while ( EMPTY_CHAR != *num2 )
+		{
+			*result = *num2 + save;
+			if (*result > '9') /*if it's greater than 9*/
+			{
+				save = 1;	
+				*result -= 10; /* getting the rightmost digit */
+			}
+			else
+			{
+				save = 0;
+			}
+			++num2;
+			++result;
+		}
 	}
 	else
 	{
-		*res = TO_CHAR(temp);
-		*save = 0;
-	}
-}
-			
-
-/**********************
-* 
-*
-***********************/
-char *BigNumbers (char * result, const char* num1, const char *num2)
-{
-	char *num1_cur = NULL;
-	char *num2_cur = NULL;
-	char *result_cur = NULL;
-	
-	size_t digit_place = 0;
-	int save = 0;
-	size_t result_len = 0;
-
-	assert(NULL != result);
-	assert(NULL != num1);
-	assert(NULL != num2);
-	
-	num1_cur = (char *) (num1 + strlen(num1) - 1);
-	num2_cur = (char *) (num2 + strlen(num2) - 1);
-	result_cur = (char *) (result + strlen(result) - 1);
-	result_len = strlen(result);
-	
-	while ( digit_place < result_len/* && (result != result_cur && 0 == save) */)
-	{		
-		AddTwoDigits (num1_cur, num2_cur, result_cur, &save);
-
-		if  (1 == save)
-		{	
-			AddOneToNextDigitPlace ((result_cur-1));
+		while ( EMPTY_CHAR != *num1 )
+		{
+			*result = *num1 + save;
+			if (*result > '9') /*if it's greater than 9*/
+			{
+				save = 1;
+				*result -= 10; /* getting the rightmost digit */
+			}
+			else
+			{
+				save = 0;
+			}
+			++num1;
+			++result;
 		}
-		--num1_cur;
-		--num2_cur;
-		--result_cur;
-		++digit_place;		
 	}
-	return result;
+	
+	if (save != 0)
+	{
+		*result = TO_CHAR(save); /* if one more digit
+									remains from the last addition*/
+		++result;
+	}
+	*result = EMPTY_CHAR; /*appending empty character to the end of the string*/
+	
+	/* reversing the strings back to the correct order*/
+	ReverseString(temp_result);
+	ReverseString(temp_num1);
+	ReverseString(temp_num2);		
 }
-	
-			
-	
