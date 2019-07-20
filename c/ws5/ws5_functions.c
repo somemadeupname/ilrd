@@ -31,14 +31,14 @@ int IsDefaultCompare()
 
 /********************* Action functions *********************/
 
-command RemoveFile(const char *filename, const char* user_input)
+command RemoveFile(const char *filename)
 {
 	/* null assert */
 	int status = remove(filename);
 	return del;
 }
 
-command CountLines(const char *filename, const char* user_input)
+command CountLines(const char *filename)
 {
 	/* null assert */
 	size_t num_lines = 0;
@@ -73,20 +73,47 @@ command AppendToFile(const char *filename, const char *text_to_append)
 	status = fputs (text_to_append, file_p); /* writes string without null char. DOES IT MATTER? */
 	fputc(NEW_LINE, file_p); /* add new line at the end TODO check if this fails */
 	fclose(file_p);
-	return append;
+	return append_default;
 }
-/* TODO append
-command PreAppend (const char *filename, const char *text_to_preappend)
-*/
 
-command ExitProgram (const char *filename, const char *text_to_append)
+command PreAppend (const char *filename, char *text_to_preappend)
+{
+	char* temp_filename = "../.temp";
+	int status = 0;
+	char c = '0';
+	char* text_without_char = ++text_to_preappend; /*remove the preappend
+													command character*/
+	/* NULL asserts*/
+	
+	FILE* temp_file_p = fopen(temp_filename , "a"); /*open in append mode*/
+	FILE* file_p = fopen(filename, "r"); /*TODO decide which open mode is most correct */
+
+	status = fputs (text_without_char, temp_file_p); /* writes string without null char. DOES IT MATTER? */
+	fputc(NEW_LINE, temp_file_p); /* add new line at the end TODO check if this fails */
+
+	c = getc(file_p);
+	while (EOF != c)
+	{
+		fputc (c, temp_file_p);
+		c = getc(file_p);
+	}
+	fclose(file_p);
+	fclose(temp_file_p);
+	remove(filename);
+	rename(temp_filename, filename);
+	
+	return pre_append;
+}
+			
+
+command ExitProgram()
 {
 	return exit;
 }
 
 /*************************Print Usage Instructions **************************/
 
-void PrintInstructions(const char *filename)
+void PrintUserInstructions(const char *filename)
 {
 	printf("Please enter a string and hit Enter.\n\n\
 	\t1. Enter \"-remove\" to delete the file.\n\
@@ -99,21 +126,3 @@ void PrintInstructions(const char *filename)
 	printf("%s\n", filename);
 	END_GREEN
 }	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
