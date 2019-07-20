@@ -78,6 +78,7 @@ command AppendToFile(const char *filename, const char *text_to_append)
 
 command PreAppend (const char *filename, char *text_to_preappend)
 {
+	/*gets seg fault when trying to preappend to non existing file TODO*/
 	char* temp_filename = "../.temp";
 	int status = 0;
 	char c = '0';
@@ -85,8 +86,9 @@ command PreAppend (const char *filename, char *text_to_preappend)
 													command character*/
 	/* NULL asserts*/
 	
-	FILE* temp_file_p = fopen(temp_filename , "a"); /*open in append mode*/
 	FILE* file_p = fopen(filename, "r"); /*TODO decide which open mode is most correct */
+	
+	FILE* temp_file_p = fopen(temp_filename , "a"); /*open in append mode*/
 
 	status = fputs (text_without_char, temp_file_p); /* writes string without null char. DOES IT MATTER? */
 	fputc(NEW_LINE, temp_file_p); /* add new line at the end TODO check if this fails */
