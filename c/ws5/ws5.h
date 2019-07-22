@@ -14,11 +14,13 @@
 #define EXIT_COMMAND "-exit"
 #define PREAPPEND_COMMAND "<"
 #define DEFAULT_COMMAND ""
+#define UNUSED(x) (void)(x)
 
+/*******************func_exit_status enum declaration************************/
 typedef enum
 {
-	del, count, exit, pre_append, append_default
-} command;
+	exit, success, fail
+} func_exit_status;
 
 
 /***************** compare functions forward declarations *****************/
@@ -27,22 +29,21 @@ int DoStringsMatch(const char *s1, const char *s2);
 int DoCharsMatch(const char *s1, const char *s2);
 int IsDefaultCompare();
 
-
 /***************** action functions forwatd declarations *****************/
 
-command RemoveFile(const char *filename);
-command CountLines (const char *filename);
-command AppendToFile(const char *filename, const char *text_to_append);
-command PreAppend (const char *filename, char *text_to_preappend);
-command ExitProgram ();
+func_exit_status RemoveFile(const char *filename, const char *input);
+func_exit_status CountLines(const char *filename, const char *input);
+func_exit_status AppendToFile(const char *filename, const char *text_to_append);
+func_exit_status PreAppend(const char *filename, const char *text_to_preappend);
+func_exit_status ExitProgram(const char *filename, const char *input);
 
 /*********************Other Functions Declarations**************************/
 void PrintUserInstructions(const char *filename);
 
+/*********************Event struct declarations**************************/
 struct Event
 {
 	const char* command_string;
-	int (*compare_function)(/*const char *, const char **/);
-	/*TODO should these be * or no *?*/
-	command (*action_function)(/*const char *, const char **/);
+	int (*compare_function)(const char *, const char *);
+	func_exit_status (*action_function)(const char *, const char *);
 };
