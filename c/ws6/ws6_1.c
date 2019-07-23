@@ -129,7 +129,7 @@ unsigned char ByteMirrorLooped(unsigned char num)
 	for (bit_index = 0; bit_index < num_bits; ++bit_index)
 	{
 		mirrored <<= 1;
-		mirrored += (num & mask);
+		mirrored |= (num & mask);
 		num >>= 1;
 	}
 	return mirrored;
