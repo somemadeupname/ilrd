@@ -7,5 +7,7 @@ int IsPowOfTwo(unsigned int n);
 unsigned int AddOne(unsigned int num);
 void PrintThreeBits(const unsigned int arr[], size_t arr_length);		
 unsigned int ByteMirrorLooped(unsigned int num);		
-unsigned int ByteMirror(unsigned int num);	
+unsigned char ByteMirror(unsigned char num);	
 unsigned int CountSetBitsLoop(unsigned int num);
+int AreBothBitsOn(unsigned char uchar);
+int IsOneBitOn(unsigned char uchar);	
