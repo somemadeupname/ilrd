@@ -1,3 +1,6 @@
+#ifndef WS5_H
+#define WS5_H
+
 #include <stdio.h>
 
 #define NEW_LINE '\n'
@@ -40,10 +43,4 @@ func_exit_status ExitProgram(const char *filename, const char *input);
 /*********************Other Functions Declarations**************************/
 void PrintUserInstructions(const char *filename);
 
-/*********************Event struct declarations**************************/
-struct Event
-{
-	const char* command_string;
-	int (*compare_function)(const char *, const char *);
-	func_exit_status (*action_function)(const char *, const char *);
-};
+#endif

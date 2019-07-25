@@ -106,6 +106,7 @@ func_exit_status AppendToFile(const char *filename, const char *text_to_append)
 	if (EOF == status)
 	{
 		perror("fputs failed in AppendToFile.\n");
+		fclose(file_p);
 		return fail;
 	}	
 	status = fputc(NEW_LINE, file_p);
@@ -113,6 +114,7 @@ func_exit_status AppendToFile(const char *filename, const char *text_to_append)
 	if (EOF == status)
 	{
 		perror("fputc failed in AppendToFile.\n");
+		fclose(file_p);				
 		return fail;
 	}		
 	
@@ -151,6 +153,7 @@ func_exit_status PreAppend (const char *filename, const char *text_to_preappend)
 	
 	if (NULL == temp_file_p)
 	{
+		fclose(file_p);			
 		perror("fopen failed in PreAppend for new temp file.\n");
 		return fail;
 	}		
@@ -159,6 +162,8 @@ func_exit_status PreAppend (const char *filename, const char *text_to_preappend)
 	
 	if (EOF == status)
 	{
+		fclose(file_p);
+		fclose(temp_file_p);	
 		perror("fputs failed in PreAppend.\n");
 		return fail;
 	}	
@@ -168,6 +173,8 @@ func_exit_status PreAppend (const char *filename, const char *text_to_preappend)
 	if (EOF == status)
 	{
 		perror("fputc failed in PreAppend.\n");
+		fclose(file_p);
+		fclose(temp_file_p);			
 		return fail;
 	}			
 
@@ -180,6 +187,7 @@ func_exit_status PreAppend (const char *filename, const char *text_to_preappend)
 	if (0 != fclose(file_p) )
 	{
 		perror("fclose failed in PreAppend.\n");
+		fclose(temp_file_p);			
 		return fail;
 	}
 	if (0 != fclose(temp_file_p) )
