@@ -59,6 +59,7 @@ void *Memset(void *s, int c, size_t n)
 	
 	while (n > 0)
 	{
+		printf("OffsetFromNextAddressDivisibleByEight(s_cur) = %d\n", OffsetFromNextAddressDivisibleByEight(s_cur));		
 		if (( n >= 8) && ( 8 == OffsetFromNextAddressDivisibleByEight(s_cur)))
 		{
 			*(unsigned long *) s_cur = CreateWordFromInt(c);
@@ -87,13 +88,22 @@ void *Memset(void *s, int c, size_t n)
 *	Offest from next address divisible by 8		*
 *												*
 *************************************************/
-void *Memcpy (void *dest, const void *src, size_t n)
+void *Memcpy (void *dest, void *src, size_t n)
 {
 	void *dest_start = dest;
 	int c = 0;
 	assert(src != dest);
 	assert(NULL != src);
 	assert(NULL != dest);
+	
+	/*
+	TODO test:
+	a. misaligned address
+	b. =8
+	c. <8
+	d. >8
+	e. >>8
+	*/
 	
 	while (n > 0)
 	{
@@ -114,27 +124,17 @@ void *Memcpy (void *dest, const void *src, size_t n)
 		}
 	}
 	assert(0 == n);
+	
 	return dest_start;
 }
 
-/************************************************
-*												*
-*	Static function used by Memcpy and Memset	*
-*												*
-*	input: const void * address					*
-*												*
-*	output:										*
-*	8 if address is divisible by 8				*
-*	Offest from next address divisible by 8		*
-*												*
-*************************************************/
-static int DoAddressesOverlap( const void *dest,
-							   const void *src,
-							   size_t n			)
+static int DoAddressesOverlap (	const void *dest,
+								const void *src,
+								size_t n)
 {
 	assert(NULL != dest);
 	assert(NULL != src);
-	return ((char *)src <= (char *) dest && ((char *)src + n) > (char *) dest);	
+	return (((char *)src+n) < (char *) dest);	
 }
 /************************************************
 *
@@ -151,8 +151,8 @@ void *Memmove(void *dest, const void *src, size_t n)
 {
 		
 		/* Declarations */
-		void *src_cur = (void *) src; /* cast no non-const 
-										 to allow dereferencing */
+		void *src_cur = (void *) src; /* to allow dereferencing */
+		int c = 0;
 		
 		/* Asserts */		
 		assert (NULL != dest);
@@ -161,7 +161,7 @@ void *Memmove(void *dest, const void *src, size_t n)
 		while (n > 0)
 		{ /* assuming addresses are aligned */
 			
-			if (DoAddressesOverlap(dest, src, n))
+			if ( 1 == DoAddressesOverlap(dest, src, n) )
 			{
 				/* copy byte-by-byte from end to start to prevent overriding */
 				*((char *) dest + n - 1) = *((char *) src_cur + n - 1);
@@ -170,7 +170,6 @@ void *Memmove(void *dest, const void *src, size_t n)
 			else /* if addresses don't overlap */
 			{
 				Memcpy(dest, src_cur, n);
-				n = 0;
 			}
 		}
 		/* assert that all bytes were written */
@@ -181,13 +180,11 @@ void *Memmove(void *dest, const void *src, size_t n)
 
 int main()
 {
-	int c = 5; can only contain values represented
-				  by char 0-255 since its value is later cast as char 
+	int c = 5; /* can only contain values represented
+				  by char 0-255 since its value is later cast as char */
 	int orig[10] = {0};
 	int mine[10] = {0};
-	int cop[10] = {0};
-	int mine2[10] = {0};
-	int cop2.....00000000000000000000000[10] = {0};		
+	int cop[10] = {0};	
 
 	size_t i = 0;
 	printf("sizeof(src)=%lu.\n", sizeof(orig));
@@ -195,8 +192,8 @@ int main()
 	printf("CreateWordFromInt(%d) = %lu.\n", c, CreateWordFromInt(c));
 	
 	printf("src address: %ld\n", &orig[i]);
-	printf("OffsetFromAddressDivisibleByEight(src) = %d\n", OffsetFromNextAddressDivisibleByEight(orig));
-	memset((char *) orig, c + 1, 39);	
+	/*printf("OffsetFromAddressDivisibleByEight(src) = %d\n", OffsetFromNextAddressDivisibleByEight(orig));*/
+	/*memset((char *) orig, c + 1, 39);	*/
 	Memset(mine, c, 40);	
 	Memcpy(cop, mine, 40);
 	printf("OffsetFromAddressDivisibleByEight(cop) = %d\n", OffsetFromNextAddressDivisibleByEight(cop));
@@ -210,9 +207,7 @@ int main()
 	{
 		printf("mine[%lu] = %10d\n", i, mine[i]);
 	}
-	
-	Memmove(cop, mine, 39);
+	Memmove(cop, mine, 40); 
 	
 	return 0;
 }
-000000000000000000000000000000000000000000001

@@ -1,8 +1,8 @@
 #include <stdio.h>
-#include <stdlib.h> /* */
-#include <string.h> /* strlen */
+#include <stdlib.h>
+#include <string.h>
 #include <assert.h>
-#include <ctype.h> /* isdigit isalpha isspace */
+#include <ctype.h>
 
 #define UNUSED(x) (void)(x)
 #define PLUS 43
@@ -63,65 +63,8 @@ int AtoIDecimal(const char *nptr)
 	return res*sign;
 }
 
-static void ReverseString(char *str)
-{
-	char *reverse = str;
-	int temp = 0;
-	
-	assert (NULL != str);
-	str += (strlen(str) - 1);
-
-	while (reverse < str)
-	{
-		temp = *str;
-		*str = *reverse;
-		*reverse = temp;
-		--str;
-		++reverse;
-	}
-}
-
-
-char *ItoADecimal(int value, char *str)
-{
-	/* init values */
-	int sign = 0;
-	char * str_start = str;
-	assert(NULL != str);
-	sign = (value >= 0 ? 1 : (-1));
-	value *= sign; /* make value positive if negative. no change otherwise */
-
-	/* in case value is 0 */
-	if (0 == value)
-	{
-		*str = '0';
-		++str;
-	}
-	
-	/* parse over value and extract each digit separately into the str */
-	while (value > 0)
-	{
-		*str = (char)(value%BASE + '0');
-		value /= BASE;	
-		++str;
-	}
-
-	/* if value is negative - add the minus char */
-	if (sign < 0)
-	{
-		*str = '-';
-		++str;
-	}	
-	*str = '\0'; /* append terminating null char */
-	
-	ReverseString(str_start);
-	
-	return str_start;
-}
-		
 int main(int argc, char *argv[])
 {
-	char str[20];
 	/*argv[1] = "  \n\t\r67  ";*/
 	/*
 	size_t index = 0;
@@ -132,11 +75,14 @@ int main(int argc, char *argv[])
 	printf("atoi() = %d\n", atoi(argv[1]));
 	*/
 	UNUSED(argc);
-	/*
 	printf("AtoIDecimal(\t%s) = \t%d\n", argv[1], AtoIDecimal(argv[1]));
 	printf("atoi \t   (\t%s) = \t%d\n", argv[1], atoi(argv[1]));		
-	*/
-	printf("ItoADecimal(%s) = %s\n", argv[1], ItoADecimal(atoi(argv[1]), str));
+	
+	return 0;
+}
+#include <stdio.h>
 
+int main()
+{
 	return 0;
 }
