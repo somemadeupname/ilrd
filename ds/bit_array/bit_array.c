@@ -85,5 +85,47 @@ bitarray_t BitArrSetBitOff(bitarray_t bit_array, size_t bit_index);
 	unsigned long mask = 1LU;	
 	return (bit_array & (mask << bit_index));
 }
+/* TODO test this*/
+bitarray_t BitArrSetBit(bitarray_t bit_array, size_t bit_index, int value)
+{
+	bitarray_t ba = bit_array;
+	if (1 == value)
+	{
+		ba = (bit_array | (1 << bit_index));
+	}
+	else
+	{
+		ba = (bit_array | (0 << bit_index));	
+	}		
+	return ba;
+}
 
-bitarray_t BitArrSetBit(bitarray_t bit_array, size_t bit_index, int value);
+bitarray_t BitArrFlipBit(bitarray_t bit_array, size_t bit_index)
+{
+	unsigned long mask = 1LU;	
+	return (bit_array ~(mask << bit_index));
+}
+/*TODO v not sure about this*/
+bitarray_t BitArrFlipAllBits(bitarray_t bit_array)
+{
+	return ~bit_array;
+}
+
+bitarray_t BitArrSetAllBitsOn(bitarray_t bit_array)
+{
+	return 0xFFFFFFFFFFFFFFFFLU;
+}
+
+bitarray_t BitArrSetAllBitsOff(bitarray_t bit_array)
+{
+	return (bitarray_t) 0;
+}
+
+bitarray_t BitArrRotateBitsRight(bitarray_t bit_array, size_t rotate_by)
+{
+	if (64 < rotate_by)
+	{
+		rotate_by %= 64;
+	}
+	
+}
