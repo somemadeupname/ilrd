@@ -3,6 +3,33 @@
 #include "bit_array.h"
 
 #define NUM_MAX_BITS 64
+#define SIZE_OF_BYTE 8
+
+/* Bits set in byte LUT*/
+static unsigned int bit_count_lut[256] = 
+{
+    0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4, 1, 2, 2, 3, 2, 3, 3, 4, 2,
+    
+    3, 3, 4, 3, 4, 4, 5, 1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5, 2, 3,
+    
+    3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3,
+    
+    4, 3, 4, 4, 5, 2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 2, 3, 3, 4,
+    
+    3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5,
+    
+    6, 6, 7, 1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5, 2, 3, 3, 4, 3, 4,
+    
+    4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5,
+    
+    6, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 2, 3, 3, 4, 3, 4, 4, 5,
+    
+    3, 4, 4, 5, 4, 5, 5, 6, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 3,
+    
+    4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 4, 5, 5, 6, 5, 6, 6, 7, 5, 6,
+    
+    6, 7, 6, 7, 7, 8
+};
 
 /* Bit Mirror LUT*/
 static unsigned char bit_mirror_lut[256] = 
@@ -33,32 +60,6 @@ static unsigned char bit_mirror_lut[256] =
 	0x67 , 0xE7 , 0x17 , 0x97 , 0x57 , 0xD7 , 0x37 , 0xB7 , 0x77 , 0xF7 ,
 	0xF  , 0x8F , 0x4F , 0xCF , 0x2F , 0xAF , 0x6F , 0xEF , 0x1F , 0x9F ,
 	0x5F , 0xDF , 0x3F , 0xBF , 0x7F , 0xFF
-};  
-
-/* Bits set in byte LUT*/
-static unsigned int bit_count_lut[256] = 
-{
-    0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4, 1, 2, 2, 3, 2, 3, 3, 4, 2,
-    
-    3, 3, 4, 3, 4, 4, 5, 1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5, 2, 3,
-    
-    3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3,
-    
-    4, 3, 4, 4, 5, 2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 2, 3, 3, 4,
-    
-    3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5,
-    
-    6, 6, 7, 1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5, 2, 3, 3, 4, 3, 4,
-    
-    4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5,
-    
-    6, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 2, 3, 3, 4, 3, 4, 4, 5,
-    
-    3, 4, 4, 5, 4, 5, 5, 6, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 3,
-    
-    4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 4, 5, 5, 6, 5, 6, 6, 7, 5, 6,
-    
-    6, 7, 6, 7, 7, 8
 };
 
 
@@ -313,3 +314,47 @@ bitarray_t BitArrBitMirror(bitarray_t bit_array)
 	}
 	return mirrored;
 }
+
+/* 
+ * Counts on bits in a bit array, must be implemented with a lookup table
+ * Param bit_array: the bit array
+ * Returns: number of on bits
+ * Errors: none
+ */
+size_t BitArrCountOnBitsLUT(bitarray_t bit_array)
+{
+	size_t byte_index = 0;
+	unsigned long mask = 0x0000000000000FFLU;
+	unsigned long on_bits_counter = 0LU;
+	
+	for (byte_index = 0; byte_index < SIZE_OF_BYTE; ++byte_index)
+	{
+		on_bits_counter =
+		on_bits_counter +
+		bit_count_lut[(bit_array & mask) >> (SIZE_OF_BYTE * byte_index)];
+		mask = (mask << SIZE_OF_BYTE);
+	}
+	return on_bits_counter;
+}
+
+size_t BitArrCountOffBitsLUT(bitarray_t bit_array)
+{
+	return (NUM_MAX_BITS - BitArrCountOnBitsLUT(bit_array));
+}
+
+bitarray_t BitArrBitMirrorLUT(bitarray_t bit_array)
+{
+	size_t byte_index = 0;
+	unsigned long mask = 0x0000000000000FFLU;
+	unsigned long mirrored = 0LU;
+	/* mask SIZE_OF_BYTE - 1 of the bytes in each iteration */
+	for (byte_index = 0; byte_index < SIZE_OF_BYTE; ++byte_index)
+	{
+		mirrored =
+		bit_mirror_lut[(bit_array & mask) >> (SIZE_OF_BYTE * byte_index)];
+		mask <<= SIZE_OF_BYTE;
+		mirrored <<= SIZE_OF_BYTE;
+	}
+	return mirrored;
+}
+

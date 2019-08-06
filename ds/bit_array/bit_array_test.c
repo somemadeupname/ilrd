@@ -2,6 +2,7 @@
 #include "bit_array.h"
 
 /* FORWARD DECLARATIONS */
+
 /* 1-3 */
 void TestBitArrIsBitSet();
 void TestBitArrCountOnBits();
@@ -23,6 +24,11 @@ void TestBitArrSwapBits();
 void TestBitArrRotateBitsRight();
 void TestBitArrRotateBitsLeft();
 
+/* 16-18 */
+void TestBitArrCountOnBitsLUT();
+void TestBitArrCountOffBitsLUT();
+void TestBitArrBitMirrorLUT();
+
 /* main */
 
 int main()
@@ -36,7 +42,7 @@ int main()
 
 	/* 4-9 */
 	
-	TestBitArrBitToStr();
+	/*TestBitArrBitToStr();*/
 	
 	TestBitArrSetBitOn();
 	
@@ -59,6 +65,14 @@ int main()
 	TestBitArrRotateBitsRight();
 	
 	TestBitArrRotateBitsLeft();
+	
+	/* 16-18 */
+	
+	TestBitArrCountOnBitsLUT();
+
+	TestBitArrCountOffBitsLUT();
+	
+	TestBitArrBitMirrorLUT();	
 	
 	return 0;
 }
@@ -459,4 +473,70 @@ void TestBitArrRotateBitsLeft()
 		printf("BitArrRotateBitsRight failed 4.\n");
 		printf("BitArrRotateBitsRight(1,0) = %lu.\n", BitArrRotateBitsLeft(ba,4));		
 	}		
+}
+
+void TestBitArrCountOnBitsLUT()
+{
+	bitarray_t ba = 5;
+	if (2 != BitArrCountOnBitsLUT(ba))
+	{
+		printf("BitArrCountOnBitsLUT failed 1.\n");
+	}
+	
+	ba = 4;
+	if (1 != BitArrCountOnBitsLUT(ba))
+	{
+		printf("BitArrCountOnBitsLUT failed 2.\n");
+	}		
+	
+	ba = 4294967296; /* 2^32 */
+	
+	if (1 != BitArrCountOnBitsLUT(ba))
+	{
+		printf("BitArrCountOnBitsLUT failed 3.\n");
+	}
+	
+	ba = 0xFFFFFFFFFFFFFFFFLU; 
+	if (64 != BitArrCountOnBitsLUT(ba))
+	{
+		printf("BitArrCountOnBitsLUT failed 4.\n");
+		printf("BitArrCountOnBitsLUT(0xFFFFFFFFFFFFFFFLU) = %lu.\n", BitArrCountOnBitsLUT(ba));		
+	}
+}
+
+void TestBitArrCountOffBitsLUT()
+{
+	bitarray_t ba = 5;
+	if (62 != BitArrCountOffBitsLUT(ba))
+	{
+		printf("BitArrCountOffBitsLUT failed 1.\n");
+		printf("BitArrCountOffBitsLUT(5) = %lu.\n", BitArrCountOffBits(ba));								
+	}
+	
+	ba = 4;
+	if (63 != BitArrCountOffBitsLUT(ba))
+	{
+		printf("BitArrCountOffBitsLUT failed 2.\n");
+		printf("BitArrCountOffBitsLUT(4) = %lu.\n", BitArrCountOffBitsLUT(ba));						
+	}		
+	
+	ba = 4294967296; /* 2^32 */
+	
+	if (63 != BitArrCountOffBitsLUT(ba))
+	{
+		printf("BitArrCountOffBitsLUT failed 3.\n");
+		printf("BitArrCountOffBitsLUT(2^32) = %lu.\n", BitArrCountOffBitsLUT(ba));				
+	}
+	
+	ba = 0xFFFFFFFFFFFFFFFFLU; 
+	if (0 != BitArrCountOffBitsLUT(ba))
+	{
+		printf("BitArrCountOffBitsLUT failed 4.\n");
+		printf("BitArrCountOffBitsLUT(0xFFFFFFFFFFFFFFFLU) = %lu.\n", BitArrCountOffBits(ba));		
+	}
+}
+
+void TestBitArrBitMirrorLUT()
+{
+	
 }
