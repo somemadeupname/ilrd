@@ -5,11 +5,15 @@
 
 void TestCreateAndDestroy();
 void TestStackPush();
+void TestStackPop();
+void TestStackPeek();
 
 int main()
 {
-	TestCreateAndDestroy();
-	TestStackPush();	
+	/*TestCreateAndDestroy();*/
+	/*TestStackPush();*/
+	/*TestStackPop();*/
+	TestStackPeek();	
 	return 0;
 }
 
@@ -36,3 +40,40 @@ void TestStackPush()
 	StackDestroy(stack);	
 }
 
+void TestStackPop()
+{
+	stack_t *stack = StackCreate(2,4);
+	
+	int a = 1;
+	int b = 2;
+	
+	CHECK(StackPop(stack));
+		
+	StackPush(stack, &a);
+	StackPush(stack, &b);
+	
+	CHECK(StackPop(stack));
+	CHECK(StackPop(stack));
+	CHECK(StackPop(stack));	
+	
+	StackDestroy(stack);
+}
+
+void TestStackPeek()
+{	
+	stack_t *stack = StackCreate(2,4);
+	
+	int a = 6;
+	int b = 5;
+	int * i_ptr = NULL;
+	
+	StackPush(stack, &a);
+	StackPush(stack, &b);
+	
+	i_ptr = (int *) StackPeek(stack);
+	
+	CHECK(*i_ptr);
+	
+	
+	StackDestroy(stack);
+}

@@ -68,12 +68,35 @@ int StackPush(stack_t *stack, const void *element)
 	return STACK_SUCCESS;
 }
 
+int StackPop(stack_t *stack)
+{
+	if (StackIsEmpty(stack))
+	{
+		return STACK_UNDERFLOW_ERROR;
+	}
+
+	stack->current = (char *) stack->current - stack->size_of_element;
+		
+	return STACK_SUCCESS;	
+}
+
 /*
- * Removes top element in stack.
+ * Get the address of the value in the top element of the stack.
  * Param stack: pointer to a stack
- * Returns: STACK_SUCCESS if the pop was successfull. Non-zero otherwise.
- * Errors:  returns STACK_UNDERFLOW_ERROR if stack is empty. Stack remains
- *		    unchanged.
- * 			If stack points to an unreadable address, behavior is undefined.
+ * Returns: A pointer to the value of the top element.
+ * Errors: If stack points to unreadable address, behavior is undefined.
  */
-int StackPop(stack_t *stack);
+void *StackPeek(const stack_t *stack)
+{
+	return (char*) stack->current - stack->size_of_element;
+}
+
+int StackIsEmpty(const stack_t *stack)
+{
+	return (stack->current == stack->base);
+}
+
+size_t StackSize(const stack_t *stack)
+{
+	return (((char*)stack->current-(char*)stack->base)/stack->size_of_element);
+}
