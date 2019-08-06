@@ -35,9 +35,8 @@ int main()
 	TestBitArrCountOffBits();
 
 	/* 4-9 */
-	/*
+	
 	TestBitArrBitToStr();
-	*/
 	
 	TestBitArrSetBitOn();
 	
@@ -257,7 +256,7 @@ void TestBitArrSetBit()
 	
 	ba = 4294967296; /* 2^32 */
 	
-	if (0 != BitArrSetBit(ba,32,0))
+	if (0 != BitArrSetBit(ba,31,0))
 	{
 		printf("BitArrSetBit failed 3.\n");
 		printf("BitArrSetBit(2^32,32,0) = %lu.\n", BitArrSetBit(ba,32,0));				
