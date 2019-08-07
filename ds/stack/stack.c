@@ -53,7 +53,7 @@ stack_t *StackCreate(size_t max_num_of_elements, size_t size_of_element)
 }
 
 /****************************
- *	 Status   : Approved        *
+ *	 Status   : Approved    *
  ****************************/
 void StackDestroy(stack_t *stack)
 {

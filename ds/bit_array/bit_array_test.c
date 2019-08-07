@@ -177,7 +177,7 @@ void TestBitArrBitToStr()
 		
 	printf("BitArrBitToStr(5) = %s.\n", BitArrBitToStr(ba,str1));								
 	
-	ba = 4;
+	ba = 4; /* 2^2 */
 	printf("BitArrBitToStr(4) = %s.\n", BitArrBitToStr(ba,str2));								
 	
 	ba = 4294967296; /* 2^32 */
@@ -280,7 +280,7 @@ void TestBitArrSetBit()
 	if (0xFEFFFFFFFFFFFFFFLU != BitArrSetBit(ba,56,0))
 	{
 		printf("BitArrSetBit failed 4.\n");
-		printf("BitArrSetBit(0xFFFFFFFFFFFFFFFLU) = %lu.\n", BitArrSetBit(ba,56,0));		
+		printf("BitArrSetBit(0xFFFFFFFFFFFFFFFLU) = %lx.\n", BitArrSetBit(ba,56,0));		
 	}
 }
 
@@ -538,5 +538,25 @@ void TestBitArrCountOffBitsLUT()
 
 void TestBitArrBitMirrorLUT()
 {
+	bitarray_t ba = 5;
+	if (0xA000000000000000LU != BitArrBitMirrorLUT(ba))
+	{
+		printf("BitArrBitMirrorLUT failed 1.\n");
+		printf("BitArrBitMirrorLUT(5) = %lu.\n", BitArrBitMirrorLUT(ba));								
+	}
 	
+	ba = 4; /* mirror is 2^61*/
+	if (2305843009213693952 != BitArrBitMirrorLUT(ba))
+	{
+		printf("BitArrBitMirrorLUT failed 2.\n");
+		printf("BitArrBitMirrorLUT(4) = %lu.\n", BitArrBitMirrorLUT(ba));						
+	}		
+	
+	ba = 4294967296; /* 2^32 */
+	
+	if (2147483648 != BitArrBitMirrorLUT(ba))
+	{
+		printf("BitArrBitMirrorLUT failed 3.\n");
+		printf("BitArrBitMirrorLUT(2^32) = %lu.\n", BitArrBitMirrorLUT(ba));				
+	}		
 }

@@ -13,11 +13,11 @@ void TestStackSize();
 
 int main()
 {
-	/*TestCreateAndDestroy();
-	TestStackPush();
-	TestStackPop();
-	TestStackPeek();
-	TestStackIsEmpty();*/
+	/*TestCreateAndDestroy();*/
+	/*TestStackPush();*/
+	/*TestStackPop();*/
+	/*TestStackPeek();*/
+	/*TestStackIsEmpty();*/
 	TestStackSize();
 	return 0;
 }

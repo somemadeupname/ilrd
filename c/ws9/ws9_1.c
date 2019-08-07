@@ -8,7 +8,7 @@
 *
 *	Author: Shieber
 *	Reviewer: Lila
-*
+*	Status : Sent 
 ***********************/
 
 /************************************************
@@ -136,6 +136,20 @@ static int DoAddressesOverlap( const void *dest,
 	assert(NULL != src);
 	return ((char *)src <= (char *) dest && ((char *)src + n) > (char *) dest);	
 }
+/* helper function which copies byte by byte from src to dest */
+static void CopyByteByByte(char *dest, const char *src, size_t n)
+{
+	assert(NULL != dest);
+	assert(NULL != src);
+
+	while(n > 0)
+	{
+		*dest = *src;
+		++dest;
+		++src;
+		--n;
+	}
+}
 /************************************************
 *
 *	Static function used by Memcpy and Memset
@@ -159,8 +173,7 @@ void *Memmove(void *dest, const void *src, size_t n)
 		assert (NULL != src);
 		
 		while (n > 0)
-		{ /* assuming addresses are aligned */
-			
+		{ 
 			if (DoAddressesOverlap(dest, src, n))
 			{
 				/* copy byte-by-byte from end to start to prevent overriding */

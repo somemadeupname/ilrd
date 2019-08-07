@@ -1,3 +1,10 @@
+/****************************
+ *   Author   : Ran Shieber *
+ *   Reviewer : Dandan	    *
+ *	 Status   : Sent        *
+ ****************************/
+
+
 #include <assert.h> /* assert */
 #include <string.h> /* strlen */
 #include "bit_array.h"
@@ -31,7 +38,7 @@ static unsigned int bit_count_lut[256] =
     6, 7, 6, 7, 7, 8
 };
 
-/* Bit Mirror LUT*/
+/* Bit mirror LUT*/
 static unsigned char bit_mirror_lut[256] = 
 { 
 	0x0  , 0x80 , 0x40 , 0xC0 , 0x20 , 0xa0 , 0x60 , 0xe0 , 0x10 , 0x90 ,
@@ -62,12 +69,17 @@ static unsigned char bit_mirror_lut[256] =
 	0x5F , 0xDF , 0x3F , 0xBF , 0x7F , 0xFF
 };
 
-
+/****************************
+ *	 Status   : Sent        *
+ ****************************/
 int BitArrIsBitSet(bitarray_t bit_array, size_t bit_index)
 {
 	return ((bit_array & ( 1LU << bit_index)) > 0);
 }
 
+/****************************
+ *	 Status   : Sent        *
+ ****************************/
 size_t BitArrCountOnBits(bitarray_t bit_array)
 {
 	size_t num_of_on_bits = 0;
@@ -86,6 +98,9 @@ size_t BitArrCountOnBits(bitarray_t bit_array)
 	return num_of_on_bits;
 }
 
+/****************************
+ *	 Status   : Sent        *
+ ****************************/
 size_t BitArrCountOffBits(bitarray_t bit_array)
 {
 	return (NUM_MAX_BITS - BitArrCountOnBits(bit_array));
@@ -138,6 +153,9 @@ char *BitArrBitToStr(bitarray_t bit_array, char *str)
 	return str_start;
 }
 
+/****************************
+ *	 Status   : Sent        *
+ ****************************/
 bitarray_t BitArrSetBitOn(bitarray_t bit_array, size_t bit_index)
 {
 	/* bring the set bit to the bit_index
@@ -146,6 +164,9 @@ bitarray_t BitArrSetBitOn(bitarray_t bit_array, size_t bit_index)
 	return (bit_array | (mask << bit_index));
 }
 
+/****************************
+ *	 Status   : Sent        *
+ ****************************/
 bitarray_t BitArrSetBitOff(bitarray_t bit_array, size_t bit_index)
 {
 	unsigned long full_mask = 0xFFFFFFFFFFFFFFFFLU;
@@ -154,6 +175,9 @@ bitarray_t BitArrSetBitOff(bitarray_t bit_array, size_t bit_index)
 	return (bit_array & full_mask);
 }
 
+/****************************
+ *	 Status   : Sent        *
+ ****************************/
 bitarray_t BitArrSetBit(bitarray_t bit_array, size_t bit_index, int value)
 {
 	unsigned long mask = 1LU;		
@@ -168,6 +192,9 @@ bitarray_t BitArrSetBit(bitarray_t bit_array, size_t bit_index, int value)
 	return bit_array;
 }
 
+/****************************
+ *	 Status   : Sent        *
+ ****************************/
 bitarray_t BitArrFlipBit(bitarray_t bit_array, size_t bit_index)
 {
 	unsigned long mask = 1LU;
@@ -187,21 +214,33 @@ bitarray_t BitArrFlipBit(bitarray_t bit_array, size_t bit_index)
 	return bit_array;
 }
 
+/****************************
+ *	 Status   : Sent        *
+ ****************************/
 bitarray_t BitArrFlipAllBits(bitarray_t bit_array)
 {
 	return ~bit_array;
 }
 
+/****************************
+ *	 Status   : Sent        *
+ ****************************/
 bitarray_t BitArrSetAllBitsOn(bitarray_t bit_array)
 {
 	return bit_array = (bitarray_t) 0xFFFFFFFFFFFFFFFFLU;
 }
 
+/****************************
+ *	 Status   : Sent        *
+ ****************************/
 bitarray_t BitArrSetAllBitsOff(bitarray_t bit_array)
 {
 	return bit_array = (bitarray_t) 0LU;
 }
 
+/****************************
+ *	 Status   : Sent        *
+ ****************************/
 bitarray_t BitArrSwapBits(bitarray_t bit_array,
 						  size_t bit_index1,
 						  size_t bit_index2)
@@ -225,15 +264,14 @@ bitarray_t BitArrSwapBits(bitarray_t bit_array,
 	
 	return bit_array;
 }
-/*
- * Function rotates the bit_array one step to the right.
- * Param bit_array
- * Returns: The rotated bit array
- */
+/****************************
+ *	 Status   : Sent        *
+ ****************************/
 static bitarray_t BitArrRotateOneBitsRight(bitarray_t bit_array)
 {
 	#define RIGHTMOST_BIT_INDEX 0
-	unsigned long rightmost_bit = BitArrIsBitSet(bit_array, RIGHTMOST_BIT_INDEX);
+	unsigned long rightmost_bit = 
+								BitArrIsBitSet(bit_array, RIGHTMOST_BIT_INDEX);
 	unsigned long mask = 0x8000000000000000LU;/* only the rightmost bit is on */
 	bit_array >>= 1LU;
 	if (0 != rightmost_bit)
@@ -261,6 +299,11 @@ bitarray_t BitArrRotateBitsRight(bitarray_t bit_array, size_t rotate_by)
 	return bit_array;
 }
 
+
+/****************************
+ *	 Status   : Sent        *
+ ****************************/
+ 
 /*
  * Function rotates the bit_array one step to the left.
  * Param bit_array
@@ -297,6 +340,9 @@ bitarray_t BitArrRotateBitsLeft(bitarray_t bit_array, size_t rotate_by)
 	return bit_array;
 }
 
+/****************************
+ *	 Status   : Sent        *
+ ****************************/
 bitarray_t BitArrBitMirror(bitarray_t bit_array)
 {
 	/* initializations  */
@@ -315,12 +361,9 @@ bitarray_t BitArrBitMirror(bitarray_t bit_array)
 	return mirrored;
 }
 
-/* 
- * Counts on bits in a bit array, must be implemented with a lookup table
- * Param bit_array: the bit array
- * Returns: number of on bits
- * Errors: none
- */
+/****************************
+ *	 Status   : Sent        *
+ ****************************/
 size_t BitArrCountOnBitsLUT(bitarray_t bit_array)
 {
 	size_t byte_index = 0;
@@ -329,32 +372,36 @@ size_t BitArrCountOnBitsLUT(bitarray_t bit_array)
 	
 	for (byte_index = 0; byte_index < SIZE_OF_BYTE; ++byte_index)
 	{
-		on_bits_counter =
-		on_bits_counter +
+		on_bits_counter +=
 		bit_count_lut[(bit_array & mask) >> (SIZE_OF_BYTE * byte_index)];
 		mask = (mask << SIZE_OF_BYTE);
 	}
 	return on_bits_counter;
 }
 
+/****************************
+ *	 Status   : Sent        *
+ ****************************/
 size_t BitArrCountOffBitsLUT(bitarray_t bit_array)
 {
 	return (NUM_MAX_BITS - BitArrCountOnBitsLUT(bit_array));
 }
 
+/****************************
+ *	 Status   : Sent        *
+ ****************************/
 bitarray_t BitArrBitMirrorLUT(bitarray_t bit_array)
 {
 	size_t byte_index = 0;
-	unsigned long mask = 0x0000000000000FFLU;
-	unsigned long mirrored = 0LU;
-	/* mask SIZE_OF_BYTE - 1 of the bytes in each iteration */
+	unsigned long mask = 0x0000000000000FFLU; /* mask to look at
+												 the rightmost byte */
+	bitarray_t mirrored = 0LU;
+
 	for (byte_index = 0; byte_index < SIZE_OF_BYTE; ++byte_index)
 	{
-		mirrored =
-		bit_mirror_lut[(bit_array & mask) >> (SIZE_OF_BYTE * byte_index)];
-		mask <<= SIZE_OF_BYTE;
-		mirrored <<= SIZE_OF_BYTE;
+		mirrored <<= SIZE_OF_BYTE;		
+		mirrored += bit_mirror_lut[(bit_array & mask)];
+		bit_array >>= SIZE_OF_BYTE;
 	}
 	return mirrored;
 }
-
