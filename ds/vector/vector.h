@@ -5,10 +5,11 @@
 
 typedef struct vector vector_t;
 
-enum {
-    VECTOR_SUCCESS
-    VECTOR_ALLOCATION_FAILED
-	};
+enum 
+{
+	VECTOR_SUCCESS,
+	VECTOR_ALLOCATION_FAILED
+};
 
 /* 
  * Create a Vector
@@ -85,7 +86,7 @@ size_t VectorCapacity(const vector_t *vector);
  * Request additional memory for vector
  * Param vector: pointer to vector
  * Param size: number of elements to increase capacity by
- * Return : 1 if success, 0 if allocation failed
+ * Return : VECTOR_SUCCESS, non-zero otherwise
  * Errors: if memory allocation failed - return VECTOR_ALLOCATION_FAILED
  */
 int VectorReserve(vector_t *vector, size_t size);

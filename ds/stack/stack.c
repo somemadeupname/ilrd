@@ -9,9 +9,6 @@
 #include <assert.h> /* assert */
 #include "stack.h"
 
-#define SIZE_OF_POINTER 8
-#define NUM_OF_ELEMENTS_IN_STRUCT 4
-
 /* stack definition */
 struct stack
 {
