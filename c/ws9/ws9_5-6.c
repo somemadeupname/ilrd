@@ -20,9 +20,3 @@ int IsSystemLittleEndian()
 	
 	return (big_value == *var_p ? FALSE : TRUE);
 }
-
-int main()
-{
-	printf ("IsSystemLittleEndian() = %d\n", IsSystemLittleEndian());
-	return 0;
-}

@@ -5,22 +5,29 @@
 #define IN_FIRST (-2)
 #define IN_SECOND (-1)
 #define IN_THIRD (-3)
+#define IN_BOTH_ARRAYS (-2)
+
+#define CHAR_ARRAY_SIZE 256
 
 
 
-static signed short chars_in_arrays[256] = {0};
+static signed short chars_in_arrays[CHAR_ARRAY_SIZE] = {0};
 
 /* Forward Declarations */
 
-static void FindCharsInArray(const char *arr, signed short *chars_in_arrays, signed short value);
+static void FindCharsInArray(const char *arr, signed short *chars_in_arrays,
+															signed short value);
 static void PrintFoundChars(const short *chars_in_arrays, size_t array_size);
 void PrintLettersOnlyInFirst2Arrs(char *str1, char *str2, char *str3);
 
 void TestPrintLettersOnlyInFirst2Arrs();
 
 /*
+Looks for the chars in a given array arr, and set the given value in the 
+chars_in_arrays array.
 */
-static void FindCharsInArray(const char *arr, signed short *chars_in_arrays, signed short value)
+static void FindCharsInArray(const char *arr, signed short *chars_in_arrays,
+															 signed short value)
 {
 	size_t index = 0;
 	assert(NULL != arr);
@@ -35,6 +42,9 @@ static void FindCharsInArray(const char *arr, signed short *chars_in_arrays, sig
 	}
 }
 
+/*
+Prints the chars who are in both first arrays, but not in the third array
+*/
 static void PrintFoundChars(const short *chars_in_arrays, size_t array_size)
 {
 	size_t index = 0;
@@ -42,9 +52,9 @@ static void PrintFoundChars(const short *chars_in_arrays, size_t array_size)
 	
 	for (index = 0; index < array_size; ++index)
 	{
-		if (-2 == chars_in_arrays[index])
+		if (IN_BOTH_ARRAYS == chars_in_arrays[index])
 		{
-			printf("%c\n",(int)index);
+			printf("%c\n",(int)index);/* print the char using the index */
 		}
 	}
 }
@@ -56,20 +66,16 @@ void PrintLettersOnlyInFirst2Arrs(char *str1, char *str2, char *str3)
 	FindCharsInArray(str2, chars_in_arrays, IN_SECOND);
 	FindCharsInArray(str3, chars_in_arrays, IN_THIRD);	
 	
-	PrintFoundChars	(chars_in_arrays, 256);
+	PrintFoundChars	(chars_in_arrays, CHAR_ARRAY_SIZE);
 }
-
-void TestPrintLettersOnlyInFirst2Arrs()
-{
-	char str1[] = {'a','a','b','d','\0'};
-	char str2[] = {'a','b','c','d','\0'};
-	char str3[] = {'a','l','l','q','\0'};
-	
-	PrintLettersOnlyInFirst2Arrs(str1, str2, str3);	
-}
-
+/*
 int main()
 {
-	TestPrintLettersOnlyInFirst2Arrs();
+	char arr1[] = {'a','b','c','d','\0'};
+	char arr2[] = {'a','b','c','d','\0'};
+	char arr3[] = {'a','a','c','c','\0'};
+	
+	PrintLettersOnlyInFirst2Arrs(arr1, arr2, arr3);
 	return 0;
 }
+*/

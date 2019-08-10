@@ -86,23 +86,25 @@ char *ItoADecimal(int value, char *str)
 {
 	/* init values */
 	int sign = 0;
-	char * str_start = str;
+	char *str_start = str;
+	long long_value = value;
 	assert(NULL != str);
-	sign = (value >= 0 ? 1 : (-1));
-	value *= sign; /* make value positive if negative. no change otherwise */
+	
+	sign = (long_value >= 0 ? 1 : (-1));
+	long_value *= sign; /* make value positive if negative. no change otherwise */
 
 	/* in case value is 0 */
-	if (0 == value)
+	if (0 == long_value)
 	{
 		*str = '0';
 		++str;
 	}
 	
 	/* parse over value and extract each digit separately into the str */
-	while (value > 0)
+	while (long_value > 0)
 	{
-		*str = (char)(value%BASE + '0');
-		value /= BASE;	
+		*str = (char)(long_value%BASE + '0');
+		long_value /= BASE;	
 		++str;
 	}
 
@@ -118,25 +120,28 @@ char *ItoADecimal(int value, char *str)
 	
 	return str_start;
 }
-		
+/*
 int main(int argc, char *argv[])
 {
-	char str[20];
-	/*argv[1] = "  \n\t\r67  ";*/
-	/*
+	char str[30];
+
+	
 	size_t index = 0;
+	
 	for (index = 0; index < strlen(argv[1]); ++index)
 	{
 		printf("IsSign(%c) = %d.\n", (*argv[1] + index), IsSign((*argv[1] + index)));
 	}
 	printf("atoi() = %d\n", atoi(argv[1]));
-	*/
+	
 	UNUSED(argc);
-	/*
+	
 	printf("AtoIDecimal(\t%s) = \t%d\n", argv[1], AtoIDecimal(argv[1]));
 	printf("atoi \t   (\t%s) = \t%d\n", argv[1], atoi(argv[1]));		
-	*/
-	printf("ItoADecimal(%s) = %s\n", argv[1], ItoADecimal(atoi(argv[1]), str));
+	
+	printf("ItoADecimal(%ld) = %s\n", -1234567891L, ItoADecimal(-1234567891L ,str));
 
 	return 0;
 }
+*/
+

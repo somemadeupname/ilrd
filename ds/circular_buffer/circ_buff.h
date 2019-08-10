@@ -65,4 +65,3 @@ size_t CircBuffCapacity(const circ_buff_t *circ_buff);
 size_t CircBuffFreeSpace(const circ_buff_t *circ_buff);
 
 #endif /* __OL71_BUFFER_H */
-
