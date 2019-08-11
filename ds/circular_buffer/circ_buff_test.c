@@ -13,13 +13,13 @@ void TestCircBuffRead();
 
 int main()
 {
-	/*
+	
 	TestCircBuffCreate();
 	
 	TestCircBuffCapacity();
 	
 	TestCircBuffWrite();
-	*/
+	
 	TestCircBuffRead();
 	
 	return 0;
@@ -60,13 +60,13 @@ void TestCircBuffRead()
 	char *src = "hello sir how are you";
 	char dest[20];
 	circ_buff_t *buf = CircBuffCreate(7);
-	PRINT_VALUE(dest);	
+	/*PRINT_VALUE(dest);*/	
 		
-	CHECK_LD(CircBuffWrite(buf, src, 7), "CircBuffWrite(buf, src, 11)");
+	CHECK_LD(CircBuffWrite(buf, src, 8), "CircBuffWrite(buf, src, 11)");
 
 	CHECK_LD(CircBuffRead(buf, dest, 11), "CircBuffRead(buf, dest, 11)");
 	
-	PRINT_VALUE(dest);
+	/*PRINT_VALUE(dest);*/
 	
 	CircBuffDestroy(buf);	
 }

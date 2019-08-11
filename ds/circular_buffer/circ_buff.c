@@ -1,3 +1,10 @@
+/****************************
+ *   Author   : Ran Shieber *
+ *   Reviewer : Adi Perez   *
+ *	 Status   : Sent	    *
+ ****************************/
+
+
 #include <assert.h> /* assert */
 #include <stdlib.h> /* malloc free */
 
@@ -19,12 +26,6 @@ struct buffer
 circ_buff_t *CircBuffCreate(size_t init_capacity)
 {
 	circ_buff_t *circ_buf = NULL;
-	/*
-	if (init_capacity < OFFSET)
-	{
-		init_capacity = 0;
-	}
-	*/
 	
 	circ_buf = (circ_buff_t *) malloc (sizeof(circ_buff_t) + init_capacity);
 	
@@ -56,6 +57,7 @@ size_t CircBuffWrite(circ_buff_t *circ_buff, const void *src, size_t count)
 	assert(NULL != circ_buff);
 	assert(0 != count);	
 	
+	/* set count to be the number of bytes to read */
 	if (count > free_bytes_to_write)
 	{
 		count = free_bytes_to_write;
@@ -63,7 +65,9 @@ size_t CircBuffWrite(circ_buff_t *circ_buff, const void *src, size_t count)
 	
 	while (bytes_written < count)
 	{
-		if (circ_buff->write_index == circ_buff->read_index && !CircBuffIsEmpty(circ_buff))
+		/* write as long as the buffer isn't full */
+		if (circ_buff->write_index == circ_buff->read_index &&
+													!CircBuffIsEmpty(circ_buff))
 		{
 			circ_buff->is_buffer_full = TRUE;
 			break;
@@ -83,22 +87,17 @@ size_t CircBuffRead(circ_buff_t *circ_buff, void *dest, size_t count)
 	assert(NULL != dest);
 	assert(NULL != circ_buff);
 	assert(0 != count);	
-	
-	for (bytes_read = 0; bytes_read < count && CircBuffIsEmpty(circ_buff) == FALSE; ++bytes_read)
+	/* write as long as the buffer isn't empty */
+	for (bytes_read = 0; bytes_read < count &&
+							  CircBuffIsEmpty(circ_buff) == FALSE; ++bytes_read)
 	{
+		/* adjusting indices to the buffer size */
 		fixed_bytes_read = circ_buff->read_index % circ_buff->capacity;
 		
 		*((char *) dest + bytes_read) = circ_buff->buf[fixed_bytes_read];
 		
 		++circ_buff->read_index;
 	}
-	
-	if (0 < bytes_read)
-	{
-		circ_buff->is_buffer_full = FALSE; /* when done writing, buffer isn't
-											  full if read more than 0 bytes */
-	}
-	
 	return bytes_read; 
 }
 
@@ -123,15 +122,15 @@ size_t CircBuffCapacity(const circ_buff_t *circ_buff)
 
 size_t CircBuffFreeSpace(const circ_buff_t *circ_buff)
 {
-	int taken = 0;
+	int space_taken = 0;
 	assert(NULL != circ_buff);
+	/* difference between the write and read indices could be negative */
+	space_taken = circ_buff->write_index - circ_buff->read_index;
 	
-	taken = circ_buff->write_index - circ_buff->read_index;
-	
-	if (taken < 0)
+	if (space_taken < 0)
 	{
-		taken *= (-1); /* flip sign */
+		space_taken *= (-1); /* flip sign */
 	}
 	
-	return circ_buff->capacity - (size_t) taken;
+	return circ_buff->capacity - (size_t) space_taken;
 }
