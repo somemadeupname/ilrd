@@ -17,17 +17,17 @@ int main()
 {
 	/*
 	TestVectorCreateAndDestroy();
-	
+	*/
 	TestVectorPushBack();	
-	
+	/*
 	TestVectorGetItemAddress();
 	
 	TestVectorSize();
 	
 	TestVectorPopBack();
-	*/
-	TestVectorReserve();
 	
+	TestVectorReserve();
+	*/
 	return 0;
 }
 
@@ -48,17 +48,19 @@ void TestVectorCreateAndDestroy()
 
 void TestVectorPushBack()
 {
-	vector_t *vector = VectorCreate(4,4);
+	vector_t *vector = VectorCreate(1,4);
 	int a = 1;
 	int b = 2;
 	int c = 3;
 	int d = 4;
-	/*int e = 5;*/
+
+	CHECK_LD(VectorCapacity(vector),"VectorCapacity");	
 	CHECK(VectorPushBack(vector, &a), "VectorPushBack");
+	CHECK_LD(VectorCapacity(vector),"VectorCapacity");		
 	CHECK(VectorPushBack(vector, &b), "VectorPushBack");
+	CHECK_LD(VectorCapacity(vector),"VectorCapacity");		
 	CHECK(VectorPushBack(vector, &c), "VectorPushBack");
 	CHECK(VectorPushBack(vector, &d), "VectorPushBack");
-	/*CHECK(VectorPushBack(vector, &e), "VectorPushBack");*/
 	
 	VectorDestroy(vector);	
 }

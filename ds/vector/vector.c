@@ -97,7 +97,7 @@ int VectorPushBack(vector_t *vector, const void *element_value)
 	assert(NULL != element_value);
 	
 	/* check if capacity needs to be increased */
-	if ((VectorSize(vector)) ==
+	if ((VectorSize(vector) - 1) >=
 							 VectorCapacity(vector)/CAPACITY_TO_SIZE_RATIO_PUSH) 
 	{
 		size = VectorSize(vector) * vector->size_of_element;

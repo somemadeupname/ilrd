@@ -5,63 +5,72 @@
 
 typedef struct buffer circ_buff_t;
 
-enum
-{
-    BUFFER_SUCCESS,
-    BUFFER_WRITE_FAILED,
-	BUFFER_READ_FAILED
-}
-
 /*
- * Create circular buffer
- * Params: init_capacity, size_of_element
- * Return: pointer to the created buffer
- * Errors: if buffer creation failed returns NULL 
+ * Create a buffer.
+ * Param init_capacity: capacity of the new buffer to create.
+ * Return: pointer to the created buffer.
+ * Errors: if buffer creation is failed returns NULL.
+ *         Behavior is undefined if initialization capacity is 0.
  */
 circ_buff_t *CircBuffCreate(size_t init_capacity);
 
-/* 
- * Destroy the buffer
- * Params: pointer to buffer 
+/*
+ * Destroy the buffer.
+ * Param circ_buff: pointer to the buffer.
  */
-void CircBuffDesroy(circ_buff_t *circ_buff);
-
-/* 
- * Write count bytes to the circ_buff to buf
- * Params: circ_buff, buf, count
- * Return: BUFFER_SUCCESS, BUFFER_WRITE_FAILED
- * Errors: if writing is failed returns BUFFER_WRITE_FAILED
- */
-int CircBuffWrite(circ_buff_t *circ_buff, const void *src, size_t count);
-
-/* 
- * Read count bytes from the buf to circ_buff
- * Params: circ_buff, buf, count
- * Return: BUFFER_SUCCESS, BUFFER_READ_FAILED
- * Errors: if reading is failed returns BUFFER_READ_FAILED
- */
-int CircBuffRead(circ_buff_t *circ_buff, void *dest, size_t count);
+void CircBuffDestroy(circ_buff_t *circ_buff);
 
 /*
- * Check if buffer is empty
- * Params: pointer to buffer
- * Return: if buffer is empty 1, else 0
- * Errors: if buffer points to unreadable address, behavior is undefined
+ * Write to the buffer.
+ * Param circ_buff: pointer to the buffer to write.
+ * Param src: pointer to the source to read.
+ * Param count: number of bytes to write. If count is 0,
+ *              function does nothing and 0 returned.
+ * Return: on success, the number of bytes written is returned. 
+ *         It is not an error if this number is smaller than the
+ *         number of bytes requested. This may happen for example because
+ *         the  buffer is full.
+ * Errors: behavior is undefined if count is more than source capacity.
+ */
+size_t CircBuffWrite(circ_buff_t *circ_buff, const void *src, size_t count);
+
+/*
+ * Read from the buffer.
+ * Param circ_buff: pointer to the buffer to read.
+ * Param dest: pointer to the destination to write.
+ * Param count: number of bytes to read. If count is 0,
+ *              function does nothing and 0 returned.
+ * Return: on success, the number of bytes read is returned.
+ *         It is not an error if this number is smaller than the
+ *         number of bytes requested. This may  happen  for example because
+ *         fewer bytes are actually available right now.
+ * Errors: behavior is undefined if destination has not enough memory to write.
+ */
+size_t CircBuffRead(circ_buff_t *circ_buff, void *dest, size_t count);
+
+/*
+ * Check if buffer is empty.
+ * Param circ_buff: pointer to the buffer.
+ * Return: if buffer is empty 1, else 0.
+ * Errors: behavior is undefined if buffer points to unreadable address.
  */
 int CircBuffIsEmpty(const circ_buff_t *circ_buff);
 
-/* 
- * Get the buffer capacity
- * Params: pointer to buffer 
- * Return: current capacity of buffer 
+/*
+ * Get buffer maximum capacity.
+ * Param circ_buff: pointer to the buffer.
+ * Return: maximum capacity of the buffer.
+ * Errors: behavior is undefined if buffer points to unreadable address.
  */
 size_t CircBuffCapacity(const circ_buff_t *circ_buff);
 
 /*
- * Get size of free space of buffer
- * Params: pointer to buffer 
- * Return: current free space of buffer 
+ * Get current size of free space of the buffer.
+ * Param circ_buff: pointer to the buffer.
+ * Return: size of current free space of the buffer.
+ * Errors: behavior is undefined if buffer points to unreadable address.
  */
 size_t CircBuffFreeSpace(const circ_buff_t *circ_buff);
 
 #endif /* __OL71_BUFFER_H */
+
