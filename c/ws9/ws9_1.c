@@ -169,11 +169,11 @@ void *Memmove(void *dest, const void *src, size_t n)
 	assert (NULL != dest);
 	assert (NULL != src);
 	
-	if (src_current < dest_current)
+	if (src_current > dest_current)
 	{
 		CopyByteByByte(dest_current, src_current, n);
 	}
-	else /* src_current > dest_current */
+	else /* src_current < dest_current */
 	{
 		/* advance pointers to the end and copy backwards */
 		src_current += n - 1;

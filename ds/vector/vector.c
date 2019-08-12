@@ -97,7 +97,7 @@ int VectorPushBack(vector_t *vector, const void *element_value)
 	assert(NULL != element_value);
 	
 	/* check if capacity needs to be increased */
-	if ((VectorSize(vector) - 1) >=
+	if ((VectorSize(vector)) >
 							 VectorCapacity(vector)/CAPACITY_TO_SIZE_RATIO_PUSH) 
 	{
 		size = VectorSize(vector) * vector->size_of_element;
@@ -170,7 +170,7 @@ int VectorReserve(vector_t *vector, size_t size)
 	assert(NULL != vector->base);
 	assert(0 != size);
 	
-	/* allocate addiitonal space for vector->base */
+	/* allocate additonal space for vector->base */
 	vector->base = (void *) realloc
 			(vector->base, (vector->capacity + size) * vector->size_of_element);
 	
