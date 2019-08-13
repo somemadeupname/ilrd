@@ -5,7 +5,7 @@
 #include <stddef.h> /* size_t */
 
 typedef struct node slist_node_t;
-typedef int (*cmp_func)(void *, const void *);
+typedef int (*cmp_func)(void *node_data, const void *param_data);
 typedef int (*func_action)(void *data, void *param);
 
 struct node
@@ -35,7 +35,7 @@ void SListFreeAll(slist_node_t *head);
 
 
 /*
- * Insert node to linked list
+ * Insert node to linked-list before a given node
  * Param current_node : node to insert before
  * Param new_node : node to insert
  * Return: pointer to new_node
@@ -60,6 +60,7 @@ slist_node_t *SListInsertAfter(slist_node_t *current_node, slist_node_t *new_nod
  * param cmp_func : pointer to compare func
  * param data : data needs to be find in list.
  * Return : address of first node with matching <data>, NULL if none was found. 
+ * Return cmp_func : 0 for success, else for fail.
  * Errors : if node has loop, behaviour is undefind
  */
 slist_node_t *SListFind(slist_node_t *head, cmp_func cmp, const void *data);
@@ -67,9 +68,9 @@ slist_node_t *SListFind(slist_node_t *head, cmp_func cmp, const void *data);
 
 /*
  * Remove links from node 
- *  param head : pointer to node to remove - can't be the last node.
+ * param head : pointer to node to remove - can't be the last node.
  * Return : pointer to the removed node
- * Errors : 
+ * Errors : if head is the last node, behaviour is undifined
  */
 slist_node_t *SListRemove(slist_node_t *head);
 
@@ -78,7 +79,8 @@ slist_node_t *SListRemove(slist_node_t *head);
  * Remove links from and to node after a given node
  *  param head : pointer to node pointing to node to remove 
  * Return : pointer to the removed node
- * Errors : if node has no node after it - returns 1
+ *			if node has no node after it - return NULL
+ * Errors : none
  */
 slist_node_t *SListRemoveAfter(slist_node_t *head);
 
@@ -98,7 +100,8 @@ size_t SListCount(const slist_node_t *head);
  * Param func : pointer to action function
  * Param param : param passing to action func. NULL if there's no param. 
  * Return : 0 for success, else for fail.
- * Errors : if node has loop, behavior is undefined
+ * Return action_func : 0 for success, else for fail.
+ * Errors : if node has loop, behaviour is undefined
  */
 int SListForEach(slist_node_t *head, func_action func, void *param);
 
