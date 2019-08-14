@@ -1,7 +1,16 @@
+/****************************
+ *   Author   : Ran Shieber *
+ *   Reviewer :     		*
+ *   Status   : 	Sent    *
+ ****************************/
+
 #include <stdlib.h> /* malloc free */
 #include <assert.h> /* assert */
 
 #include "slist.h"
+
+#define TRUE 1
+#define FALSE 0
 
 slist_node_t *SListCreateNode(void *data, slist_node_t *next)
 {
@@ -106,7 +115,6 @@ slist_node_t *SListRemove(slist_node_t *head)
 	return removed_node;
 }
 
-
 /*
  * Remove links from and to node after a given node
  *  param head : pointer to node pointing to node to remove 
@@ -150,4 +158,78 @@ int SListForEach(slist_node_t *head, func_action func, void *param)
 		cur_node = cur_node->next_node;
 	}
 	return result;
+}
+
+slist_node_t *SListFlip(slist_node_t *head)
+{
+	slist_node_t *prev = NULL;
+	slist_node_t *cur = head;
+	slist_node_t *next = NULL;
+	assert (NULL != head);
+	while (NULL != cur)
+	{
+		next = cur->next_node;
+		cur->next_node = prev;
+		prev = cur;
+		cur = next;
+	}
+	return prev;
+}
+
+int SListHasLoop(const slist_node_t *head)
+{
+	slist_node_t *jumps_one = NULL;
+	slist_node_t *jumps_two = NULL;
+	
+	if (NULL == head)
+	{
+		return FALSE;
+	}
+	
+	jumps_one = (slist_node_t *) head;
+	jumps_two = head->next_node;
+	
+	while ( NULL != jumps_one && NULL != jumps_two && NULL != jumps_two->next_node)
+	{
+		if (jumps_one == jumps_two)
+		{
+			return TRUE;
+		}
+		jumps_two = jumps_two->next_node->next_node;
+		jumps_one = jumps_one->next_node;
+	}
+	return FALSE;
+}
+
+slist_node_t *SListFindIntersection(const slist_node_t *node1,
+													const slist_node_t *node2)
+{
+	slist_node_t *cur1 = NULL;
+	slist_node_t *cur2 = NULL;
+
+	assert(NULL != node1);
+	assert(NULL != node2);
+
+	cur1 = (slist_node_t *) node1;
+	cur2 = (slist_node_t *) node2;
+
+	while (NULL != cur1)
+	{
+		while (NULL != cur2)
+		{
+			if (cur1 == cur2 &&
+				(cur1 == (slist_node_t *)node2 || cur2 == (slist_node_t *)node1))
+			{
+				return NULL;
+			}
+			else if (cur1 == cur2)
+			{
+				return cur1;
+			}
+			cur2 = cur2->next_node;
+		}
+		cur2 = (slist_node_t *) node2;
+		cur1 = cur1->next_node;
+	}
+	return NULL;
 }
