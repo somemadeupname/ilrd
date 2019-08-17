@@ -1,6 +1,6 @@
 /****************************
  *   Author   : Ran Shieber *
- *   Reviewer :     		*
+ *   Reviewer : Vova   		*
  *   Status   : 	Sent    *
  ****************************/
 
@@ -31,12 +31,13 @@ void SListFreeAll(slist_node_t *head)
 	
 	while (NULL != cur_node)
 	{
+		/* save the next node before freeing the current node */
 		slist_node_t *next = cur_node->next_node;
 		free(cur_node); cur_node = NULL;
 		cur_node = next;
 	}
 }
-
+/* helper function used by insert and remove */
 static void SwapNodeData(slist_node_t *node1, slist_node_t *node2)
 {
 	void *data_temp = NULL;
@@ -115,13 +116,6 @@ slist_node_t *SListRemove(slist_node_t *head)
 	return removed_node;
 }
 
-/*
- * Remove links from and to node after a given node
- *  param head : pointer to node pointing to node to remove 
- * Return : pointer to the removed node
- *			if node has no node after it - return NULL
- * Errors : none
- */
 slist_node_t *SListRemoveAfter(slist_node_t *head)
 {
 	if (NULL == head->next_node)
@@ -165,7 +159,7 @@ slist_node_t *SListFlip(slist_node_t *head)
 	slist_node_t *prev = NULL;
 	slist_node_t *cur = head;
 	slist_node_t *next = NULL;
-	assert (NULL != head);
+	
 	while (NULL != cur)
 	{
 		next = cur->next_node;
@@ -181,20 +175,18 @@ int SListHasLoop(const slist_node_t *head)
 	slist_node_t *jumps_one = NULL;
 	slist_node_t *jumps_two = NULL;
 	
-	if (NULL == head)
-	{
-		return FALSE;
-	}
-	
 	jumps_one = (slist_node_t *) head;
 	jumps_two = head->next_node;
 	
-	while ( NULL != jumps_one && NULL != jumps_two && NULL != jumps_two->next_node)
+	while ( NULL != jumps_one && NULL != jumps_two &&
+												   NULL != jumps_two->next_node)
 	{
 		if (jumps_one == jumps_two)
 		{
 			return TRUE;
 		}
+		/* advance both at difference paces so that they meet if there's a 
+																	    loop */
 		jumps_two = jumps_two->next_node->next_node;
 		jumps_one = jumps_one->next_node;
 	}
@@ -202,13 +194,10 @@ int SListHasLoop(const slist_node_t *head)
 }
 
 slist_node_t *SListFindIntersection(const slist_node_t *node1,
-													const slist_node_t *node2)
+													  const slist_node_t *node2)
 {
 	slist_node_t *cur1 = NULL;
 	slist_node_t *cur2 = NULL;
-
-	assert(NULL != node1);
-	assert(NULL != node2);
 
 	cur1 = (slist_node_t *) node1;
 	cur2 = (slist_node_t *) node2;
@@ -217,8 +206,10 @@ slist_node_t *SListFindIntersection(const slist_node_t *node1,
 	{
 		while (NULL != cur2)
 		{
+			/* confirm that they're not from the same linked list */
 			if (cur1 == cur2 &&
-				(cur1 == (slist_node_t *)node2 || cur2 == (slist_node_t *)node1))
+				(cur1 == (slist_node_t *)node2 ||
+												 cur2 == (slist_node_t *)node1))
 			{
 				return NULL;
 			}

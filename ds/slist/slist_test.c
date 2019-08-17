@@ -30,6 +30,7 @@ void TestSListFindIntersectionSameListTwoNodes();
 static void expect(void *data, int expected_result, char *func_name);
 static void expect_size_t(size_t result, size_t expected_result, char *func_name);
 static void expect_int(int result, int expected_result, char *func_name);
+
 int* GenerateIntLinkedList(slist_node_t *head, int size, int * data_array);
 static int IncrementDataByParam(void *data, void *param);
 
