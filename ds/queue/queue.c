@@ -1,6 +1,6 @@
 /****************************
  *   Author   : Ran Shieber *
- *   Reviewer : 		    *
+ *   Reviewer : Hila	    *
  *	 Status   : Sent	    *
  ****************************/
  
@@ -43,12 +43,6 @@ void QueueDestroy(queue_t *queue)
 
 int QueueEnqueue(queue_t *queue, const void *data);
 {
-	slist_node_t *node_to_enqueue = NULL;	
-	if (NULL == queue)
-	{
-		return FAIL;
-	}
-	
 	node_to_enqueue = SListCreateNode((void*) data, queue->dummy);
 	if (NULL == node_to_enqueue)
 	{
