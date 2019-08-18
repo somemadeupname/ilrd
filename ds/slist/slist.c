@@ -41,6 +41,7 @@ void SListFreeAll(slist_node_t *head)
 static void SwapNodeData(slist_node_t *node1, slist_node_t *node2)
 {
 	void *data_temp = NULL;
+	
 	assert(NULL != node1);
 	assert(NULL != node2);
 	
@@ -52,7 +53,7 @@ static void SwapNodeData(slist_node_t *node1, slist_node_t *node2)
 slist_node_t *SListInsert(slist_node_t *current_node, slist_node_t *new_node)
 {
 	
-	assert(NULL != new_node); 
+	assert(NULL != new_node);
 	assert(NULL != current_node);
 	
 	SwapNodeData(current_node, new_node);

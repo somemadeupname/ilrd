@@ -16,7 +16,7 @@ struct queue
 	slist_node_t *start;
 	slist_node_t *dummy;
 	size_t size;
-}
+};
 
 queue_t *QueueCreate(void)
 {
@@ -41,15 +41,15 @@ void QueueDestroy(queue_t *queue)
 	free(queue); queue = NULL;
 }
 
-int QueueEnqueue(queue_t *queue, const void *data);
+int QueueEnqueue(queue_t *queue, const void *data)
 {
-	node_to_enqueue = SListCreateNode((void*) data, queue->dummy);
+	slist_node_t *node_to_enqueue = SListCreateNode((void*) data, queue->dummy);
 	if (NULL == node_to_enqueue)
 	{
 		return FAIL;
 	}	
 	
-	SListInsert(queue->dummy, node_to_enqueue);
+	node_to_enqueue = SListInsert(queue->dummy, node_to_enqueue);
 	
 	queue->dummy = node_to_enqueue->next_node;
 	

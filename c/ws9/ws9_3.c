@@ -2,8 +2,8 @@
 #include <stddef.h> /* size_t */
 #include <assert.h> /* assert */
 
-#define IN_FIRST (-2)
-#define IN_SECOND (-1)
+#define IN_FIRST (-1)
+#define IN_SECOND (-2)
 #define IN_THIRD (-3)
 #define IN_BOTH_ARRAYS (-2)
 
@@ -35,7 +35,16 @@ static void FindCharsInArray(const char *arr, signed short *chars_in_arrays,
 	
 	for (index = 0; '\0' != arr[index]; ++index)
 	{
-		if ( value <= chars_in_arrays[((int) arr[index])])
+		
+		if ( value == IN_THIRD )
+		{
+			chars_in_arrays[((int) arr[index])] = 0;
+		}
+		else if (value == IN_SECOND && (0 == chars_in_arrays[((int) arr[index])]))
+		{
+			chars_in_arrays[((int) arr[index])] = 0;
+		}
+		else
 		{
 			chars_in_arrays[((int) arr[index])] = value;
 		}
@@ -54,9 +63,10 @@ static void PrintFoundChars(const short *chars_in_arrays, size_t array_size)
 	{
 		if (IN_BOTH_ARRAYS == chars_in_arrays[index])
 		{
-			printf("%c\n",(int)index);/* print the char using the index */
+			printf("%c",(int)index);/* print the char using the index */
 		}
 	}
+	printf("\n");
 }
 
 void PrintLettersOnlyInFirst2Arrs(char *str1, char *str2, char *str3)
@@ -71,11 +81,11 @@ void PrintLettersOnlyInFirst2Arrs(char *str1, char *str2, char *str3)
 /*
 int main()
 {
-	char arr1[] = {'a','b','c','d','\0'};
-	char arr2[] = {'a','b','c','d','\0'};
-	char arr3[] = {'a','a','c','c','\0'};
+	char str1[] = "46gvI5aGDH$&^*(*AhelloA";
+	char str2[] = "1a23!!!!lbicfg";
+	char str3[] = "543146hjmngpo";
 	
-	PrintLettersOnlyInFirst2Arrs(arr1, arr2, arr3);
+	PrintLettersOnlyInFirst2Arrs(str1, str2, str3);
 	return 0;
 }
 */
