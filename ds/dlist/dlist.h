@@ -80,10 +80,10 @@ int DListForEach(dlist_iter_t from, dlist_iter_t to, action_func func,
  * Find element with matching data
  * Param from : iterator to start search from
  * Param to : iterator to stop search at (last comparison done on previous iter)
- * Param cmp : pointer to compare function
+ * Param cmp : pointer to compare func, return 0 if equal, non-zero otherwise
  * Param data : pointer to data to compare
  * Return : pointer to first matching element found 
- * Errors : if no match was found, return to
+ * Errors : if no match was found, return <to>
  */
 dlist_iter_t DListFind(dlist_iter_t from, dlist_iter_t to, cmp_func cmp,
 					   const void *data);
