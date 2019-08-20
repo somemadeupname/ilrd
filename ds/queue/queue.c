@@ -20,12 +20,17 @@ struct queue
 
 queue_t *QueueCreate(void)
 {
-	queue_t *queue = (queue_t *)malloc(sizeof(queue));
+	queue_t *queue = (queue_t *)malloc(sizeof(queue_t));
 	if (NULL == queue)
 	{
 		return NULL;
 	}
 	queue->dummy = SListCreateNode(NULL, NULL);
+	if  (NULL == queue->dummy)
+	{
+		return NULL;
+	}
+	
 	queue->start = queue->dummy;
 	queue->size = 0;
 	
@@ -34,16 +39,19 @@ queue_t *QueueCreate(void)
 
 void QueueDestroy(queue_t *queue)
 {
-	if (NULL != queue)
-	{
-		SListFreeAll(queue->start);
-	}
+	assert(NULL != queue);
+	SListFreeAll(queue->start); queue->start = NULL;
 	free(queue); queue = NULL;
 }
 
 int QueueEnqueue(queue_t *queue, const void *data)
 {
-	slist_node_t *node_to_enqueue = SListCreateNode((void*) data, queue->dummy);
+	slist_node_t *node_to_enqueue = NULL;
+	
+	assert(NULL != queue);
+	
+	node_to_enqueue = SListCreateNode((void *)data, queue->dummy);	
+	
 	if (NULL == node_to_enqueue)
 	{
 		return FAIL;
@@ -61,14 +69,17 @@ int QueueEnqueue(queue_t *queue, const void *data)
 int QueueDequeue(queue_t *queue)
 {
 	slist_node_t *node_to_remove = NULL;	
-	if (NULL == queue)
+	
+	assert(NULL == queue);
+	
+	if (QueueIsEmpty(queue))
 	{
-		return FAIL;
+		return SUCCESS;
 	}
 
 	node_to_remove = SListRemove(queue->start);
 	
-	free(node_to_remove);
+	free(node_to_remove); node_to_remove = NULL;
 	
 	--queue->size;
 	
@@ -77,16 +88,19 @@ int QueueDequeue(queue_t *queue)
 
 void *QueuePeek(const queue_t *queue)
 {
+	assert(NULL == queue);	
 	return queue->start->data;
 }
 
 size_t QueueSize(const queue_t *queue)
 {
+	assert(NULL == queue);	
 	return queue->size;
 }
 
 int QueueIsEmpty(const queue_t *queue)
 {
+	assert(NULL == queue);	
 	return (0 == queue->size);
 }
 
