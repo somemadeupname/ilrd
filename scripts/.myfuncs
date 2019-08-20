@@ -1,0 +1,21 @@
+# gcc aliases #
+alias gd='gcc -ansi -pedantic-errors -Wall -Wextra -g'
+alias gc='gcc -ansi -pedantic-errors -Wall -Wextra -DNDEBUG -O3'
+alias gd9='gcc -std=c99 -pedantic-errors -Wall -Wextra -g'
+alias gc9='gcc -std=c99 -pedantic-errors -Wall -Wextra -DNDEBUG -O3'
+
+# valgrind alias #
+alias vlg='valgrind --leak-check=yes --track-origins=yes'
+
+# gedit #
+alias g='gedit'
+
+# echo c template into new file in current path #
+alias ctemp='echo -e "#include <stdio.h>\n\nint main()\n{\n\treturn 0;\n}" >> '
+alias c_args='echo -e "#include <stdio.h>\n\nint main(int argc, char *argv[])\n{\n\treturn 0;\n}" >> '
+
+# create h,c,test_c files
+alias newfile='bash ~/ran.shieber/scripts/newfile'
+
+# ds directory alias
+alias ds='cd ~/ran-shieber/ds'

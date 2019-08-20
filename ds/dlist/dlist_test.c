@@ -99,7 +99,7 @@ void TestDListRemoveFirst()
 	
 	expect_int(DListIsEmpty(list),FALSE, "TestDListRemoveFirst");
 
-	DListRemove(list,iter1);
+	DListRemove(iter1);
 	
 	expect_int(DListIsEmpty(list),TRUE, "TestDListRemoveFirst");
 
@@ -124,7 +124,7 @@ void TestDListRemoveSomeNode()
 	
 /*	PrintList(list);*/
 	
-	after_removed_iter = DListRemove(list,iter2);
+	after_removed_iter = DListRemove(iter2);
 	
 	expect(after_removed_iter->data,1,"TestDListRemoveSomeNode");
 	

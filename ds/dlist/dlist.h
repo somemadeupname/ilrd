@@ -55,7 +55,7 @@ dlist_iter_t DListInsert(dlist_t *list, dlist_iter_t iter, void *data);
  * Return: iter to next
  * Errors: --
  */
-dlist_iter_t DListRemove(dlist_t *list, dlist_iter_t iter_to_remove);
+dlist_iter_t DListRemove(dlist_iter_t iter_to_remove);
 
 /*
  * Size of list
