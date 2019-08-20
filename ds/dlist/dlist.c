@@ -1,7 +1,7 @@
 
 /****************************
  *   Author   : Ran Shieber *
- *   Reviewer : 	*
+ *   Reviewer : Adi Peretz	*
  *	   Status   : Sent	    *
  ****************************/
 #include <assert.h> /* assert */
@@ -57,7 +57,7 @@ dlist_t *DListCreate(void)
 	dlist->dummy_begin = DListCreateNode(NULL, NULL, NULL);
 	dlist->dummy_end = DListCreateNode(NULL, dlist->dummy_begin, NULL);
 	dlist->dummy_begin->next = dlist->dummy_end;
-
+	
 	return dlist;
 }
 
@@ -149,14 +149,9 @@ int DListForEach(dlist_iter_t from, dlist_iter_t to, action_func func,
 	dlist_iter_t runner = from;
 	int exit_status = 0;
 	
-	while (runner != to)
+	while (runner != to && 0 == exit_status)
 	{
-		exit_status = func(runner->data, param);
-		if (0 != exit_status)
-		{
-			return exit_status;
-		}
-		
+		exit_status = func(runner->data, param);	
 		runner = DListNext(runner);
 	}
 	return exit_status;
@@ -166,33 +161,27 @@ dlist_iter_t DListFind(dlist_iter_t from, dlist_iter_t to, cmp_func cmp,
 					   const void *data)
 {
 	dlist_iter_t runner = from;
-	int exit_status = 0;
 	
-	while (runner != to)
+	while (runner != to && 0 != cmp(runner->data, data))
 	{
-		exit_status = cmp(runner->data, data);
-		if (0 == exit_status)
-		{
-			return runner;
-		}
 		runner = DListNext(runner);
 	}
-	return to;
+	return runner;
 }				
 
 dlist_iter_t DListPushFront(dlist_t *list, const void *data)
 {
-	void *temp_data = (void *) data;
-	return DListInsert(list, DListBegin(list), temp_data);
+	return DListInsert(list, DListBegin(list), (void *) data);
 }
 
-/* wrapper for the pop functions */
+/* wrapper for the pop functions: pops iter and returns its data */
 static void *DListPopIter(dlist_t *list, dlist_iter_t iter_to_pop)
 {
 	dlist_iter_t iter = iter_to_pop;
 	void *data = iter->data;
 	
 	assert(NULL != list);
+	
 	iter->prev->next = iter->next;
 	iter->next->prev = iter->prev;
 		
@@ -206,8 +195,7 @@ void *DListPopFront(dlist_t *list)
 
 dlist_iter_t DListPushBack(dlist_t *list, const void *data)
 {
-	void *temp_data = (void *) data;
-	return DListInsert(list, DListEnd(list), temp_data);
+	return DListInsert(list, DListEnd(list), (void *) data);
 }
 
 void *DListPopBack(dlist_t *list)
@@ -247,32 +235,25 @@ dlist_iter_t DListEnd(const dlist_t *dlist)
 
 int DListIsSameIter(const dlist_iter_t iter1, const dlist_iter_t iter2)
 {
-	return (iter1 == iter2); /* comparison of pointers */
+	return (iter1 == iter2);
 }
 
-/*
- * Insert part of list before iter_dest 
- * Param iter_dest: pointer to the list for adding.
- * Param iter_src_start: pointer to beginning of source
- * Param iter_src_end: pointer to end of source (not included) - must be after
-					   iter_src_start.
- * Return: pointer to iter_dest
- * Errors: if iter_src_end is before iter_src_start, behaviour is undefined
- */
 dlist_iter_t DListSplice(dlist_iter_t iter_dest, dlist_iter_t iter_src_start, 
 						 dlist_iter_t iter_src_end)
 {
 	dlist_iter_t src_last_inclusive_node = DListBack(iter_src_end);
 	
+	/* mend the pointers in src before removing its nodes */
 	iter_src_start->prev->next = iter_src_end;
 	iter_src_end->prev = iter_src_start->prev;
 	
+	/* connect dest to first src iter */
 	iter_dest->prev->next = iter_src_start;
 	iter_src_start->prev = iter_dest->prev;
 	
+	/* connect dest to last src iter */
 	iter_dest->prev = src_last_inclusive_node;
 	src_last_inclusive_node->next = iter_dest;
 	
 	return iter_dest;	
-	
 }

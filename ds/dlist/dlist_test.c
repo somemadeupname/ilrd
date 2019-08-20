@@ -36,13 +36,6 @@ void TestDListRemoveSomeNode();
 void TestDListSizeEmpty();
 void TestDListSizeNotEmpty();
 
-void TestDListPushFront();
-void TestDListPopFront();
-void TestDListPushBack();
-void TestDListPopBack();
-
-
-
 int main()
 {
 	TestDListCreate();
@@ -60,26 +53,6 @@ int main()
 	TestDListSizeNotEmpty();
 	
 	return 0;
-}
-
-void TestDListPushFront()
-{
-	dlist_t *list = DListCreate();
-	int *data_array = NULL;
-	
-	GenerateIntLinkedList()
-}
-void TestDListPopFront()
-{
-
-}
-void TestDListPushBack()
-{
-
-}
-void TestDListPopBack()
-{
-
 }
 
 void TestDListSizeEmpty()
