@@ -11,10 +11,12 @@
 #define TRUE 1
 #define FALSE 0
 
+typedef struct dlist_node dlist_node_t;
+
 struct dlist
 {
-	dlist_iter_t dummy_begin;
-	dlist_iter_t dummy_end;	
+	dlist_node_t *dummy_begin;
+	dlist_node_t *dummy_end;	
 };
 
 struct dlist_node
@@ -53,20 +55,7 @@ dlist_t *DListCreate(void)
 	}
 	
 	dlist->dummy_begin = DListCreateNode(NULL, NULL, NULL);
-	if (NULL == dlist->dummy_begin)
-	{
-		free(dlist); dlist = NULL;
-		return NULL;
-	}
-	
 	dlist->dummy_end = DListCreateNode(NULL, dlist->dummy_begin, NULL);
-	if (NULL == dlist->dummy_end)
-	{
-		free(dlist); dlist = NULL;
-		free(dlist->dummy_begin); dlist->dummy_begin = NULL;
-		return NULL;
-	}
-	
 	dlist->dummy_begin->next = dlist->dummy_end;
 	
 	return dlist;
@@ -114,7 +103,7 @@ dlist_iter_t DListRemove(dlist_iter_t iter_to_remove)
 	dlist_iter_t following_iter = NULL;	
 	
 	assert(NULL != iter_to_remove);
-	
+		
 	iter_to_remove->prev->next = iter_to_remove->next;
 	iter_to_remove->next->prev = iter_to_remove->prev;
 		
