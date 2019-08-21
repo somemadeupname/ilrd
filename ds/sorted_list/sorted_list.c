@@ -101,16 +101,6 @@ size_t SortedListSize(const sorted_list_t *list)
 	return DListSize(list->dlist); 
 }
 
-/*
- * Perform a function for every element in the sorted list
- * Param from : iterator to start operation from
- * Param to : iterator to stop operation at (not included in comparison)
- * Param param : pointer to additional parameters
- * Param func : pointer to action function
- * Return : last return status. stop operation if func_action return non-zero
- * Errors : if list or function pointers are not valid, behaviour is undefined
- *          if action_func changes sorted data, list behaviour is undefined
- */
 int SortedListForEach(sorted_list_iter_t from,
 					  sorted_list_iter_t to,
                       sorted_list_action_func func,
@@ -122,55 +112,115 @@ int SortedListForEach(sorted_list_iter_t from,
 	
 	for(cur = from;
 	    0 == exit_status && !SortedListIsSameIter(cur,to);
-	    cur = SortedListNext(cur), 
-	    exit_status = func(SortedListGetData(cur), param)
+	    exit_status = func(SortedListGetData(cur), param),
+	    cur = SortedListNext(cur)
 	    )
 	{ /* empty body */ }
 	
 	return exit_status;
 }                      
 
-/*
- * Find element with matching data
- * Param from : iterator to start search from
- * Param to : iterator to stop search at (not included in comparison)
- * Param data : pointer to data to compare
- * Return : iter to first matching element found, iter to to if no match found
- * Errors : if list pointer or one or both iters is not valid,
- *            behaviour is undefined
- */
 sorted_list_iter_t SortedListFind(const sorted_list_t *list,
                                   sorted_list_iter_t from,
                                   sorted_list_iter_t to,
-                                  const void *param);
+                                  const void *param)
+{
+	sorted_list_iter_t cur;
+	/* optimization using the fact that the list is sorted */
+	if (0 == list->cmp(SortedListGetData(from),(void *)param,NULL))
+	{
+		return to;
+	}
+	
+	for (cur = from;
+		 !SortedListIsSameIter(cur,to) && 
+		 list->cmp(SortedListGetData(cur),(void *)param, list->param) >
+		 list->cmp((void *) param, SortedListGetData(cur), list->param);
+		 cur = SortedListNext(cur)
+		 )
+		 {/* empty body */}
 
-/*
- * Merge two sorted lists
- * Param list_dest : list to be merged into
- * Param list_src : list to be merged
- *                    (after merging, list_src will be empty but still valid)
- * Return : pointer to merged list_dest
- * Errors : if one or both list pointers are not valid, behaviour is undefined
- *          if list_src and list_dest are sorted differently,
- *            behaviour is undefined
- */
+	return cur;
+}
+
+void PrintList(sorted_list_t *list)
+{
+	size_t iter_index = 0;
+	sorted_list_iter_t cur_iter = SortedListBegin(list);
+	while (!SortedListIsSameIter(SortedListEnd(list), cur_iter))
+	{
+		printf("[n%lu. data: %d]<-->", iter_index, *(int *)SortedListGetData(cur_iter));
+		cur_iter = SortedListNext(cur_iter);
+		++iter_index;
+	}
+	printf("\b \b");
+	printf("\b \b");
+	printf("\b \b");		
+	printf("\b \b");			
+	printf("\n");
+}                       
+
 sorted_list_t *SortedListMerge(sorted_list_t *list_dest,
-                               sorted_list_t *list_src);
+                               sorted_list_t *list_src)
+{
+	sorted_list_iter_t src_from;
+	sorted_list_iter_t src_to;
+	sorted_list_iter_t src_end;	
+	sorted_list_iter_t dest_runner;
 
-/*
- * Find element with matching data
- * Param from : iterator to start search from
- * Param to : iterator to stop search at (not included in comparison)
- * Param data : pointer to data to compare
- * Param cmp : pointer to compare function
- * Return : iter to first matching element found, iter to to if no match found
- * Errors : if function pointer or one or both iters is not valid,
- *             behaviour is undefined
- */
+	assert(NULL != list_dest);
+	assert(NULL != list_src);
+	
+	src_to = SortedListBegin(list_src);
+	src_end = SortedListEnd(list_src);
+	src_from = src_to;
+	dest_runner = SortedListBegin(list_dest);
+	
+	while(!SortedListIsSameIter(src_to,src_end))
+	{
+		while(list_dest->cmp(SortedListGetData(src_to),
+							 SortedListGetData(dest_runner),
+							 NULL))
+		{
+			dest_runner = SortedListNext(dest_runner);
+		}
+		
+		if (SortedListIsSameIter(dest_runner,SortedListEnd(list_dest)))
+		{
+			src_to = SortedListEnd(list_src);
+		}
+		
+		while (!SortedListIsSameIter(src_to,src_end) && list_dest->cmp(SortedListGetData(dest_runner),
+							  SortedListGetData(src_to),
+							  NULL))
+		{
+			src_to = SortedListNext(src_to);
+		}
+							 
+		DListSplice(dest_runner.iter, src_from.iter, src_to.iter);
+		src_from = src_to;
+		src_to = SortedListNext(src_to);
+	}
+	
+	return list_dest;
+}                               
+
 sorted_list_iter_t SortedListFindIf(sorted_list_iter_t from,
                                     sorted_list_iter_t to,
                                     sorted_list_cmp_func cmp,
-                                    const void *data);
+                                    const void *data)
+{
+	sorted_list_iter_t cur;
+	
+	for (cur = from;
+		 (!SortedListIsSameIter(cur,to) && 
+		 cmp(SortedListGetData(cur),(void *)data));
+		 cur = SortedListNext(cur)
+		 )
+		 {/* empty body */}
+
+	return cur;
+}                                  
 
 sorted_list_iter_t SortedListBegin(const sorted_list_t *list)
 {
