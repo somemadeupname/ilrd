@@ -111,8 +111,25 @@ size_t SortedListSize(const sorted_list_t *list)
  * Errors : if list or function pointers are not valid, behaviour is undefined
  *          if action_func changes sorted data, list behaviour is undefined
  */
-int SortedListForEach(sorted_list_iter_t from, sorted_list_iter_t to,
-                      sorted_list_action_func func, void *param);
+int SortedListForEach(sorted_list_iter_t from,
+					  sorted_list_iter_t to,
+                      sorted_list_action_func func,
+                      void *param)
+{
+	sorted_list_iter_t cur;
+	int exit_status = 0;
+	assert(NULL != func);
+	
+	for(cur = from;
+	    0 == exit_status && !SortedListIsSameIter(cur,to);
+	    cur = SortedListNext(cur)
+	    )
+	{ 
+		exit_status = func(SortedListGetData(cur), param);    
+	}
+	
+	return exit_status;
+}                      
 
 /*
  * Find element with matching data
@@ -125,7 +142,8 @@ int SortedListForEach(sorted_list_iter_t from, sorted_list_iter_t to,
  */
 sorted_list_iter_t SortedListFind(const sorted_list_t *list,
                                   sorted_list_iter_t from,
-                                  sorted_list_iter_t to, const void *param);
+                                  sorted_list_iter_t to,
+                                  const void *param);
 
 /*
  * Merge two sorted lists
@@ -152,7 +170,8 @@ sorted_list_t *SortedListMerge(sorted_list_t *list_dest,
  */
 sorted_list_iter_t SortedListFindIf(sorted_list_iter_t from,
                                     sorted_list_iter_t to,
-                                    sorted_list_cmp_func cmp, const void *data);
+                                    sorted_list_cmp_func cmp,
+                                    const void *data);
 
 sorted_list_iter_t SortedListBegin(const sorted_list_t *list)
 {
