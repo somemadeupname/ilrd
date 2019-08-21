@@ -145,11 +145,13 @@ size_t DListSize(const dlist_t *list)
 int DListIsEmpty(const dlist_t *list)
 {
 	assert(NULL != list);	
-	return DListIsSameIter(DListStart(list),DListEnd(list));
+	return DListIsSameIter(DListBegin(list),DListEnd(list));
 }
 
-int DListForEach(dlist_iter_t from, dlist_iter_t to, action_func func, 
-				 void *param)
+int DListForEach(dlist_iter_t from,
+				 dlist_iter_t to,
+				 action_func func, 
+				 void *param	)
 {
 	dlist_iter_t runner = from;
 	int exit_status = 0;
