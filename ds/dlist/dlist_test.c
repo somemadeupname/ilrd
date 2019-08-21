@@ -122,7 +122,7 @@ void TestDListRemoveSomeNode()
 	
 	iter2 = DListInsert(list, DListBegin(list), i_ptr2);
 	
-	PrintList(list);
+	/*PrintList(list);*/
 	
 	after_removed_iter = DListRemove(iter2);
 	

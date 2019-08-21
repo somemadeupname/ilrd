@@ -15,7 +15,11 @@ alias ctemp='echo -e "#include <stdio.h>\n\nint main()\n{\n\treturn 0;\n}" >> '
 alias c_args='echo -e "#include <stdio.h>\n\nint main(int argc, char *argv[])\n{\n\treturn 0;\n}" >> '
 
 # create h,c,test_c files
-alias newfile='bash ~/ran.shieber/scripts/newfile'
+alias newfile='bash ~/ran-shieber/scripts/newfile'
 
 # ds directory alias
 alias ds='cd ~/ran-shieber/ds'
+
+# myfuncs alias
+alias myfuncs='nano ~/ran-shieber/scripts/.myfuncs'
+alias smyfuncs='source ~/ran-shieber/scripts/.myfuncs'

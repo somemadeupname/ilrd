@@ -5,7 +5,7 @@
  *	   Status   : Sent	    *
  ****************************/
 #include <assert.h> /* assert */
-#include <stdlib.h> /* malloc free */
+#include <stdlib.h> /* malloc free sizeof */
 #include "dlist.h"
 
 #define TRUE 1
@@ -142,11 +142,15 @@ int DListForEach(dlist_iter_t from, dlist_iter_t to, action_func func,
 	dlist_iter_t runner = from;
 	int exit_status = 0;
 	
+	assert(NULL != from);
+	assert(NULL != to);	
+	
 	while (runner != to && 0 == exit_status)
 	{
 		exit_status = func(runner->data, param);	
 		runner = DListNext(runner);
 	}
+	
 	return exit_status;
 }
 
@@ -183,16 +187,19 @@ static void *DListPopIter(dlist_t *list, dlist_iter_t iter_to_pop)
 
 void *DListPopFront(dlist_t *list)
 {		
+	assert(NULL != list);	
 	return DListPopIter(list, DListBegin(list));
 }
 
 dlist_iter_t DListPushBack(dlist_t *list, const void *data)
 {
+	assert(NULL != list);	
 	return DListInsert(list, DListEnd(list), (void *) data);
 }
 
 void *DListPopBack(dlist_t *list)
 {
+	assert(NULL != list);
 	return DListPopIter(list, DListEnd(list)->prev);
 }
 
