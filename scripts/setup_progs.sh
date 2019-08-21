@@ -11,3 +11,9 @@ sudo apt install gnome-tweak-tool
 
 # Increase text size #
 gsettings set org.gnome.desktop.interface text-scaling-factor 1.3
+
+# Gedit plugins
+sudo apt-get update
+sudo apt-get install gedit-plugins
+
+# Frippery Move Clock - install from Ubuntu Software #

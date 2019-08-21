@@ -2,7 +2,7 @@
 /****************************
  *   Author   : Ran Shieber *
  *   Reviewer : Adi Peretz	*
- *	   Status   : Sent	    *
+ *   Status   : 	Fixing  *
  ****************************/
 #include <assert.h> /* assert */
 #include <stdlib.h> /* malloc free sizeof */
@@ -22,8 +22,8 @@ struct dlist
 struct dlist_node
 {
 	void *data;
-	dlist_iter_t next;
-	dlist_iter_t prev;	
+	dlist_node_t *next;
+	dlist_node_t *prev;	
 };
 
 /* Forward Declaration */
@@ -55,7 +55,19 @@ dlist_t *DListCreate(void)
 	}
 	
 	dlist->dummy_begin = DListCreateNode(NULL, NULL, NULL);
+	if (NULL == dlist->dummy_begin)
+	{
+		free(dlist->dummy_begin); dlist->dummy_begin = NULL;
+		
+	}
+	
 	dlist->dummy_end = DListCreateNode(NULL, dlist->dummy_begin, NULL);
+	if (NULL == dlist->dummy_end)
+	{
+		free(dlist->dummy_begin); dlist->dummy_begin = NULL;
+		
+		
+	}
 	dlist->dummy_begin->next = dlist->dummy_end;
 	
 	return dlist;
@@ -68,10 +80,10 @@ void DListDestroy(dlist_t *list)
 	
 	assert(NULL != list);
 	
-	while (runner != list->dummy_end)
+	while (!DListIsSameIter(runner,DListEnd(list)))
 	{
 		temp_iter_to_free = runner;
-		runner = runner->next;
+		runner = DListNext(runner);
 		free (temp_iter_to_free); temp_iter_to_free = NULL;
 	}
 	free(list->dummy_end); list->dummy_end = NULL;
@@ -122,7 +134,7 @@ size_t DListSize(const dlist_t *list)
 	assert(NULL != list);
 	
 	for (runner = DListBegin(list);
-		 runner != DListEnd(list);
+		 !DListIsSameIter(runner,DListEnd(list));
 		 runner = DListNext(runner), ++elements_counter
 		)
 		{/* empty body */}
@@ -133,7 +145,7 @@ size_t DListSize(const dlist_t *list)
 int DListIsEmpty(const dlist_t *list)
 {
 	assert(NULL != list);	
-	return (list->dummy_begin->next == list->dummy_end);
+	return DListIsSameIter(DListStart(list),DListEnd(list));
 }
 
 int DListForEach(dlist_iter_t from, dlist_iter_t to, action_func func, 
@@ -145,7 +157,7 @@ int DListForEach(dlist_iter_t from, dlist_iter_t to, action_func func,
 	assert(NULL != from);
 	assert(NULL != to);	
 	
-	while (runner != to && 0 == exit_status)
+	while (!DListIsSameIter(runner,to) && 0 == exit_status)
 	{
 		exit_status = func(runner->data, param);	
 		runner = DListNext(runner);
@@ -159,28 +171,27 @@ dlist_iter_t DListFind(dlist_iter_t from, dlist_iter_t to, cmp_func cmp,
 {
 	dlist_iter_t runner = from;
 	
-	while (runner != to && 0 != cmp(runner->data, data))
+	while (!DListIsSameIter(runner,to) && 0 != cmp(runner->data, data))
 	{
 		runner = DListNext(runner);
 	}
+	
 	return runner;
 }				
 
 dlist_iter_t DListPushFront(dlist_t *list, const void *data)
 {
-	return DListInsert(list, DListBegin(list), (void *) data);
+	return DListInsert(list, DListBegin(list), (void *)data);
 }
 
 /* wrapper for the pop functions: pops iter and returns its data */
 static void *DListPopIter(dlist_t *list, dlist_iter_t iter_to_pop)
 {
-	dlist_iter_t iter = iter_to_pop;
-	void *data = iter->data;
+	void *data = DListIterGetData(iter_to_pop);
 	
 	assert(NULL != list);
 	
-	iter->prev->next = iter->next;
-	iter->next->prev = iter->prev;
+	DListRemove(iter_to_pop);
 		
 	return data;
 }
@@ -194,13 +205,13 @@ void *DListPopFront(dlist_t *list)
 dlist_iter_t DListPushBack(dlist_t *list, const void *data)
 {
 	assert(NULL != list);	
-	return DListInsert(list, DListEnd(list), (void *) data);
+	return DListInsert(list, DListEnd(list), (void *)data);
 }
 
 void *DListPopBack(dlist_t *list)
 {
 	assert(NULL != list);
-	return DListPopIter(list, DListEnd(list)->prev);
+	return DListPopIter(list, DListBack(DListEnd(list)));
 }
 
 dlist_iter_t DListNext(dlist_iter_t iter)
