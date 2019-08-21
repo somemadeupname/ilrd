@@ -122,11 +122,10 @@ int SortedListForEach(sorted_list_iter_t from,
 	
 	for(cur = from;
 	    0 == exit_status && !SortedListIsSameIter(cur,to);
-	    cur = SortedListNext(cur)
+	    cur = SortedListNext(cur), 
+	    exit_status = func(SortedListGetData(cur), param)
 	    )
-	{ 
-		exit_status = func(SortedListGetData(cur), param);    
-	}
+	{ /* empty body */ }
 	
 	return exit_status;
 }                      
