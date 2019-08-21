@@ -27,7 +27,7 @@ struct dlist_node
 };
 
 /* Forward Declaration */
-static void *DListPopIter(dlist_t *list, dlist_iter_t iter_to_pop);
+static void *DListPopIter(dlist_iter_t iter_to_pop);
 
 /* create double nodes */
 static dlist_node_t *DListCreateNode(void *data, dlist_node_t *prev,
@@ -115,13 +115,13 @@ dlist_iter_t DListRemove(dlist_iter_t iter_to_remove)
 	dlist_iter_t following_iter = NULL;	
 	
 	assert(NULL != iter_to_remove);
-		
-	iter_to_remove->prev->next = iter_to_remove->next;
-	iter_to_remove->next->prev = iter_to_remove->prev;
-		
-	following_iter = iter_to_remove->next;
 	
-	free(iter_to_remove);
+	following_iter = iter_to_remove->next;	
+	
+	iter_to_remove->prev->next = following_iter;
+	following_iter->prev = iter_to_remove->prev;
+			
+	free(iter_to_remove); iter_to_remove = NULL;
 	
 	return following_iter;
 }
@@ -187,11 +187,9 @@ dlist_iter_t DListPushFront(dlist_t *list, const void *data)
 }
 
 /* wrapper for the pop functions: pops iter and returns its data */
-static void *DListPopIter(dlist_t *list, dlist_iter_t iter_to_pop)
+static void *DListPopIter(dlist_iter_t iter_to_pop)
 {
 	void *data = DListIterGetData(iter_to_pop);
-	
-	assert(NULL != list);
 	
 	DListRemove(iter_to_pop);
 		
@@ -201,7 +199,7 @@ static void *DListPopIter(dlist_t *list, dlist_iter_t iter_to_pop)
 void *DListPopFront(dlist_t *list)
 {		
 	assert(NULL != list);	
-	return DListPopIter(list, DListBegin(list));
+	return DListPopIter(DListBegin(list));
 }
 
 dlist_iter_t DListPushBack(dlist_t *list, const void *data)
@@ -213,7 +211,7 @@ dlist_iter_t DListPushBack(dlist_t *list, const void *data)
 void *DListPopBack(dlist_t *list)
 {
 	assert(NULL != list);
-	return DListPopIter(list, DListBack(DListEnd(list)));
+	return DListPopIter(DListBack(DListEnd(list)));
 }
 
 dlist_iter_t DListNext(dlist_iter_t iter)
