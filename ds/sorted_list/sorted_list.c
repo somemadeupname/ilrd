@@ -178,7 +178,7 @@ sorted_list_t *SortedListMerge(sorted_list_t *list_dest,
 	
 	while(!SortedListIsSameIter(src_to,src_end))
 	{
-		while(list_dest->cmp(SortedListGetData(src_to),
+		while(!SortedListIsSameIter(dest_runner,SortedListEnd(list_dest)) && 0 == list_dest->cmp(SortedListGetData(src_to),
 							 SortedListGetData(dest_runner),
 							 NULL))
 		{
@@ -190,7 +190,7 @@ sorted_list_t *SortedListMerge(sorted_list_t *list_dest,
 			src_to = SortedListEnd(list_src);
 		}
 		
-		while (!SortedListIsSameIter(src_to,src_end) && list_dest->cmp(SortedListGetData(dest_runner),
+		while (!SortedListIsSameIter(src_to,src_end) && 0 == list_dest->cmp(SortedListGetData(dest_runner),
 							  SortedListGetData(src_to),
 							  NULL))
 		{
@@ -198,8 +198,7 @@ sorted_list_t *SortedListMerge(sorted_list_t *list_dest,
 		}
 							 
 		DListSplice(dest_runner.iter, src_from.iter, src_to.iter);
-		src_from = src_to;
-		src_to = SortedListNext(src_to);
+		src_from = SortedListBegin(list_src);
 	}
 	
 	return list_dest;
