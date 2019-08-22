@@ -19,6 +19,7 @@ alias newfile='bash ~/ran-shieber/scripts/newfile'
 
 # ds directory alias
 alias ds='cd ~/ran-shieber/ds'
+alias rm='rm -f'
 
 # myfuncs alias
 alias myfuncs='nano ~/ran-shieber/scripts/.myfuncs'

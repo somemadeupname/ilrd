@@ -1,6 +1,6 @@
 #!/bin/bash 
 
-echo -e "Creating:\n$1.h\n$1.c\n$1_test.c"
+echo -e "Created:\n$1.h\n$1.c\n$1_test.c"
 
 mkdir $1
 touch $1/$1.h
@@ -11,8 +11,6 @@ echo -e "#ifndef __OL71_${1^^}_H" >> $1/$1.h
 echo -e "#define __OL71_${1^^}_H" >> $1/$1.h
 echo -e "\n#endif /* __OL71_${1^^}_H */" >> $1/$1.h
 
-echo -e "#include <stdio.h>\n#include \"$1.h\"\n\nint main()\n{\n\treturn 0;\n}" >> $1/$1_test.c
+echo -e "#include <stdio.h>\n#include <assert.h>\n\n#include \"$1.h\"\n#include \"/home/rd61/test/test_template.c\"\n\nint main()\n{\n\tPREVENT_WARNINGS_FROM_UNUSED_FUNCS_FROM_TESTS_TEMPLATE\n\treturn 0;\n}" >> $1/$1_test.c
 echo -e "\n/****************************\n *   Author   : Ran Shieber *\n *   Reviewer : 		    *\n *	 Status   : Sent	    *\n ****************************/\n" >> $1/$1.c
 echo -e "#include \"$1.h\"\n" >> $1/$1.c
-
-cd $1
