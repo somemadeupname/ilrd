@@ -125,16 +125,13 @@ sorted_list_iter_t SortedListFind(const sorted_list_t *list,
                                   sorted_list_iter_t to,
                                   const void *param)
 {
-	sorted_list_iter_t cur;
-	/* optimization using the fact that the list is sorted */
-	if (0 == list->cmp(SortedListGetData(from),(void *)param,NULL))
-	{
-		return to;
-	}
+	sorted_list_iter_t cur;	
 	
 	for (cur = from;
 		 !SortedListIsSameIter(cur,to) && 
-		 list->cmp(SortedListGetData(cur),(void *)param, list->param) >
+		 /* exit if searching for value which shoul be before cur */
+		 list->cmp(SortedListGetData(cur),(void *)param, list->param) && 
+		 list->cmp(SortedListGetData(cur),(void *)param, list->param) !=
 		 list->cmp((void *) param, SortedListGetData(cur), list->param);
 		 cur = SortedListNext(cur)
 		 )

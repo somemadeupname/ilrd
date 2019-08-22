@@ -1,9 +1,12 @@
+#ifndef __OL71_UID_H
+#define __OL71_UID_H
+
 #include <time.h>
 #include <stddef.h>
 
-extern const uid_t BAD_UID;
-
 typedef struct uid uid_t;
+
+extern const uid_t BAD_UID;
 
 struct uid
 {
@@ -15,9 +18,9 @@ struct uid
  * Create new UID
  * Param : none
  * Return : uid
- * Errors : apoch overflow at 2038 
+ * Errors : epoch overflow at 2038 
  */
-uid_t UIDCreate(void)
+uid_t UIDCreate(void);
 
 /*
  * Compares two UIDs' 
@@ -28,4 +31,5 @@ uid_t UIDCreate(void)
  */
 int UIDIsSame(uid_t uid1, uid_t uid2);
 
+#endif /*__OL71_UID_H*/
 
