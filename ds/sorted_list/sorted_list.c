@@ -18,6 +18,8 @@ struct sorted_list
 	void *param;
 };
 
+/* SORTED LIST FUNCTIONS */
+
 sorted_list_t *SortedListCreate(is_before func, const void *param)
 {
 	sorted_list_t *list = (sorted_list_t *)malloc(sizeof(sorted_list_t)); 
@@ -49,21 +51,21 @@ void SortedListDestroy(sorted_list_t *list)
 sorted_list_iter_t SortedListInsert(sorted_list_t *list, const void *data)
 {
 	sorted_list_iter_t iter_to_insert; 
-	dlist_iter_t runner = NULL; 
-	dlist_iter_t end = NULL;
+	sorted_list_iter_t runner; 
+	sorted_list_iter_t end;
 	
 	assert(NULL != list);
 	
-	runner = DListBegin(list->dlist);
-	end = DListEnd(list->dlist);  
+	runner.iter = DListBegin(list->dlist);
+	end.iter = DListEnd(list->dlist);  
 	
-	while (!DListIsSameIter(runner,end) && /*change to for TODO*/
-		  (0 != list->cmp(DListIterGetData(runner), 
+	while (!SortedListIsSameIter(runner,end) &&
+		  (0 != list->cmp(SortedListGetData(runner), 
 		  (void *)data, list->param)))
 	{
-		runner = DListNext(runner);
+		runner = SortedListNext(runner);
 	}
-	iter_to_insert.iter = DListInsert(list->dlist, runner, (void *)data); 
+	iter_to_insert.iter = DListInsert(list->dlist, runner.iter, (void *)data); 
 	
 	return iter_to_insert;
 }
@@ -106,18 +108,12 @@ int SortedListForEach(sorted_list_iter_t from,
                       sorted_list_action_func func,
                       void *param)
 {
-	sorted_list_iter_t cur;
-	int exit_status = 0;
+
 	assert(NULL != func);
-	
-	for(cur = from;
-	    0 == exit_status && !SortedListIsSameIter(cur,to);
-	    exit_status = func(SortedListGetData(cur), param),
-	    cur = SortedListNext(cur)
-	    )
-	{ /* empty body */ }
-	
-	return exit_status;
+	assert(NULL != from.iter);
+	assert(NULL != to.iter);			
+		
+	return DListForEach(from.iter, to.iter, func, param);
 }                      
 
 sorted_list_iter_t SortedListFind(const sorted_list_t *list,
@@ -138,24 +134,7 @@ sorted_list_iter_t SortedListFind(const sorted_list_t *list,
 		 {/* empty body */}
 
 	return cur;
-}
-
-void PrintList(sorted_list_t *list)
-{
-	size_t iter_index = 0;
-	sorted_list_iter_t cur_iter = SortedListBegin(list);
-	while (!SortedListIsSameIter(SortedListEnd(list), cur_iter))
-	{
-		printf("[n%lu. data: %d]<-->", iter_index, *(int *)SortedListGetData(cur_iter));
-		cur_iter = SortedListNext(cur_iter);
-		++iter_index;
-	}
-	printf("\b \b");
-	printf("\b \b");
-	printf("\b \b");		
-	printf("\b \b");			
-	printf("\n");
-}                       
+}                     
 
 sorted_list_t *SortedListMerge(sorted_list_t *list_dest,
                                sorted_list_t *list_src)
@@ -175,9 +154,9 @@ sorted_list_t *SortedListMerge(sorted_list_t *list_dest,
 	
 	while(!SortedListIsSameIter(src_to,src_end))
 	{
-		while(!SortedListIsSameIter(dest_runner,SortedListEnd(list_dest)) && 0 == list_dest->cmp(SortedListGetData(src_to),
-							 SortedListGetData(dest_runner),
-							 NULL))
+		while(!SortedListIsSameIter(dest_runner,SortedListEnd(list_dest))
+			  && 0 == list_dest->cmp(SortedListGetData(src_to),
+			  SortedListGetData(dest_runner), NULL))
 		{
 			dest_runner = SortedListNext(dest_runner);
 		}
@@ -187,9 +166,9 @@ sorted_list_t *SortedListMerge(sorted_list_t *list_dest,
 			src_to = SortedListEnd(list_src);
 		}
 		
-		while (!SortedListIsSameIter(src_to,src_end) && 0 == list_dest->cmp(SortedListGetData(dest_runner),
-							  SortedListGetData(src_to),
-							  NULL))
+		while (!SortedListIsSameIter(src_to,src_end)
+			   && 0 == list_dest->cmp(SortedListGetData(dest_runner),
+			   SortedListGetData(src_to), NULL))
 		{
 			src_to = SortedListNext(src_to);
 		}
@@ -217,6 +196,8 @@ sorted_list_iter_t SortedListFindIf(sorted_list_iter_t from,
 
 	return cur;
 }                                  
+
+/* ITERATOR FUNCTIONS */
 
 sorted_list_iter_t SortedListBegin(const sorted_list_t *list)
 {
