@@ -50,9 +50,9 @@ void SortedListDestroy(sorted_list_t *list)
 
 sorted_list_iter_t SortedListInsert(sorted_list_t *list, const void *data)
 {
-	sorted_list_iter_t iter_to_insert; 
-	sorted_list_iter_t runner; 
-	sorted_list_iter_t end;
+	sorted_list_iter_t iter_to_insert = {NULL};
+	sorted_list_iter_t runner = {NULL};
+	sorted_list_iter_t end = {NULL};
 	
 	assert(NULL != list);
 	
@@ -121,7 +121,7 @@ sorted_list_iter_t SortedListFind(const sorted_list_t *list,
                                   sorted_list_iter_t to,
                                   const void *param)
 {
-	sorted_list_iter_t cur;	
+	sorted_list_iter_t cur = {NULL};
 	
 	for (cur = from;
 		 !SortedListIsSameIter(cur,to) && 
@@ -139,10 +139,10 @@ sorted_list_iter_t SortedListFind(const sorted_list_t *list,
 sorted_list_t *SortedListMerge(sorted_list_t *list_dest,
                                sorted_list_t *list_src)
 {
-	sorted_list_iter_t src_from;
-	sorted_list_iter_t src_to;
-	sorted_list_iter_t src_end;	
-	sorted_list_iter_t dest_runner;
+	sorted_list_iter_t src_from = {NULL};
+	sorted_list_iter_t src_to = {NULL};
+	sorted_list_iter_t src_end = {NULL};
+	sorted_list_iter_t dest_runner = {NULL};
 
 	assert(NULL != list_dest);
 	assert(NULL != list_src);
@@ -185,7 +185,7 @@ sorted_list_iter_t SortedListFindIf(sorted_list_iter_t from,
                                     sorted_list_cmp_func cmp,
                                     const void *data)
 {
-	sorted_list_iter_t cur;
+	sorted_list_iter_t cur = {NULL};
 	
 	for (cur = from;
 		 (!SortedListIsSameIter(cur,to) && 
@@ -201,7 +201,7 @@ sorted_list_iter_t SortedListFindIf(sorted_list_iter_t from,
 
 sorted_list_iter_t SortedListBegin(const sorted_list_t *list)
 {
-	sorted_list_iter_t begin; 
+	sorted_list_iter_t begin = {NULL};
 	
 	assert(NULL != list);
 	
@@ -212,7 +212,7 @@ sorted_list_iter_t SortedListBegin(const sorted_list_t *list)
 
 sorted_list_iter_t SortedListEnd(const sorted_list_t *list)
 {
-	sorted_list_iter_t end;
+	sorted_list_iter_t end = {NULL};
 	
 	assert(NULL != list);
 	
