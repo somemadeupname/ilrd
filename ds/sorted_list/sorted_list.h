@@ -16,7 +16,7 @@ typedef struct
 typedef int (*is_before)(void *data1, void *data2, const void *param);
 
 /*return 0 if match found, non-zero otherwise */
-typedef int (*sorted_list_cmp_func)(void *data, const void *param);
+typedef int (*sorted_list_is_match)(void *data1, const void *data2, void *param);
 
 /*return 0 for success, non-zero otherwise*/
 typedef int (*sorted_list_action_func)(void *data, void *param);
@@ -142,7 +142,8 @@ sorted_list_t *SortedListMerge(sorted_list_t *list_dest,
  */
 sorted_list_iter_t SortedListFindIf(sorted_list_iter_t from,
                                     sorted_list_iter_t to,
-                                    sorted_list_cmp_func cmp, const void *data);
+                                    sorted_list_is_match cmp, const void *data,
+                                    void *param);
 
 /*
  * Returns iterator to the first element of the sorted list

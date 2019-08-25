@@ -11,18 +11,35 @@
 #include "../dlist/dlist.c"
 #include "sorted_list.h"
 
+typedef param
+{
+	is_before cmp;
+	void *param;
+} param_t;
+
 struct sorted_list
 {
 	dlist_t *dlist;
-	is_before cmp;
-	void *param;
+	param_t *param;
 };
+
+/* Patch to correct past mistakes */
+typedef struct patch
+{
+	void *user_data;
+	void *user_param;
+	sorted_list_is_match user_func;
+} patch_t;
+
+int IsMatchAdaptation(void *data1,const void *patch);
+static patch_t PatchInit(void *data, void *param, sorted_list_is_match func);
 
 /* SORTED LIST FUNCTIONS */
 
 sorted_list_t *SortedListCreate(is_before func, const void *param)
 {
 	sorted_list_t *list = (sorted_list_t *)malloc(sizeof(sorted_list_t)); 
+	param_t params = {NULL};
 	if(NULL == list)
 	{
 		return NULL;
@@ -35,8 +52,8 @@ sorted_list_t *SortedListCreate(is_before func, const void *param)
 		return NULL; 
 	}
 	
-	list->cmp = func;
-	list->param = (void *)param;
+	list->params->cmp = func;
+	list->params->param = (void *)param;
 	
 	return list;
 }
@@ -60,8 +77,8 @@ sorted_list_iter_t SortedListInsert(sorted_list_t *list, const void *data)
 	end.iter = DListEnd(list->dlist);  
 	
 	while (!SortedListIsSameIter(runner,end) &&
-		  (0 != list->cmp(SortedListGetData(runner), 
-		  (void *)data, list->param)))
+		  (0 != list->params->cmp(SortedListGetData(runner), 
+		  (void *)data, list->params->param)))
 	{
 		runner = SortedListNext(runner);
 	}
@@ -126,9 +143,9 @@ sorted_list_iter_t SortedListFind(const sorted_list_t *list,
 	for (cur = from;
 		 !SortedListIsSameIter(cur,to) && 
 		 /* exit if searching for value which shoul be before cur */
-		 list->cmp(SortedListGetData(cur),(void *)param, list->param) && 
-		 list->cmp(SortedListGetData(cur),(void *)param, list->param) !=
-		 list->cmp((void *) param, SortedListGetData(cur), list->param);
+		 list->params->cmp(SortedListGetData(cur),(void *)param, list->params->param) && 
+		 list->params->cmp(SortedListGetData(cur),(void *)param, list->params->param) !=
+		 list->params->cmp((void *) param, SortedListGetData(cur), list->params->param);
 		 cur = SortedListNext(cur)
 		 )
 		 {/* empty body */}
@@ -182,19 +199,19 @@ sorted_list_t *SortedListMerge(sorted_list_t *list_dest,
 
 sorted_list_iter_t SortedListFindIf(sorted_list_iter_t from,
                                     sorted_list_iter_t to,
-                                    sorted_list_cmp_func cmp,
-                                    const void *data)
+                                    sorted_list_is_match func,
+                                    const void *data, void *param)
 {
-	sorted_list_iter_t cur;
+	patch_t patch_struct = {NULL};
 	
-	for (cur = from;
-		 (!SortedListIsSameIter(cur,to) && 
-		 cmp(SortedListGetData(cur),(void *)data));
-		 cur = SortedListNext(cur)
-		 )
-		 {/* empty body */}
+	assert(NULL != from.iter);
+	assert(NULL != func);
+	
+	patch_struct = PatchInit((void *)data, param, func);
+	
+	from.iter = DListFind(from.iter,to.iter,IsMatchAdaptation,&patch_struct);
 
-	return cur;
+	return from;
 }                                  
 
 /* ITERATOR FUNCTIONS */
@@ -251,3 +268,25 @@ int SortedListIsSameIter(const sorted_list_iter_t iter1,
 	return DListIsSameIter(iter1.iter, iter2.iter);
 }
 
+int IsMatchAdaptation(void *data1,const void *patch)
+{
+	patch_t *non_void_patch = (patch_t *) patch;
+	
+	assert(NULL != patch);
+	
+			/* the actual adaptation which wraps the comparator */
+	return !((non_void_patch->user_func(data1,non_void_patch->user_data,
+			  non_void_patch->user_param)));
+}
+static patch_t PatchInit(void *data, void *param, sorted_list_is_match func)
+{	
+	patch_t patch = {NULL};
+
+	assert(NULL != func);
+	
+	patch.user_data = data;
+	patch.user_param = param;
+	patch.user_func = func;
+	
+	return patch;
+}
