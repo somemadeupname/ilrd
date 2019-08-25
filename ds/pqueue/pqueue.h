@@ -12,8 +12,13 @@ enum {PQUEUE_SUCCESS, PQUEUE_FAILED};
    return 0 if priority is equal */
 typedef int (*cmp_priority)(void *data1, void *data2, const void *param);
 
+<<<<<<< HEAD
 /* return 1 if q_data and user_data match, 0 otherwise */
 typedef int (*is_match)(void *q_data, const void *user_data, void *param);
+=======
+/* return 1 if q_data and user_data do not match, 0 otherwise */
+typedef int (*is_not_match)(void *q_data, const void *user_data);
+>>>>>>> 204b63be8ab182d6102072edd2f287ad5ef146b8
 
 /*
  * Create new pqueue
@@ -23,7 +28,6 @@ typedef int (*is_match)(void *q_data, const void *user_data, void *param);
  * Errors: if memory allocation failed, return NULL
  */
 pqueue_t *PQueueCreate(cmp_priority is_lower_priority, const void *param);
-
 
 /*
  * Destroy pqueue
@@ -80,9 +84,15 @@ int PQueueIsEmpty(const pqueue_t *pqueue);
  * Param func : is_match function to compare <data>
  * Param data : data to compare
  * Return: void pointer to data of erased iter
+<<<<<<< HEAD
  * Errors: if <data> was not found in queue, return NULL  
  */
 void *PQueueErase(pqueue_t *pqueue, is_match func, void *data, void *param);
+=======
+ * Errors: if <data> was not found in queue, return NULL
+ */
+void *PQueueErase(pqueue_t *pqueue, is_not_match func, void *data);
+>>>>>>> 204b63be8ab182d6102072edd2f287ad5ef146b8
 
 /*
  * Clear all elements from pq
@@ -93,6 +103,9 @@ void *PQueueErase(pqueue_t *pqueue, is_match func, void *data, void *param);
 void PQueueClear(pqueue_t *pqueue);
 
 #endif /* __OL71_PQUEUE_H */
+<<<<<<< HEAD
 
 
 
+=======
+>>>>>>> 204b63be8ab182d6102072edd2f287ad5ef146b8

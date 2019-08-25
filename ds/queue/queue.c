@@ -28,6 +28,7 @@ queue_t *QueueCreate(void)
 	queue->dummy = SListCreateNode(NULL, NULL);
 	if  (NULL == queue->dummy)
 	{
+		free(queue); queue = NULL;
 		return NULL;
 	}
 	
@@ -50,7 +51,7 @@ int QueueEnqueue(queue_t *queue, const void *data)
 	
 	assert(NULL != queue);
 	
-	node_to_enqueue = SListCreateNode((void *)data, queue->dummy);	
+	node_to_enqueue = SListCreateNode((void *)data, NULL);	
 	
 	if (NULL == node_to_enqueue)
 	{
@@ -70,11 +71,11 @@ int QueueDequeue(queue_t *queue)
 {
 	slist_node_t *node_to_remove = NULL;	
 	
-	assert(NULL == queue);
+	assert(NULL != queue);
 	
 	if (QueueIsEmpty(queue))
 	{
-		return SUCCESS;
+		return FAIL;
 	}
 
 	node_to_remove = SListRemove(queue->start);
@@ -88,30 +89,36 @@ int QueueDequeue(queue_t *queue)
 
 void *QueuePeek(const queue_t *queue)
 {
-	assert(NULL == queue);	
+	assert(NULL != queue);	
 	return queue->start->data;
 }
 
 size_t QueueSize(const queue_t *queue)
 {
-	assert(NULL == queue);	
+	assert(NULL != queue);	
 	return queue->size;
 }
 
 int QueueIsEmpty(const queue_t *queue)
 {
-	assert(NULL == queue);	
+	assert(NULL != queue);	
 	return (0 == queue->size);
 }
 
 queue_t *QueueAppend(queue_t *dest, queue_t *src)
 {
+	slist_node_t *src_new_dummy = NULL;
+	
 	assert(NULL != src);
 	assert(NULL != dest);
+	assert(src != dest);
 	
-	dest->dummy = src->start;
+	dest->dummy->next_node = src->start;
+	src_new_dummy = SListRemove(dest->dummy);
 	
-	src->start = dest->dummy;
+	dest->dummy = src->dummy;
+	
+	src->start = src_new_dummy;
 	
 	dest->size += src->size;
 	src->size = 0; /* src is now empty */
