@@ -5,9 +5,14 @@
  *	 Status   : Sent	    *
  ****************************/
 
+#include <stdlib.h> /*malloc free*/
+#include <assert.h> /* assert */
+
 #include "pqueue.h"
-#include "../sorted_list/sorted_list.c"
+/*#include "../sorted_list/sorted_list.c"*/
 #include "../sorted_list/sorted_list.h"
+
+#define UNUSED(x) (void)(x)
 
 struct pqueue
 {
@@ -103,19 +108,20 @@ int PQueueIsEmpty(const pqueue_t *pqueue)
 	return SortedListIsEmpty(pqueue->list);
 }
 /* erase data if found in pqueue */
-void *PQueueErase(pqueue_t *pqueue, is_match func, void *data)
+void *PQueueErase(pqueue_t *pqueue, is_match func, void *data, void *param)
 {
 	sorted_list_iter_t from = {NULL};
 	sorted_list_iter_t to = {NULL};
 	sorted_list_iter_t data_iter = {NULL};
 	void *data_to_remove = NULL;
+	UNUSED(param);
 	
 	assert(NULL != pqueue);
 	
 	from = SortedListBegin(pqueue->list);
 	to = SortedListEnd(pqueue->list);
 	
-	data_iter = SortedListFindIf(from,to,func,data);
+	data_iter = SortedListFindIf(from,to,func,data,NULL);
 	
 	data_to_remove = SortedListGetData(data_iter);
 	if (SortedListIsSameIter(data_iter, to))

@@ -5,6 +5,7 @@
 #include <time.h> /* time_t */
 
 #include "../../ds/uid/uid.h" /* uid */
+#include "../../ds/pqueue/pqueue.h"
 
 typedef uid_t task_uid_t;
 typedef struct scheduler scheduler_t;
@@ -14,6 +15,11 @@ typedef enum task_status {
 	SCHED_REPEAT,
 	SCHED_NO_REPEAT
 } task_status;
+
+typedef enum sched_status {
+	SCHED_SUCCESS,
+	SCHED_FAIL
+} sched_status;
 
 /* returns SCHED_REPEAT for repeating, SCHED_NO_REPEAT for no repeating */
 typedef task_status (*task_func)(void *param);
@@ -36,12 +42,14 @@ void SchedulerDestroy(scheduler_t *scheduler);
 /*
  * Add task to scheduler
  * Param scheduler : scheduler
- * Param time : when to do task (time in epoch)
- * Param interval : seconds to next time task is executed
- * Return: added task uid
- * Note:  if current time is after next task's time - execute it
+ * Param func_param: task_func param
+ * Param task_func : func to exec (returns task_status)
+ * Param time : time to execute task (in seconds, since epoch)
+ * Param interval : seconds to add to next time task is executed
+ * Return: new tasks task_uid
+ * Note: if current time is after new task time, task will be executed first
  * Errors: return BAD_UID if adding task failed
- *           if already exist task at same time, task can be added before or after
+ *         if task time is not unique, task position is undefined
  */
 task_uid_t SchedulerAddTask(scheduler_t *scheduler, void *func_param,
                    task_status (*task_func)(void *param), time_t time_in_sec,
@@ -51,10 +59,10 @@ task_uid_t SchedulerAddTask(scheduler_t *scheduler, void *func_param,
  * Remove task from schedule 
  * Param scheduler : scheduler
  * Param task_uid : uid of task to remove
- * Return: 0 if remove succeed, 1 if no task with task_uid in scheduler
- * Errors: if no task with task_uid in scheduler, return 1
+ * Return: SCHED_SUCCESS if remove succeed, SCHED_FAIL otherwise
+ * Errors: if no task with task_uid in scheduler, return SCHED_FAIL
  */
-int SchedulerRemoveTask(scheduler_t *scheduler, task_uid_t task_uid);
+sched_status SchedulerRemoveTask(scheduler_t *scheduler, task_uid_t task_uid);
 
 /*
  * Stops executing tasks
@@ -67,10 +75,10 @@ void SchedulerStop(scheduler_t *scheduler);
 /*
  * Start executing tasks
  * Param scheduler : scheduler
- * Return: none
- * Errors: if scheduler is running, behavior is undefined
+ * Return: SCHED_SUCCESS for success, SCHED_FAIL otherwise
+ * Errors: if rescheduling failed, stops and returns SCHED_FAIL
  */
-void SchedulerRun(scheduler_t *scheduler);
+sched_status SchedulerRun(scheduler_t *scheduler);
 
 /*
  * Check if scheduler is empty
@@ -83,8 +91,8 @@ int SchedulerIsEmpty(const scheduler_t *scheduler);
 /*
  * Returns amount of tasks in scheduler
  * Param scheduler : scheduler
- * Return: number of tasks in scheduler
- * Errors:
+ * Return: number of tasks in scheduler, including currently running task
+ * Errors: none 
  */
 size_t SchedulerSize(const scheduler_t *scheduler);
 
