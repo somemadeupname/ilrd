@@ -2,7 +2,7 @@
 /****************************
  *   Author   : Ran Shieber *
  *   Reviewer : Shaddad	    *
- *	 Status   : Sent	    *
+ *	 Status   : Approved    *
  ****************************/
 
 #include <stdlib.h> /* malloc, free, sizeof */
@@ -11,7 +11,7 @@
 #include "../dlist/dlist.c"
 #include "sorted_list.h"
 
-typedef param
+typedef struct param
 {
 	is_before cmp;
 	void *param;
@@ -20,7 +20,7 @@ typedef param
 struct sorted_list
 {
 	dlist_t *dlist;
-	param_t *param;
+	param_t *params;
 };
 
 /* Patch to correct past mistakes */
@@ -39,7 +39,6 @@ static patch_t PatchInit(void *data, void *param, sorted_list_is_match func);
 sorted_list_t *SortedListCreate(is_before func, const void *param)
 {
 	sorted_list_t *list = (sorted_list_t *)malloc(sizeof(sorted_list_t)); 
-	param_t params = {NULL};
 	if(NULL == list)
 	{
 		return NULL;
@@ -48,6 +47,14 @@ sorted_list_t *SortedListCreate(is_before func, const void *param)
 	list->dlist = DListCreate(); 
 	if(NULL == list->dlist)
 	{
+		free(list); list = NULL; 
+		return NULL; 
+	}
+	
+	list->params = (param_t *)malloc(sizeof(param_t));
+	if(NULL == list->params)
+	{
+		DListDestroy(list->dlist); list->dlist = NULL; 
 		free(list); list = NULL; 
 		return NULL; 
 	}
@@ -62,6 +69,7 @@ void SortedListDestroy(sorted_list_t *list)
 {
 	assert(NULL != list);
 	DListDestroy(list->dlist); list->dlist = NULL; 
+	free(list->params); list->params = NULL;
 	free(list); list = NULL;
 }
 
@@ -172,7 +180,7 @@ sorted_list_t *SortedListMerge(sorted_list_t *list_dest,
 	while(!SortedListIsSameIter(src_to,src_end))
 	{
 		while(!SortedListIsSameIter(dest_runner,SortedListEnd(list_dest))
-			  && 0 == list_dest->cmp(SortedListGetData(src_to),
+			  && 0 == list_dest->params->cmp(SortedListGetData(src_to),
 			  SortedListGetData(dest_runner), NULL))
 		{
 			dest_runner = SortedListNext(dest_runner);
@@ -184,7 +192,7 @@ sorted_list_t *SortedListMerge(sorted_list_t *list_dest,
 		}
 		
 		while (!SortedListIsSameIter(src_to,src_end)
-			   && 0 == list_dest->cmp(SortedListGetData(dest_runner),
+			   && 0 == list_dest->params->cmp(SortedListGetData(dest_runner),
 			   SortedListGetData(src_to), NULL))
 		{
 			src_to = SortedListNext(src_to);
@@ -202,11 +210,7 @@ sorted_list_iter_t SortedListFindIf(sorted_list_iter_t from,
                                     sorted_list_is_match func,
                                     const void *data, void *param)
 {
-<<<<<<< HEAD
 	patch_t patch_struct = {NULL};
-=======
-	sorted_list_iter_t cur = {NULL};
->>>>>>> 204b63be8ab182d6102072edd2f287ad5ef146b8
 	
 	assert(NULL != from.iter);
 	assert(NULL != func);

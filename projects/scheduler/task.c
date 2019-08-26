@@ -10,7 +10,7 @@
 #include "task.h"
 #include "../../ds/uid/uid.c"
 
-#define UNUSED(x) void(x)
+#define UNUSED(x) (void)(x)
 
 struct task
 {
@@ -53,11 +53,13 @@ void TaskDestroy(task_t *task)
 task_status TaskExec(task_t *task)
 {
 	assert (NULL != task);
+	
 	return task->func(task->param);
 }
 
 int TaskIsMatch(void *task, const void *task_uid, void *param)
 {
+	UNUSED(param);
 	assert (NULL != task);
 	assert (NULL != task_uid);
 	
@@ -78,17 +80,10 @@ time_t TaskGetTime(const task_t *task)
 	return task->time;
 }
 
-/*
- * check if new_task is before the timestamp of scheduled_task 
- * Param new_task: new task to check.
- * Param scheduled_task: task in queue of the scheduler.
- * Param param: user-defined param. 
- * Return: 1 if before and zero otherwise.
- * Errors: none
- */
 int TaskIsBefore(const task_t *new_task, const task_t *scheduled_task, 
 				 void *param)
 {
+	UNUSED(param);
 	assert(NULL != new_task);
 	assert(NULL != scheduled_task);
 		
