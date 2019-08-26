@@ -32,4 +32,3 @@ uid_t UIDCreate(void);
 int UIDIsSame(uid_t uid1, uid_t uid2);
 
 #endif /*__OL71_UID_H*/
-
