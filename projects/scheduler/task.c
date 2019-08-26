@@ -10,6 +10,8 @@
 #include "task.h"
 #include "../../ds/uid/uid.c"
 
+#define UNUSED(x) void(x)
+
 struct task
 {
 	void *param;
@@ -90,7 +92,7 @@ int TaskIsBefore(const task_t *new_task, const task_t *scheduled_task,
 	assert(NULL != new_task);
 	assert(NULL != scheduled_task);
 		
-	if (TaskGetTime(scheduled_task) <= TaskGetTime(new_task))
+	if (TaskGetTime(new_task) <= TaskGetTime(scheduled_task))
 	{
 		return 1;
 	}
