@@ -7,6 +7,7 @@
  
 #include <stdlib.h> /* malloc free */
 #include <assert.h> /* assert */
+#include <unistd.h> /* sleep */
 
 #include "scheduler.h"
 #include "task.h"
@@ -43,6 +44,7 @@ static int TaskCompareTime(void *task1, void *task2,
 
 /* helper for run */
 static sched_status RescheduleTask(scheduler_t *scheduler, task_t *task);
+static void SleepUntilExecution(time_t secs_until_next_execution);
 
 /* create a scheduler */
 scheduler_t *SchedulerCreate(void)
@@ -129,6 +131,18 @@ void SchedulerStop(scheduler_t *scheduler)
 	
 	scheduler->continue_running = FALSE;
 }
+/* make sure that sleeps works for the entire duration it's set to */
+static void SleepUntilExecution(time_t secs_until_next_execution)
+{
+	time_t start_time = time(NULL);
+	unsigned int seconds_left = 0;
+	
+	while (time(NULL) > start_time + secs_until_next_execution)
+	{
+		seconds_left = time(NULL) - start_time + secs_until_next_execution;
+		sleep(seconds_left);
+	}
+}
 
 /*
  * Start executing tasks
@@ -145,6 +159,7 @@ sched_status SchedulerRun(scheduler_t *scheduler)
 										    TRUE == scheduler->continue_running)
 	{
 		scheduler->is_running = PQueuePeek(scheduler->queue);
+		SleepUntilExecution(TaskGetTime(scheduler->is_running));
 		PQueueDequeue(scheduler->queue);
 		if (SCHED_REPEAT == TaskExec(scheduler->is_running))
 		{
@@ -156,7 +171,7 @@ sched_status SchedulerRun(scheduler_t *scheduler)
 		}
 		else /* TaskExec returns SCHED_NO_REPEAT */
 		{
-			TaskDestroy(scheduler->is_running); scheduler->is_running = NULL;
+			TaskDestroy(scheduler->is_running); scheduler->is_running = NULL; /* TODO is this where this should be?*/
 		}
 	}
 	return SCHED_SUCCESS;

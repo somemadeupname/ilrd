@@ -23,6 +23,8 @@ void SchedulerAddRemoveTask_test();
 
 void SchedulerClear_test();
 
+void SchedulerBasicRunAndStop_test();
+
 int main()
 {
 	PREVENT_WARNINGS_FROM_UNUSED_FUNCS_FROM_TESTS_TEMPLATE
@@ -33,7 +35,25 @@ int main()
 	
 	SchedulerClear_test();
 	
+	SchedulerBasicRunAndStop_test();	
+	
 	return 0;
+}
+
+void SchedulerBasicRunAndStop_test()
+{
+	scheduler_t *scheduler = SchedulerCreate();
+	
+	time_t start_time = time(NULL);
+	
+	expect_size_t(SchedulerSize(scheduler),0,"SchedulerSize");
+	
+	/* add five tasks */
+	SchedulerAddTask(scheduler,NULL,PrintSomethingNoRepeat,start_time+1,0);
+	SchedulerAddTask(scheduler,NULL,PrintSomethingNoRepeat,start_time+4,0);
+	SchedulerAddTask(scheduler,NULL,PrintSomethingNoRepeat,5,0);
+	
+	expect_size_t(SchedulerSize(scheduler),3,"SchedulerClear_test");
 }
 
 void SchedulerClear_test()
