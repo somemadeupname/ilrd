@@ -21,7 +21,9 @@ struct pqueue
 static int IsBefore(void *d1, void *d2, const void *pqueue)
 {
 	pqueue_t *non_const_pq = (pqueue_t *)pqueue;
-	assert(NULL != pqueue);
+	
+	assert (NULL != pqueue);
+	
 	return (0 < non_const_pq->cmp(d1, d2, non_const_pq->param));
 }
 
@@ -100,15 +102,7 @@ int PQueueIsEmpty(const pqueue_t *pqueue)
 	assert(NULL != pqueue);
 	return SortedListIsEmpty(pqueue->list);
 }
-
-/*
- * Erase iter from pqueue
- * Param pqueue : pointer to pqueue
- * Param func : is_match function to compare <data>
- * Param data : data to compare
- * Return: void pointer to data of erased iter
- * Errors: none    
- */
+/* erase data if found in pqueue */
 void *PQueueErase(pqueue_t *pqueue, is_not_match func, void *data)
 {
 	sorted_list_iter_t from = {NULL};
@@ -124,7 +118,7 @@ void *PQueueErase(pqueue_t *pqueue, is_not_match func, void *data)
 	data_iter = SortedListFindIf(from,to,func,data);
 	
 	data_to_remove = SortedListGetData(data_iter);
-	if (NULL == data_to_remove)
+	if (SortedListIsSameIter(data_iter), to)
 	{
 		return NULL;
 	}
@@ -146,5 +140,5 @@ void PQueueClear(pqueue_t *pqueue)
 	for (cur = SortedListBegin(pqueue->list);
 		!SortedListIsSameIter(cur,end);
 		cur = SortedListRemove(cur))
-		{ /* Empty Body */}	
+	{ /* Empty Body */ }	
 }

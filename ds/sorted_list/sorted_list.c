@@ -148,7 +148,7 @@ sorted_list_iter_t SortedListFind(const sorted_list_t *list,
 		 list->params->cmp((void *) param, SortedListGetData(cur), list->params->param);
 		 cur = SortedListNext(cur)
 		 )
-		 {/* empty body */}
+	{/* empty body */}
 
 	return cur;
 }                     
@@ -202,11 +202,8 @@ sorted_list_iter_t SortedListFindIf(sorted_list_iter_t from,
                                     sorted_list_is_match func,
                                     const void *data, void *param)
 {
-<<<<<<< HEAD
+
 	patch_t patch_struct = {NULL};
-=======
-	sorted_list_iter_t cur = {NULL};
->>>>>>> 204b63be8ab182d6102072edd2f287ad5ef146b8
 	
 	assert(NULL != from.iter);
 	assert(NULL != func);
