@@ -21,6 +21,7 @@ struct scheduler
 {
 	pqueue_t *queue;
 	task_t *is_running;
+	int continue_running;
 };
 
 /* helper functions */
@@ -60,6 +61,7 @@ scheduler_t *SchedulerCreate(void)
 	}
 	
 	scheduler->is_running = NULL;
+	scheduler->continue_running = 0;
 	
 	return scheduler;
 }
@@ -125,7 +127,7 @@ void SchedulerStop(scheduler_t *scheduler)
 {
 	assert(NULL != scheduler);
 	
-	while(!SchedulerIsEmpty(scheduler) || scheduler->is_running)	
+	scheduler->continue_running = FALSE;
 }
 
 /*
@@ -137,8 +139,10 @@ void SchedulerStop(scheduler_t *scheduler)
 sched_status SchedulerRun(scheduler_t *scheduler)
 {
 	assert(NULL != scheduler);
+	scheduler->continue_running = TRUE;
 	
-	while(!SchedulerIsEmpty(scheduler) || scheduler->is_running)
+	while((!SchedulerIsEmpty(scheduler) || scheduler->is_running) &&
+										    TRUE == scheduler->continue_running)
 	{
 		scheduler->is_running = PQueuePeek(scheduler->queue);
 		PQueueDequeue(scheduler->queue);
@@ -150,7 +154,7 @@ sched_status SchedulerRun(scheduler_t *scheduler)
 				return SCHED_FAIL;
 			}
 		}
-		else /* taskExec returns SCHED_NO_REPEAT */
+		else /* TaskExec returns SCHED_NO_REPEAT */
 		{
 			TaskDestroy(scheduler->is_running); scheduler->is_running = NULL;
 		}
@@ -158,9 +162,10 @@ sched_status SchedulerRun(scheduler_t *scheduler)
 	return SCHED_SUCCESS;
 }
 
-/* helper for run */
-/* return SCHED_SUCCESS if rescheduling worked
- * 		  SCHED_FAIL if failed 									*/
+/* helper for run 
+ * return SCHED_SUCCESS if rescheduling worked
+ * 		  SCHED_FAIL if failed 									
+ */
 static sched_status RescheduleTask(scheduler_t *scheduler, task_t *task)
 {
 	assert(NULL != scheduler);
