@@ -42,7 +42,7 @@ static int TaskCompareTime(void *task1, void *task2,
 	return TaskIsBefore((task_t *)task1,(task_t *)task2,NULL) ? (1) : (-1);
 }
 
-/* helper for run */
+/* helpers for run */
 static sched_status RescheduleTask(scheduler_t *scheduler, task_t *task);
 static void SleepUntilExecution(time_t secs_until_next_execution);
 
@@ -134,13 +134,12 @@ void SchedulerStop(scheduler_t *scheduler)
 /* make sure that sleeps works for the entire duration it's set to */
 static void SleepUntilExecution(time_t secs_until_next_execution)
 {
-	time_t start_time = time(NULL);
-	unsigned int seconds_left = 0;
+/*	time_t start_time = time(NULL);*/
+	unsigned int seconds_left = (unsigned int) secs_until_next_execution;
 	
-	while (time(NULL) > start_time + secs_until_next_execution)
+	while (seconds_left > 0)
 	{
-		seconds_left = time(NULL) - start_time + secs_until_next_execution;
-		sleep(seconds_left);
+		seconds_left = sleep(seconds_left);
 	}
 }
 
@@ -159,7 +158,7 @@ sched_status SchedulerRun(scheduler_t *scheduler)
 										    TRUE == scheduler->continue_running)
 	{
 		scheduler->is_running = PQueuePeek(scheduler->queue);
-		SleepUntilExecution(TaskGetTime(scheduler->is_running));
+		SleepUntilExecution(TaskGetTime(scheduler->is_running)-time(NULL));
 		PQueueDequeue(scheduler->queue);
 		if (SCHED_REPEAT == TaskExec(scheduler->is_running))
 		{

@@ -9,7 +9,6 @@
 #include <assert.h> /* assert */
 
 #include "pqueue.h"
-/*#include "../sorted_list/sorted_list.c"*/
 #include "../sorted_list/sorted_list.h"
 
 #define UNUSED(x) (void)(x)
@@ -123,11 +122,11 @@ void *PQueueErase(pqueue_t *pqueue, is_match func, void *data, void *param)
 	
 	data_iter = SortedListFindIf(from,to,func,data,NULL);
 	
-	data_to_remove = SortedListGetData(data_iter);
 	if (SortedListIsSameIter(data_iter, to))
 	{
 		return NULL;
 	}
+	data_to_remove = SortedListGetData(data_iter);
 	
 	SortedListRemove(data_iter);
 	

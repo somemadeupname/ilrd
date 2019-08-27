@@ -8,13 +8,18 @@
 #define TRUE 1
 #define FALSE 0
 #define UNUSED(x) (void)(x)
-#define PLUS_X_SECS(x) (x += time)
+
+#define INIT_TIME time_t start = 0
+#define START_TIME_MEASURE start = time(NULL)
+#define END_TIME printf("it took %lu seconds.\n", time(NULL)-start)
+#define END_TIME_VAL (time(NULL)-start)
 
 /* Foward Declarations */
 
 /* Helpers */
 void PrintUID(uid_t uid);
 task_status PrintSomethingNoRepeat(void *param);
+task_status PrintSomething4Repeats(void *param);
 
 /*Test Functions*/
 void SchedulerCreateAndDestroy_test(); /* and size and isempty on empty scheduler */
@@ -35,7 +40,7 @@ int main()
 	
 	SchedulerClear_test();
 	
-	SchedulerBasicRunAndStop_test();	
+	SchedulerBasicRunAndStop_test();
 	
 	return 0;
 }
@@ -43,17 +48,25 @@ int main()
 void SchedulerBasicRunAndStop_test()
 {
 	scheduler_t *scheduler = SchedulerCreate();
+	INIT_TIME;
 	
 	time_t start_time = time(NULL);
 	
+	int repeat_interval = 1;
+	
 	expect_size_t(SchedulerSize(scheduler),0,"SchedulerSize");
 	
-	/* add five tasks */
+	/* add three tasks */
+	SchedulerAddTask(scheduler,NULL,PrintSomething4Repeats,start_time+1,repeat_interval);
+	SchedulerAddTask(scheduler,NULL,PrintSomethingNoRepeat,start_time+9,0);
 	SchedulerAddTask(scheduler,NULL,PrintSomethingNoRepeat,start_time+1,0);
-	SchedulerAddTask(scheduler,NULL,PrintSomethingNoRepeat,start_time+4,0);
-	SchedulerAddTask(scheduler,NULL,PrintSomethingNoRepeat,5,0);
 	
 	expect_size_t(SchedulerSize(scheduler),3,"SchedulerClear_test");
+	START_TIME_MEASURE;
+	expect_int(SchedulerRun(scheduler),SCHED_SUCCESS,"SchedulerBasicRunAndStop_test");
+	expect_size_t(END_TIME_VAL, /*4*repeat_interval + 1*/9, "SchedulerBasicRun");
+	
+	SchedulerDestroy(scheduler);
 }
 
 void SchedulerClear_test()
@@ -129,6 +142,20 @@ task_status PrintSomethingNoRepeat(void *param)
 	UNUSED(param);
 	
 	return SCHED_NO_REPEAT;
+}
+
+task_status PrintSomething4Repeats(void *param)
+{
+	static size_t counter;
+	if (4 == counter)
+	{
+		return SCHED_NO_REPEAT;
+	}
+	printf("Print something. counter = %lu.\n", counter);
+	UNUSED(param);
+	++counter;
+	
+	return SCHED_REPEAT;
 }
 /* Print UID*/
 void PrintUID(uid_t uid)
