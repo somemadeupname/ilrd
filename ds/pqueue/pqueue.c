@@ -13,11 +13,16 @@
 
 #define UNUSED(x) (void)(x)
 
+typedef struct params
+{
+	cmp_priority cmp;
+	void *param;
+} params_t;
+
 struct pqueue
 {
 	sorted_list_t *list;
-	cmp_priority cmp;
-	void *param;
+	params_t *params;
 };
 
 /* HELPER FUNCTIONS */
@@ -28,7 +33,7 @@ static int IsBefore(void *d1, void *d2, const void *pqueue)
 	
 	assert (NULL != pqueue);
 	
-	return (0 < non_const_pq->cmp(d1, d2, non_const_pq->param));
+	return (0 < non_const_pq->params->cmp(d1, d2, non_const_pq->params->param));
 }
 
 /* PQUEUE FUNCTIONS */
@@ -48,8 +53,16 @@ pqueue_t *PQueueCreate(cmp_priority is_lower_priority, const void *param)
 		return NULL;
 	}
 	
-	pqueue->cmp = is_lower_priority;
-	pqueue->param = (void *)param;
+	pqueue->params = (params_t *)malloc(sizeof(params_t));
+	if (NULL == pqueue->params)
+	{
+		free(pqueue->list); pqueue->list = NULL;
+		free(pqueue); pqueue = NULL;
+		return NULL;
+	}
+	
+	pqueue->params->cmp = is_lower_priority;
+	pqueue->params->param = (void *)param;
 	
 	return pqueue;	
 }
@@ -59,6 +72,7 @@ void PQueueDestroy(pqueue_t *pqueue)
 	assert(NULL != pqueue);
 	
 	SortedListDestroy(pqueue->list); pqueue->list = NULL;
+	free(pqueue->params); pqueue->params = NULL;
 	free(pqueue); pqueue = NULL;
 }
 
