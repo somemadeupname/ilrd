@@ -23,6 +23,7 @@ struct scheduler
 	pqueue_t *queue;
 	task_t *is_running;
 	int continue_running;
+	int task_kills_itself;
 };
 
 /* helper functions */
@@ -63,6 +64,7 @@ scheduler_t *SchedulerCreate(void)
 	}
 	
 	scheduler->is_running = NULL;
+	scheduler->task_kills_itself = 0;
 	scheduler->continue_running = 0;
 	
 	return scheduler;
@@ -107,6 +109,14 @@ sched_status SchedulerRemoveTask(scheduler_t *scheduler, task_uid_t task_uid)
 	void *task_to_remove = NULL;
 	assert(NULL != scheduler);
 	
+	/* if running task asked to remove itself */
+	/*if (TaskIsMatch(scheduler->is_running, task_uid)) 
+	{
+		TaskDestroy(scheduler->is_running); scheduler->is_running = NULL;
+		return SCHED_SUCCESS;
+	}
+	*/
+	
 	task_to_remove = PQueueErase(scheduler->queue, TaskIsMatch, &task_uid, NULL);
 	
 	if (NULL == task_to_remove)
@@ -134,7 +144,6 @@ void SchedulerStop(scheduler_t *scheduler)
 /* make sure that sleeps works for the entire duration it's set to */
 static void SleepUntilExecution(time_t secs_until_next_execution)
 {
-/*	time_t start_time = time(NULL);*/
 	unsigned int seconds_left = (unsigned int) secs_until_next_execution;
 	
 	while (seconds_left > 0)
@@ -152,10 +161,8 @@ static void SleepUntilExecution(time_t secs_until_next_execution)
 sched_status SchedulerRun(scheduler_t *scheduler)
 {
 	assert(NULL != scheduler);
-	scheduler->continue_running = TRUE;
 	
-	while((!SchedulerIsEmpty(scheduler) || scheduler->is_running) &&
-										    TRUE == scheduler->continue_running)
+	while(!SchedulerIsEmpty(scheduler) && TRUE == scheduler->continue_running)
 	{
 		scheduler->is_running = PQueuePeek(scheduler->queue);
 		SleepUntilExecution(TaskGetTime(scheduler->is_running)-time(NULL));

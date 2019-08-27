@@ -158,7 +158,7 @@ task_status PrintSomething4Repeats(void *param)
 	return SCHED_REPEAT;
 }
 /* Print UID*/
-void PrintUID(uid_t uid)
+static void PrintUID(uid_t uid)
 {
 	printf("PrintUID\n");
 	printf("%lu%lu\n", uid.uid,uid.counter);
