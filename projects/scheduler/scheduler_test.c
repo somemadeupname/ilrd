@@ -17,7 +17,7 @@
 /* Foward Declarations */
 
 /* Helpers */
-void PrintUID(uid_t uid);
+static void PrintUID(uid_t uid);
 task_status PrintSomethingNoRepeat(void *param);
 task_status PrintSomething4Repeats(void *param);
 

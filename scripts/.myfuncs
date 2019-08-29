@@ -19,6 +19,8 @@ alias newfile='bash ~/ran-shieber/scripts/newfile'
 
 # ds directory alias
 alias ds='cd ~/ran-shieber/ds'
+alias sp='cd ~/ran-shieber/system_programming'
+
 alias rm='rm -f'
 
 # myfuncs alias

@@ -9,7 +9,7 @@
 #include <assert.h> /* assert */
 
 #include "pqueue.h"
-#include "../sorted_list/sorted_list.h"
+/*#include "../sorted_list/sorted_list.h"*/
 
 #define UNUSED(x) (void)(x)
 

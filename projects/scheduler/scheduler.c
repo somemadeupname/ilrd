@@ -23,7 +23,6 @@ struct scheduler
 	pqueue_t *queue;
 	task_t *is_running;
 	int continue_running;
-/*	int task_kills_itself;*/
 };
 
 /* helper functions */
@@ -64,7 +63,6 @@ scheduler_t *SchedulerCreate(void)
 	}
 	
 	scheduler->is_running = NULL;
-/*	scheduler->task_kills_itself = 0;*/
 	scheduler->continue_running = 0;
 	
 	return scheduler;
@@ -91,12 +89,9 @@ task_uid_t SchedulerAddTask(scheduler_t *scheduler, void *func_param,
 	
 	task_to_add = TaskCreate(func_param, task_func,
 							 time_in_sec, interval_in_sec);
-	if (NULL == task_to_add)
-	{
-		return BAD_UID;
-	}
 	
-	if (PQUEUE_FAILED == PQueueEnqueue(scheduler->queue, task_to_add))
+	if ((NULL == task_to_add) || (PQUEUE_FAILED ==
+								 PQueueEnqueue(scheduler->queue, task_to_add) ))
 	{
 		return BAD_UID;
 	}
@@ -131,19 +126,15 @@ sched_status SchedulerRemoveTask(scheduler_t *scheduler, task_uid_t task_uid)
 	return SCHED_SUCCESS;
 }
 
-/*
- * Stops executing tasks
- * Param scheduler : scheduler
- * Return: none
- * Errors: none
- */
+/*Stops executing tasks */
 void SchedulerStop(scheduler_t *scheduler)
 {
 	assert(NULL != scheduler);
 	
 	scheduler->continue_running = FALSE;
 }
-/* make sure that sleeps works for the entire duration it's set to */
+/* helper for runnin
+ * makes sure that sleeps works for the entire duration it's set to */
 static void SleepUntilExecution(time_t secs_until_next_execution)
 {
 	unsigned int seconds_left = (unsigned int) secs_until_next_execution;
@@ -154,12 +145,7 @@ static void SleepUntilExecution(time_t secs_until_next_execution)
 	}
 }
 
-/*
- * Start executing tasks
- * Param scheduler : scheduler
- * Return: SCHED_SUCCESS for success, SCHED_FAIL otherwise
- * Errors: if rescheduling failed, stops and returns SCHED_FAIL
- */
+/* Resume\Start executing tasks */
 sched_status SchedulerRun(scheduler_t *scheduler)
 {
 	assert(NULL != scheduler);

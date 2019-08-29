@@ -1,7 +1,7 @@
 #ifndef __OL71_TASK_H
 #define __OL71_TASK_H
 
-#include "../../ds/uid/uid.h" /* uid */
+/*#include "../../ds/uid/uid.h"  uid */
 #include "scheduler.h"
 
 typedef struct task task_t;

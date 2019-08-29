@@ -8,7 +8,7 @@
 #include <stdlib.h> /* malloc, free, sizeof */
 #include <assert.h> /* assert */
 
-#include "../dlist/dlist.c"
+/*#include "../dlist/dlist.c"*/
 #include "sorted_list.h"
 
 typedef struct param
