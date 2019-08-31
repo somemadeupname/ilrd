@@ -3,7 +3,7 @@
 
 #include "scheduler.h"
 #include "task.h"
-#include "/home/rd61/test/test_template.c"
+#include "/home/shieber/git/ran-shieber/scripts/test_template.c"
 
 #define TRUE 1
 #define FALSE 0
@@ -17,7 +17,7 @@
 /* Foward Declarations */
 
 /* Helpers */
-static void PrintUID(uid_t uid);
+/*static void PrintUID(uid_t uid);*/
 task_status PrintSomethingNoRepeat(void *param);
 task_status PrintSomething4Repeats(void *param);
 
@@ -158,8 +158,8 @@ task_status PrintSomething4Repeats(void *param)
 	return SCHED_REPEAT;
 }
 /* Print UID*/
-static void PrintUID(uid_t uid)
-{
-	printf("PrintUID\n");
-	printf("%lu%lu\n", uid.uid,uid.counter);
-}
+/*static void PrintUID(uid_t uid)*/
+/*{*/
+/*	printf("PrintUID\n");*/
+/*	printf("%lu%lu\n", uid.uid,uid.counter);*/
+/*}*/

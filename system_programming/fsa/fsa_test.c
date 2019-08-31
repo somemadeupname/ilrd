@@ -3,7 +3,7 @@
 #include <stdlib.h> /* malloc free */
 
 #include "fsa.h"
-#include "/home/rd61/ran-shieber/scripts/test_template.c"
+#include "/home/shieber/git/ran-shieber/scripts/test_template.c"
 
 /* Forward Declarations */
 void FSAInit_LessThanWord_test();
@@ -15,13 +15,13 @@ int main()
 {
 	PREVENT_WARNINGS_FROM_UNUSED_FUNCS_FROM_TESTS_TEMPLATE
 	
-/*	FSAInit_LessThanWord_test();*/
+	FSAInit_LessThanWord_test();
 	
-/*	FSAInit_WordAligned_test();*/
+	FSAInit_WordAligned_test();
 	
 	FSAInit_MoreThanWord_test();
 	
-/*	FSAAlloc_test();*/
+	FSAAlloc_test();
 	
 	return 0;
 }

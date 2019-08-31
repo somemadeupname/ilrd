@@ -1,7 +1,7 @@
 
 /****************************
  *   Author   : Ran Shieber *
- *   Reviewer : 		    *
+ *   Reviewer : Lila 		 *
  *	 Status   : Sent	    *
  ****************************/
 #include <assert.h>
@@ -9,6 +9,7 @@
 
 #define WORD_SIZE sizeof(size_t)
 #define FSA_START_OFFSET sizeof(fsa_t)
+#define BLOCK_START_OFFSET sizeof(meta_t)
 
 /* Forward Declarations */
 static size_t AlignBlockSize(size_t block_size);
@@ -23,21 +24,11 @@ struct fsa
 	size_t free_block_offset;
 };
 
-/*
- * Initialize new fixed size allocator
- * @memory : allocated memory to be used as fixed sized allocator
- * @memory_size : size of mem in bytes
- * @block_size  : size of fixed block in bytes
- * Return: pointer to fixed sized allocator
- * Errors: if @memory_size is too small for 1 block of size @block_size, 
- *         return NULL
- *   	   if @block_size is 0, behavior is undefined
- *		   if @memory is not aligned, behavior is undefined
- */
+/* initialize a fixed sized allocator */
 fsa_t *FSAInit(void *memory, size_t memory_size, size_t block_size)
 {
 	fsa_t *fsa_pool = NULL;
-	meta_t *metadata = NULL;
+	meta_t *cur_metadata = NULL;
 	size_t block_offset = block_size;
 	
 	assert(NULL != memory);
@@ -54,16 +45,16 @@ fsa_t *FSAInit(void *memory, size_t memory_size, size_t block_size)
 	
 	fsa_pool->free_block_offset = FSA_START_OFFSET;
 
-	metadata = (meta_t *)((char *)fsa_pool + FSA_START_OFFSET);
+	cur_metadata = (meta_t *)((char *)fsa_pool + FSA_START_OFFSET);
 	
 	for ( block_offset = block_size
 		; block_offset < memory_size - block_size /* check extreme values for all alignments TODO */
-		; block_offset += block_size, metadata = (meta_t *)((char *) metadata + block_size)
+		; block_offset += block_size, cur_metadata = (meta_t *)((char *) cur_metadata + block_size)
 		)
 	{
-		metadata->block = (block_offset * block_size);
+		cur_metadata->block = (block_offset * block_size + BLOCK_START_OFFSET);
 	}
-	metadata->block = 0; /* when all blocks are filled pool reaches 0 blocks */
+	cur_metadata->block = 0; /* when all blocks are filled pool reaches 0 blocks */
 	
 	return fsa_pool;
 }
@@ -105,17 +96,12 @@ static void SwapBlockInfo(fsa_t *fsa_pool, void *allocated_return_address)
 	
 	temp = fsa_pool->free_block_offset;
 	
-	fsa_pool->free_block_offset = *(size_t *) allocated_return_address;
+	fsa_pool->free_block_offset = ((meta_t *)allocated_return_address)->block;
 
-	allocated_return_address = &temp;
+	((meta_t *)allocated_return_address)->block = temp;
 }
 
-/*
- * Allocate memory block in fixed size allocator
- * @fsa_pool : fixed sized allocator
- * Return: pointer to allocated memory
- * Errors: if fsa is full, return NULL
- */
+/* Allocate memory block in fixed size allocator */
 void *FSAAlloc(fsa_t *fsa_pool)
 {
 	void *allocated_return_address = NULL;
@@ -131,21 +117,41 @@ void *FSAAlloc(fsa_t *fsa_pool)
 	
 	SwapBlockInfo(fsa_pool, allocated_return_address);
 	
-	return allocated_return_address;
+	return (char *)allocated_return_address + BLOCK_START_OFFSET;
 }
 
-/*
- * Count number of free blocks in fixed size allocator
- * @fsa_pool  : fixed sized allocator
- * Return: number of free blocks in fsa_pool
- * Errors: none
- */
+/* Free memory block in fixed size allocator */
+void FSAFree(void *block_to_free)
+{
+	char *cur_block = (char *)block_to_free;
+	void *temp_block = NULL;
+	
+	if (NULL == block_to_free)
+	{
+		return;
+	}
+	
+	cur_block -= BLOCK_START_OFFSET; /* get it to the start of the metadata */
+	temp_block = (char *)cur_block - ((meta_t *)cur_block)->block;
+	
+	SwapBlockInfo((fsa_t *)temp_block, &((meta_t *)cur_block)->block);	
+}
+
+/* Count number of free blocks in fixed size allocator */
 size_t FSACountFree(const fsa_t *fsa_pool)
 {
 	size_t num_free_blocks = 0;
+	meta_t *cur_block = NULL;
+	
 	assert(NULL != fsa_pool);
 	
-	
+	for (num_free_blocks = 0,
+	     cur_block = (meta_t *)((char *)fsa_pool + fsa_pool->free_block_offset);
+	     0 != cur_block->block;
+	     ++num_free_blocks,
+	     cur_block = (meta_t *)((char *)fsa_pool + cur_block->block)
+	     )
+	     {/* empty body */}	
 	
 	return num_free_blocks;
 }

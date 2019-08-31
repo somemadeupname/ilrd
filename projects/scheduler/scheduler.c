@@ -11,7 +11,7 @@
 
 #include "scheduler.h"
 #include "task.h"
-/*#include "../../ds/pqueue/pqueue.c"*/
+#include "pqueue.h"
 
 #define TRUE 1
 #define FALSE 0
@@ -133,8 +133,8 @@ void SchedulerStop(scheduler_t *scheduler)
 	
 	scheduler->continue_running = FALSE;
 }
-/* helper for runnin
- * makes sure that sleeps works for the entire duration it's set to */
+/* helper for run
+ * makes sure that sleep works for the entire duration it's set to */
 static void SleepUntilExecution(time_t secs_until_next_execution)
 {
 	unsigned int seconds_left = (unsigned int) secs_until_next_execution;
@@ -200,6 +200,7 @@ static sched_status RescheduleTask(scheduler_t *scheduler, task_t *task)
 		TaskDestroy(scheduler->is_running); scheduler->is_running = NULL;
 		return SCHED_FAIL;
 	}
+	
 	return SCHED_SUCCESS;
 }
 
