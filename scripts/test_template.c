@@ -46,31 +46,3 @@ static void expect_size_t(size_t result, size_t expected_result, char *func_name
 		printf("Expected: \t%lu\nActual: \t%lu\n", expected_result, result);
 	}	
 }
-/*
-static void PrintList(const dlist_t *dlist)
-{
-	size_t iter_index = 0;
-	dlist_iter_t cur_iter = DListBegin(dlist);
-	while (DListEnd(dlist) != cur_iter)
-	{
-		printf("[n%lu. data: %d]--", iter_index, *(int *)cur_iter->data);
-		cur_iter = cur_iter->next;
-		++iter_index;
-	}
-	printf("\n");
-}
-
-int *GenerateIntLinkedList(dlist_t *list, dlist_iter_t *iter, int size,
-																int *data_array)
-{
-	int index = size - 1;
-	data_array = (int *)malloc(sizeof(int)*size);
-	while (index >= 0)
-	{
-		data_array[index] = index;
-		DListInsert(list, DListBegin(list),&data_array[index]);
-		--index;
-	}
-	return data_array;
-}
-*/
