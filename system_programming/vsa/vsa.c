@@ -23,6 +23,13 @@ typedef struct header
     #endif /* _NDEBUG */
 } header_t;
 
+
+/* helper for VSALargestChunk */
+void UpdateFreeHeader()
+{
+	
+}
+
 /* Find the largest contiguous chunk of free memory */
 size_t VSALargestChunk(vsa_t *vsa_pool)
 {
