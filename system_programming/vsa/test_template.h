@@ -12,3 +12,7 @@
 void expect_int(int result, int expected_result, char *func_name);
 
 void expect_size_t(size_t result, size_t expected_result, char *func_name);
+
+void expect_NULL(void *pointer, char *func_name);
+
+void expect_Not_NULL(void *pointer, char *func_name);
