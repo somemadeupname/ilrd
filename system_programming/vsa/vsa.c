@@ -44,11 +44,11 @@ size_t VSALargestChunk(vsa_t *vsa_pool)
 	{
 		if (FALSE == cur_header->is_free)
 		{
-			cur_header = (header_t *)((char *)cur_header + cur_header->bytes_of_block);
+			cur_header = (header_t *)((char *)cur_header + abs(cur_header->bytes_of_block));
 		}
 		for ( ;
 			 cur_header->is_free;
-		     cur_header = (header_t *)((char *)cur_header + cur_header->bytes_of_block),
+		     cur_header = (header_t *)((char *)cur_header + abs(cur_header->bytes_of_block)),
 		     cur_chunk_size += cur_header->bytes_of_block
 		    )
 		{ /* empty body */}
