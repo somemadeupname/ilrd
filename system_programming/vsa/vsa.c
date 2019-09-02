@@ -10,6 +10,9 @@
 
 #include "vsa.h"
 
+#define FALSE 0
+#define TRUE 1
+
 #define WORD sizeof(size_t)
 #define END_OF_MEMORY 0xDEADBEEFl
 #define VSA_MIN_MEMORY_SIZE (4*WORD) /*TODO move this to init? and use sizeof type?*/
@@ -20,14 +23,15 @@
 
 /* Forward declarations */
 static int IsAddressWordAligned(void *address);
+static void* AlignedEndAddress(void *address, size_t memory_size);
 
-typedef struct header
+struct vsa
 {
 	long bytes_of_block;
 	#ifndef NDEBUG
     long specific_identifier;
     #endif /* _NDEBUG */
-} header_t;
+};
 
 /*
  * Initialize variable size allocator
@@ -41,28 +45,26 @@ typedef struct header
 vsa_t *VSAInit(void *memory, size_t memory_size)
 {
 	
-	vsa_t *vsa = NULL;
+	vsa_t *vsa = memory;
 	vsa_t *end_vsa = NULL;
 	
-	if (!IsAddressWordAligned(memory))
+	if (FALSE == IsAddressWordAligned(memory))
 	{
 		return NULL;
 	}
 	
 	assert(memory_size > VSA_MIN_MEMORY_SIZE);
 	
-	vsa = (header_t *) header;
-	
 	vsa->bytes_of_block = memory_size;
 	
 	#ifndef NDEBUG
-    long specific_identifier = UNALLOCATED_POINTER;
+    vsa->specific_identifier = UNALLOCATED_POINTER;
     #endif /* _NDEBUG */
     
-    end_vsa += (header_t *)((char *) vsa + memory_size);
+    end_vsa = (vsa_t *)((char *) vsa + memory_size);
     if (FALSE == IsAddressWordAligned(end_vsa))
     {
-    	end_vsa = (vsa_t *)AlignedEndAddress(end_vsa);
+    	end_vsa = (vsa_t *)AlignedEndAddress(end_vsa, memory_size);
     }
     
     end_vsa->bytes_of_block = END_OF_MEMORY;
@@ -76,10 +78,10 @@ static int IsAddressWordAligned(void *address)
 	return !((uintptr_t) address % WORD);
 }
 
-/* helper for init to check if address is WORD-aligned */
+/* helper which finds the aligned address at the end of the alloced memory */
 static void* AlignedEndAddress(void *address, size_t memory_size)
 {
-	return (char *)address - memory_size % WORD;
+	return (char *)address - memory_size % WORD - WORD;
 }
 
 /* helper for VSALargestChunk */
@@ -93,7 +95,7 @@ size_t VSALargestChunk(vsa_t *vsa_pool)
 {
 	size_t cur_chunk_size = 0;
 	size_t largest_chunk_size = 0;
-	header_t *cur_header = (header_t *)vsa_pool;
+	vsa_t *cur_header = (vsa_t *)vsa_pool;
 		
 	assert(NULL != vsa_pool);
 	
@@ -102,8 +104,8 @@ size_t VSALargestChunk(vsa_t *vsa_pool)
 	{
 		
 		for ( ;
-		     cur_header = (header_t *)((char *)cur_header + abs(cur_header->bytes_of_block)),
-		     cur_chunk_size += cur_header->bytes_of_block
+		     cur_header = (vsa_t *)((char *)cur_header + abs(cur_header->bytes_of_block)),
+		     cur_chunk_size += cur_header->bytes_of_block;
 		    )
 		{ /* empty body */}
 		if (largest_chunk_size < cur_chunk_size)
