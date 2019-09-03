@@ -1,11 +1,12 @@
 
 /****************************
  *   Author   : Ran Shieber *
- *   Reviewer : 		    *
+ *   Reviewer : Hila 	    *
  *	 Status   : Sent	    *
  ****************************/
+ 
 #include <assert.h> /* assert */
-#include <stdlib.h> /* abs */
+#include <stdlib.h> /* labs */
 #include <stdint.h> /* uintptr_t */
 
 #include "vsa.h"
@@ -19,6 +20,7 @@
 #ifndef NDEBUG
 #define VSA_MIN_MEMORY_SIZE (4*WORD)
 #else
+/* for potential future use. not relevant for now */
 #define VSA_MIN_MEMORY_SIZE (3*WORD)
 #endif
 
@@ -28,11 +30,11 @@
 
 /* Forward declarations */
 static int IsAddressWordAligned(const void *address);
-static void* AlignedEndAddress(void *address, size_t memory_size);
 static vsa_t *NextChunk(const vsa_t* vsa_pool);
 static int IsChunkFree(const vsa_t *vsa_pool);
 static long ChunkSize(const vsa_t *vsa_pool);
 static long AlignedBytes(long bytes_to_alloc);
+static size_t GetSizeOfCurrentChunk(vsa_t *vsa_pool);
 
 struct vsa
 {
@@ -42,15 +44,7 @@ struct vsa
 	long bytes_of_block;
 };
 
-/*
- * Initialize variable size allocator
- * @memory : allocated memory to be used as variable sized allocator
- * @memory_size : size of memory in bytes must be at least VSA_MIN_MEMORY_SIZE
- * Return: pointer to variable size allocator
- * Errors: if @memory is not word-aligned, return NULL
- * Note: in DEBUG version, @memory_size must be greater than 4 * WORD
- * 		 in RELEASE version, @memory_size must be greater than 3 * WORD
- */
+/* Initialize variable size allocator */
 vsa_t *VSAInit(void *memory, size_t memory_size)
 {
 	
@@ -64,12 +58,13 @@ vsa_t *VSAInit(void *memory, size_t memory_size)
 	
 	assert(memory_size > VSA_MIN_MEMORY_SIZE);
 	
-	/* decrease by sizes of metadata and END_OF_MEMORY */
-	if (memory_size != AlignedBytes(memory_size))
+	/* align memory_size and decrease by sizes of metadata and END_OF_MEMORY */
+	if (memory_size != (size_t) AlignedBytes(memory_size))
 	{
 		memory_size = AlignedBytes(memory_size) - WORD;
 	}
 	
+	/* set number of free bytes and subtract sizes of END and START chunks */
 	vsa->bytes_of_block = memory_size - sizeof(vsa_t) - sizeof(vsa_t);
 	
 	#ifndef NDEBUG
@@ -77,40 +72,13 @@ vsa_t *VSAInit(void *memory, size_t memory_size)
     #endif /* _NDEBUG */
     
     end_vsa = (vsa_t *)((char *)vsa + memory_size - sizeof(vsa_t));
-
-/*   	end_vsa = (vsa_t *)AlignedEndAddress(end_vsa, memory_size);*/
     
     end_vsa->bytes_of_block = END_OF_MEMORY;
     
     return vsa;
 }
 
-/************************
-*						*
-*	  HELPER FUNCS		*
-*						*
-************************/
-
-/* helper for init to check if address is WORD-aligned */
-static int IsAddressWordAligned(const void *address)
-{
-	return !((uintptr_t) address % WORD);
-}
-
-/* helper which finds the aligned address at the end of the alloced memory */
-static void* AlignedEndAddress(void *address, size_t memory_size)
-{
-	return (char *)address - memory_size % WORD - WORD;
-}
-
-/*
- * Allocate memory block in variable size allocator
- * @ vsa_pool : variable sized allocator
- * @ bytes_to_alloc : num of bytes to allocate
- * Return: pointer to allocated memory
- * Errors: if bytes_to_alloc is larger than largest free chunk in vsa, 
- *		   returns NULL
- */
+/*Allocate memory block in variable size allocator */
 void *VSAAlloc(vsa_t *vsa_pool, size_t bytes_to_alloc)
 {
 	void *allocated_address = NULL;
@@ -122,22 +90,18 @@ void *VSAAlloc(vsa_t *vsa_pool, size_t bytes_to_alloc)
 	
 	bytes_to_alloc = AlignedBytes(bytes_to_alloc);
 	
-	if (bytes_to_alloc > VSALargestChunk(vsa_pool) )
-	/* TODO should this be in general flow? optimization */
-	{
-		return NULL;
-	}
-	
 	for (
 		 cur_chunk = vsa_pool;
 		 cur_chunk->bytes_of_block != END_OF_MEMORY;
 		 cur_chunk = NextChunk(cur_chunk)
 		)
 	{
-		if (IsChunkFree(cur_chunk) && (ChunkSize(cur_chunk) >= (long) bytes_to_alloc))
+		if (IsChunkFree(cur_chunk) &&
+								(ChunkSize(cur_chunk) >= (long) bytes_to_alloc))
 		{
 			vsa_t *next_chunk = NULL;
 			
+			/* set aside size which is left after allocation */
 			long excess_size = cur_chunk->bytes_of_block - bytes_to_alloc;
 			
 			cur_chunk->bytes_of_block = -bytes_to_alloc;
@@ -145,13 +109,16 @@ void *VSAAlloc(vsa_t *vsa_pool, size_t bytes_to_alloc)
 			/* set next free chunk */
 			next_chunk = NextChunk(cur_chunk);
 			
-			next_chunk->bytes_of_block = excess_size - sizeof(vsa_t);
+			if (0 < excess_size - (long) sizeof(vsa_t))
+			{
+				next_chunk->bytes_of_block = excess_size - sizeof(vsa_t);
+			}
 			
 			#ifndef NDEBUG
 		    cur_chunk->specific_identifier = POINTER_TO_LEGIT_ADDRESS;
 		    #endif /* _NDEBUG */
 		    
-		    allocated_address = cur_chunk + sizeof(vsa_t);
+		    allocated_address = (char *)cur_chunk + sizeof(vsa_t);
 		    break;
 		}
 	}
@@ -159,77 +126,31 @@ void *VSAAlloc(vsa_t *vsa_pool, size_t bytes_to_alloc)
 	return allocated_address;
 }
 
-/* helper for alloc
- *
- *
- */
-static vsa_t *NextChunk(const vsa_t* vsa_pool)
+/* Free block starting in @address_to_free from variable size allocator */
+void VSAFree(void *address_to_free)
 {
-	return (vsa_t *)((char *)vsa_pool + abs(vsa_pool->bytes_of_block) + sizeof(vsa_t));
-}
-
-/* helper for alloc
- *
- *
- */
-static int IsChunkFree(const vsa_t *vsa_pool)
-{
-	return vsa_pool->bytes_of_block > 0;
-}
-
-/* helper for alloc
- *
- *
- */
-static long ChunkSize(const vsa_t *vsa_pool)
-{
-	return vsa_pool->bytes_of_block;
-}
-
-/* helper for alloc */
-static long AlignedBytes(long bytes_to_alloc)
-{
-	long aligned_bytes = bytes_to_alloc;
-	int remainder = (bytes_to_alloc % WORD);
-	if (0 != remainder)
-	{
-		aligned_bytes += WORD - remainder;
-	}
-	return aligned_bytes;
-}
-
-
-/* helper for VSALargestChunk */
-size_t GetSizeOfCurrentChunk(vsa_t *vsa_pool)
-{
-	size_t size_of_current_chunk = 0;
-	vsa_t *first_chunk = vsa_pool;
-	vsa_t *cur_chunk = first_chunk;
+	vsa_t *chunk_meta = NULL;
 	
-	assert(NULL != vsa_pool);
-	
-	for (cur_chunk = NextChunk(vsa_pool);
-		 cur_chunk->bytes_of_block != END_OF_MEMORY && IsChunkFree(cur_chunk);
-		 cur_chunk = NextChunk(cur_chunk)
-		)
+	if (NULL == address_to_free)
 	{
-		size_of_current_chunk += cur_chunk->bytes_of_block + sizeof(vsa_t);
+		return;
 	}
 	
-	first_chunk->bytes_of_block += size_of_current_chunk;
-
-	return first_chunk->bytes_of_block;
+    /* get to the meta data for the given chunk */
+    chunk_meta = (vsa_t *)((char *)address_to_free - sizeof(vsa_t));
+    
+	#ifndef NDEBUG
+    if (POINTER_TO_LEGIT_ADDRESS != *(long *)chunk_meta)
+    {
+    	return;
+    }
+    #endif /* _NDEBUG */
+    
+    chunk_meta->bytes_of_block = labs(ChunkSize(chunk_meta));
 }
 
 
 /* Find the largest contiguous chunk of free memory */
-
-/*
- * Find the largest continuous chunk of free memory
- * @vas_pool : vsa to count
- * Return: Size in bytes of the largest continuous chunk of free memory
- * Errors: none
- */
 size_t VSALargestChunk(vsa_t *vsa_pool)
 {
 	size_t size_of_largest_chunk = 0;
@@ -238,7 +159,8 @@ size_t VSALargestChunk(vsa_t *vsa_pool)
 
 	assert(NULL != vsa_pool);
 	
-	for (cur_chunk = vsa_pool;
+	for (
+		 cur_chunk = vsa_pool;
 		 cur_chunk->bytes_of_block != END_OF_MEMORY;
 		 cur_chunk = NextChunk(cur_chunk)
 		)
@@ -257,21 +179,70 @@ size_t VSALargestChunk(vsa_t *vsa_pool)
 	return size_of_largest_chunk;
 }
 
+/************************
+*						*
+*	  HELPER FUNCS		*
+*						*
+************************/
 
+/* helper for init to check if address is WORD-aligned */
+static int IsAddressWordAligned(const void *address)
+{
+	return !((uintptr_t) address % WORD);
+}
 
+/* helper for alloc - returns next chunk */
+static vsa_t *NextChunk(const vsa_t* vsa_pool)
+{
+	return (vsa_t *)((char *)vsa_pool + labs(vsa_pool->bytes_of_block)
+															   + sizeof(vsa_t));
+}
 
+/* helper for alloc - checks if chunk is free */
+static int IsChunkFree(const vsa_t *vsa_pool)
+{
+	return (vsa_pool->bytes_of_block > 0);
+}
 
+/* helper for alloc - gets chunk size */
+static long ChunkSize(const vsa_t *vsa_pool)
+{
+	return vsa_pool->bytes_of_block;
+}
 
+/* helper for alloc - returns number of WORD-aligned bytes */
+static long AlignedBytes(long bytes_to_alloc)
+{
+	long aligned_bytes = bytes_to_alloc;
+	int remainder = (bytes_to_alloc % WORD);
+	if (0 != remainder)
+	{
+		aligned_bytes += WORD - remainder;
+	}
+	
+	return aligned_bytes;
+}
 
+/* helper for VSALargestChunk - returns the size of the current chunk */
+static size_t GetSizeOfCurrentChunk(vsa_t *vsa_pool)
+{
+	size_t size_of_current_chunk = 0;
+	vsa_t *first_chunk = vsa_pool;
+	vsa_t *cur_chunk = first_chunk;
+	
+	assert(NULL != vsa_pool);
+	
+	for (
+		 cur_chunk = NextChunk(vsa_pool);
+		 cur_chunk->bytes_of_block != END_OF_MEMORY && IsChunkFree(cur_chunk);
+		 cur_chunk = NextChunk(cur_chunk)
+		)
+	{
+		size_of_current_chunk += cur_chunk->bytes_of_block + sizeof(vsa_t);
+	}
+	
+	/* updates the size of the chunk to include size of the next free blocks */
+	first_chunk->bytes_of_block += size_of_current_chunk;
 
-
-
-
-
-
-
-
-
-
-
-
+	return first_chunk->bytes_of_block;
+}

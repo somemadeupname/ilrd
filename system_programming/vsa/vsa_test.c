@@ -15,6 +15,10 @@ void VSAInit_EndIsAligned_test();
 void VSAInit_EndIsNotAligned_test();
 
 void VSAAlloc_Sanity_test();
+void VSAAlloc_AllocExactCapacity_test();
+void VSAAlloc_AllocWhenFull_test();
+
+void VSAFree_Naive_test();
 
 int main()
 {
@@ -30,27 +34,72 @@ int main()
 	
 	VSAAlloc_Sanity_test();
 	
+	VSAAlloc_AllocExactCapacity_test();
+	
+	VSAFree_Naive_test();
+	
 	return 0;
+}
+
+void VSAFree_Naive_test()
+{
+	size_t memory_size = 280;
+	int *i = (int *)malloc(memory_size);
+	void *alloced_address = NULL;
+	
+	vsa_t *new_vsa = VSAInit(i, memory_size);
+	
+	alloced_address = VSAAlloc(new_vsa, 248);
+
+	VSAFree(alloced_address);
+	
+	VSAFree(alloced_address);	
+	
+	alloced_address = VSAAlloc(new_vsa, 248);
+
+	free(i);	
+	
+}
+
+void VSAAlloc_AllocExactCapacity_test()
+{
+	size_t memory_size = 280;
+	int *i = (int *)malloc(memory_size);
+	
+	vsa_t *new_vsa = VSAInit(i,memory_size);
+	
+	void *alloced_address = VSAAlloc(new_vsa,248);
+	
+	expect_Not_NULL(alloced_address, "VSAAlloc_AllocExactCapacity_test1" );
+	
+	alloced_address = VSAAlloc(new_vsa,1);
+	
+	expect_NULL(alloced_address, "VSAAlloc_AllocExactCapacity_test2" );
+	
+	UNUSED(new_vsa);
+	
+	free(i);
 }
 
 void VSAAlloc_Sanity_test()
 {
 	size_t memory_size = 170;
 	int *i = (int *) malloc (memory_size);
+	void *alloced_address = NULL;
 	
-	vsa_t *new_vsa = VSAInit(i,memory_size);
+	vsa_t *new_vsa = VSAInit(i, memory_size);
 	
-	void *alloced_address = VSAAlloc(new_vsa,70);
+	alloced_address = VSAAlloc(new_vsa, 70);
 	
-	expect_Not_NULL(alloced_address, "VSAAlloc_Sanity_test1" );
+	expect_Not_NULL(alloced_address, "VSAAlloc_Sanity_test1");
 	
-	alloced_address = VSAAlloc(new_vsa,200);
+	alloced_address = VSAAlloc(new_vsa, 200);
 	
-	expect_NULL(alloced_address, "VSAAlloc_Sanity_test2" );
+	expect_NULL(alloced_address, "VSAAlloc_Sanity_test2");
 	
-	alloced_address = VSAAlloc(new_vsa,30);
+	alloced_address = VSAAlloc(new_vsa, 30);
 	
-	expect_Not_NULL(alloced_address, "VSAAlloc_Sanity_test3" );	
+	expect_Not_NULL(alloced_address, "VSAAlloc_Sanity_test3");	
 	
 	UNUSED(new_vsa);
 	
