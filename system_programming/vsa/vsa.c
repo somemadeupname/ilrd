@@ -65,6 +65,11 @@ vsa_t *VSAInit(void *memory, size_t memory_size)
 	assert(memory_size > VSA_MIN_MEMORY_SIZE);
 	
 	/* decrease by sizes of metadata and END_OF_MEMORY */
+	if (memory_size != AlignedBytes(memory_size))
+	{
+		memory_size = AlignedBytes(memory_size) - WORD;
+	}
+	
 	vsa->bytes_of_block = memory_size - sizeof(vsa_t) - sizeof(vsa_t);
 	
 	#ifndef NDEBUG
@@ -73,7 +78,7 @@ vsa_t *VSAInit(void *memory, size_t memory_size)
     
     end_vsa = (vsa_t *)((char *)vsa + memory_size - sizeof(vsa_t));
 
-   	end_vsa = (vsa_t *)AlignedEndAddress(end_vsa, memory_size);
+/*   	end_vsa = (vsa_t *)AlignedEndAddress(end_vsa, memory_size);*/
     
     end_vsa->bytes_of_block = END_OF_MEMORY;
     
@@ -160,7 +165,7 @@ void *VSAAlloc(vsa_t *vsa_pool, size_t bytes_to_alloc)
  */
 static vsa_t *NextChunk(const vsa_t* vsa_pool)
 {
-	return (vsa_t *)((char *)vsa_pool + abs(vsa_pool->bytes_of_block));
+	return (vsa_t *)((char *)vsa_pool + abs(vsa_pool->bytes_of_block) + sizeof(vsa_t));
 }
 
 /* helper for alloc
@@ -203,7 +208,7 @@ size_t GetSizeOfCurrentChunk(vsa_t *vsa_pool)
 	
 	assert(NULL != vsa_pool);
 	
-	for (cur_chunk = vsa_pool;
+	for (cur_chunk = NextChunk(vsa_pool);
 		 cur_chunk->bytes_of_block != END_OF_MEMORY && IsChunkFree(cur_chunk);
 		 cur_chunk = NextChunk(cur_chunk)
 		)
@@ -211,9 +216,9 @@ size_t GetSizeOfCurrentChunk(vsa_t *vsa_pool)
 		size_of_current_chunk += cur_chunk->bytes_of_block + sizeof(vsa_t);
 	}
 	
-	first_chunk->bytes_of_block = size_of_current_chunk - sizeof(vsa_t);
+	first_chunk->bytes_of_block += size_of_current_chunk;
 
-	return size_of_current_chunk - sizeof(vsa_t);
+	return first_chunk->bytes_of_block;
 }
 
 
@@ -240,7 +245,7 @@ size_t VSALargestChunk(vsa_t *vsa_pool)
 	{
 		if (ChunkSize(cur_chunk) > 0)
 		{
-			size_of_current_chunk = GetSizeOfCurrentChunk(vsa_pool);
+			size_of_current_chunk = GetSizeOfCurrentChunk(cur_chunk);
 		}
 		
 		if (size_of_current_chunk > size_of_largest_chunk)

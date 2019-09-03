@@ -41,19 +41,18 @@ void VSAAlloc_Sanity_test()
 	vsa_t *new_vsa = VSAInit(i,memory_size);
 	
 	void *alloced_address = VSAAlloc(new_vsa,70);
-	/*
+	
 	expect_Not_NULL(alloced_address, "VSAAlloc_Sanity_test1" );
 	
 	alloced_address = VSAAlloc(new_vsa,200);
-
+	
 	expect_NULL(alloced_address, "VSAAlloc_Sanity_test2" );
 	
-	alloced_address = VSAAlloc(new_vsa,101);
+	alloced_address = VSAAlloc(new_vsa,30);
 	
 	expect_Not_NULL(alloced_address, "VSAAlloc_Sanity_test3" );	
 	
 	UNUSED(new_vsa);
-	*/
 	
 	free(i);
 }
