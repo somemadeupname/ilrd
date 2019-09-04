@@ -20,6 +20,8 @@ void VSAAlloc_AllocWhenFull_test();
 
 void VSAFree_Naive_test();
 
+void VSALargestChunk_test();
+
 int main()
 {
 	PREVENT_WARNINGS_FROM_UNUSED_FUNCS_FROM_TESTS_TEMPLATE
@@ -38,20 +40,52 @@ int main()
 	
 	VSAFree_Naive_test();
 	
+	VSALargestChunk_test();
+	
 	return 0;
 }
-
-void VSAFree_Naive_test()
+void VSALargestChunk_test()
 {
-	size_t memory_size = 280;
+	size_t memory_size = 264;
 	int *i = (int *)malloc(memory_size);
 	void *alloced_address = NULL;
 	
 	vsa_t *new_vsa = VSAInit(i, memory_size);
 	
+	#ifndef NDEBUG
+	memory_size = 280;
+    #endif /* _NDEBUG */
+	
 	alloced_address = VSAAlloc(new_vsa, 248);
 
 	VSAFree(alloced_address);
+	
+	VSAFree(alloced_address);	
+	
+	alloced_address = VSAAlloc(new_vsa, 248);
+
+	free(i);	
+}
+
+void VSAFree_Naive_test()
+{
+	size_t memory_size = 264;
+	int *i = (int *)malloc(memory_size);
+	void *alloced_address = NULL;
+	
+	vsa_t *new_vsa = VSAInit(i, memory_size);
+	
+	#ifndef NDEBUG
+	memory_size = 280;
+    #endif /* _NDEBUG */
+	
+	alloced_address = VSAAlloc(new_vsa, 248);
+
+	expect_size_t(VSALargestChunk(new_vsa),0,"VSAFree_Naive_test1");
+	
+	VSAFree(alloced_address);
+	
+	expect_size_t(VSALargestChunk(new_vsa),248,"VSAFree_Naive_test2");
 	
 	VSAFree(alloced_address);	
 	
@@ -72,7 +106,7 @@ void VSAAlloc_AllocExactCapacity_test()
 	
 	expect_Not_NULL(alloced_address, "VSAAlloc_AllocExactCapacity_test1" );
 	
-	alloced_address = VSAAlloc(new_vsa,1);
+	alloced_address = VSAAlloc(new_vsa,16);
 	
 	expect_NULL(alloced_address, "VSAAlloc_AllocExactCapacity_test2" );
 	
