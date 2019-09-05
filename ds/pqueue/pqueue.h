@@ -2,7 +2,6 @@
 #define __OL71_PQUEUE_H
 
 #include <stddef.h> /* size_t */
-#include "sorted_list.h"
 
 typedef struct pqueue pqueue_t;
 
