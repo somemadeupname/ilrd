@@ -11,7 +11,7 @@
 
 #include "scheduler.h"
 #include "task.h"
-#include "pqueue.h"
+#include "../../ds/pqueue/pqueue.h"
 
 #define TRUE 1
 #define FALSE 0

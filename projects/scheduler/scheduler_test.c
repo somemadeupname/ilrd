@@ -3,7 +3,7 @@
 
 #include "scheduler.h"
 #include "task.h"
-#include "/home/shieber/git/ran-shieber/scripts/test_template.c"
+#include "/home/student0/ran-shieber/scripts/test_template.c"
 
 #define TRUE 1
 #define FALSE 0

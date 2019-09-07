@@ -50,19 +50,17 @@ vsa_t *VSAInit(void *memory, size_t memory_size)
 	
 	vsa_t *vsa = memory;
 	vsa_t *end_vsa = NULL;
+
+	assert(NULL != memory);
+	assert(memory_size > VSA_MIN_MEMORY_SIZE);
 	
 	if (FALSE == IsAddressWordAligned(memory))
 	{
 		return NULL;
-	}
+	}	
 	
-	assert(memory_size > VSA_MIN_MEMORY_SIZE);
-	
-	/* align memory_size and decrease by sizes of metadata and END_OF_MEMORY */
-	if (memory_size != (size_t) AlignedBytes(memory_size))
-	{
-		memory_size = AlignedBytes(memory_size) - WORD;
-	}
+	/* align memory_size  */
+	memory_size -= memory_size % WORD;
 	
 	/* set number of free bytes and subtract sizes of END and START chunks */
 	vsa->bytes_of_block = memory_size - sizeof(vsa_t) - sizeof(vsa_t);
@@ -86,7 +84,7 @@ void *VSAAlloc(vsa_t *vsa_pool, size_t bytes_to_alloc)
 			
 	assert(NULL != vsa_pool);
 	assert(POINTER_TO_LEGIT_ADDRESS == vsa_pool->specific_identifier);
-	assert(0 != bytes_to_alloc);
+	assert(0 != bytes_to_alloc);	
 	
 	bytes_to_alloc = AlignedBytes(bytes_to_alloc);
 	
@@ -99,31 +97,35 @@ void *VSAAlloc(vsa_t *vsa_pool, size_t bytes_to_alloc)
 		if (IsChunkFree(cur_chunk) &&
 								(ChunkSize(cur_chunk) >= (long) bytes_to_alloc))
 		{
-			vsa_t *next_chunk = NULL;
 			
 			/* set aside size which is left after allocation */
 			long excess_size = cur_chunk->bytes_of_block - bytes_to_alloc;
 			
 			cur_chunk->bytes_of_block = -bytes_to_alloc;
 			
-			/* set next free chunk */
-			next_chunk = NextChunk(cur_chunk);
-			
-			if (0 < excess_size - (long) sizeof(vsa_t))
+			if ((long) sizeof(vsa_t) < excess_size)
 			{
+				/* set next free chunk */
+				vsa_t *next_chunk = NextChunk(cur_chunk);
+				
 				next_chunk->bytes_of_block = excess_size - sizeof(vsa_t);
+				
+				#ifndef NDEBUG
+				next_chunk->specific_identifier = POINTER_TO_LEGIT_ADDRESS;
+				#endif /* _NDEBUG */
 			}
-			
-			#ifndef NDEBUG
-		    cur_chunk->specific_identifier = POINTER_TO_LEGIT_ADDRESS;
-		    #endif /* _NDEBUG */
+			else
+			{
+				cur_chunk->bytes_of_block -= excess_size;
+			}
 		    
 		    allocated_address = (char *)cur_chunk + sizeof(vsa_t);
-		    break;
+		    
+		    return allocated_address;
 		}
 	}
 	
-	return allocated_address;
+	return NULL;
 }
 
 /* Free block starting in @address_to_free from variable size allocator */
@@ -168,11 +170,11 @@ size_t VSALargestChunk(vsa_t *vsa_pool)
 		if (ChunkSize(cur_chunk) > 0)
 		{
 			size_of_current_chunk = GetSizeOfCurrentChunk(cur_chunk);
-		}
-		
-		if (size_of_current_chunk > size_of_largest_chunk)
-		{
-			size_of_largest_chunk = size_of_current_chunk;
+			
+			if (size_of_current_chunk > size_of_largest_chunk)
+			{
+				size_of_largest_chunk = size_of_current_chunk;
+			}
 		}
 	}
 	
@@ -213,14 +215,13 @@ static long ChunkSize(const vsa_t *vsa_pool)
 /* helper for alloc - returns number of WORD-aligned bytes */
 static long AlignedBytes(long bytes_to_alloc)
 {
-	long aligned_bytes = bytes_to_alloc;
 	int remainder = (bytes_to_alloc % WORD);
 	if (0 != remainder)
 	{
-		aligned_bytes += WORD - remainder;
+		bytes_to_alloc += WORD - remainder;
 	}
 	
-	return aligned_bytes;
+	return bytes_to_alloc;
 }
 
 /* helper for VSALargestChunk - returns the size of the current chunk */
