@@ -100,9 +100,9 @@ int main()
 void Counting_test()
 {
 	
-	int my_array_big_unsorted[] = {1,4,3,4,5,6,7,867,567,456,345,245,35,65,67,5678,56789,456,7345};
-	int qsort_big_unsorted[] =	  {1,4,3,4,5,6,7,867,567,456,345,245,35,65,67,5678,56789,456,7345};	
-	size_t my_array_big_unsorted_size = 19;
+	int my_array_big_unsorted[] = {1,4,3,4,5,6,7,867,567,456,345,245,35,-400,-5,-19,65,67,5678,56789,456,7345};
+	int qsort_big_unsorted[] =	  {1,4,3,4,5,6,7,867,567,456,345,245,35,65,67,5678,56789,456,7345, -400,-5,-19};	
+	size_t my_array_big_unsorted_size = 22;
 	
 	int my_array_small_unsorted[] = {5,4,7,1};
 	int qsort_small_unsorted[] = 	{5,4,7,1};
@@ -118,10 +118,22 @@ void Counting_test()
 	size_t my_array_with_negatives_size = 7;
 	
 	Counting(my_array_with_negatives,my_array_with_negatives_size,-2,9);
-	qsort(qsort_array_with_negatives, my_array_with_negatives_size, sizeof(int), Qsort_Cmp_Wrapper);	
+	qsort(qsort_array_with_negatives, my_array_with_negatives_size, sizeof(int), Qsort_Cmp_Wrapper);
+	
+	Counting(my_array_small_unsorted,my_array_small_unsorted_size,1,7);
+	qsort(qsort_small_unsorted, my_array_small_unsorted_size, sizeof(int), Qsort_Cmp_Wrapper);
+	
+	Counting(my_array_big_unsorted,my_array_big_unsorted_size,-400,56789);
+	qsort(qsort_big_unsorted, my_array_big_unsorted_size, sizeof(int), Qsort_Cmp_Wrapper);
+	
+	Counting(my_array_sorted,my_array_sorted_size,1,202020202);
+	qsort(qsort_array_sorted, my_array_sorted_size, sizeof(int), Qsort_Cmp_Wrapper);
+	
 	
 	CompareTwoArrays(my_array_with_negatives, qsort_array_with_negatives, my_array_with_negatives_size, "Counting sort 1");
-	
+	CompareTwoArrays(my_array_small_unsorted, qsort_small_unsorted, my_array_small_unsorted_size, "Counting sort 2");
+	CompareTwoArrays(my_array_big_unsorted, qsort_big_unsorted, my_array_big_unsorted_size, "Counting sort 3");		
+	CompareTwoArrays(my_array_sorted, qsort_array_sorted, my_array_sorted_size, "Counting sort 4");	
 	
 }
 

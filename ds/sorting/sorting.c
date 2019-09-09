@@ -27,7 +27,7 @@ static void IntSwap(int *element1, int *element2)
 }
 
 /* isbefore function */
-int IsIntBefore(int int1, int int2)
+static int IsIntBefore(int int1, int int2)
 {
 	return int2 < int1;
 }
@@ -112,7 +112,7 @@ void Bubble(int *arr, size_t size)
 	}
 }
 /* helper for counting */
-static void PrintArray(int* arr, size_t size, const char* arr_name)
+/*static void PrintArray(int* arr, size_t size, const char* arr_name)
 {
 	size_t index = 0;
 	printf("%s = {", arr_name);
@@ -121,18 +121,81 @@ static void PrintArray(int* arr, size_t size, const char* arr_name)
 		printf("%d ", arr[index]);
 	}
 	printf("}\n");	
+}*/
+
+static void	FillHistogram(int *arr,
+						  size_t arr_size,
+						  size_t *hist,
+						  int offset_to_first_index)
+{		
+	size_t arr_index = 0;
+	
+	assert(NULL != arr);
+	assert(NULL != hist);
+	
+	for (arr_index = 0; arr_index < arr_size; ++arr_index)
+	{
+		++hist[arr[arr_index] - offset_to_first_index];
+	}
+}
+
+static void SummateHistogram(size_t *hist, size_t hist_size)
+{
+	size_t hist_index = 1;
+	
+	assert(NULL != hist);
+	
+	for (hist_index = 1; hist_index < hist_size; ++hist_index)
+	{
+		hist[hist_index] += hist[hist_index - 1];
+	}
+}
+
+/* fill new arr */
+static void FillNewArr(int *new_arr,
+					   int *arr,
+					   size_t arr_size,
+					   size_t *hist,
+					   int offset_to_first_index)
+{
+	size_t arr_index = arr_size;
+	
+	assert(NULL != arr);
+	assert(NULL != hist);
+	assert(NULL != new_arr);	
+	
+	for (arr_index = arr_size; arr_index > 0; --arr_index)
+	{
+		new_arr[hist[arr[arr_index - 1] - offset_to_first_index ]- 1] =
+															 arr[arr_index - 1];
+		--hist[arr[arr_index - 1] - offset_to_first_index];
+	}
+}
+
+static void CopyNewIntArrayToOriginal(int *dest_arr, int *src_arr, size_t size)
+{
+	size_t arr_index = 0;
+	
+	assert(NULL != dest_arr);
+	assert(NULL != src_arr);	
+		
+	for (arr_index = 0; arr_index < size; ++arr_index)
+	{
+		dest_arr[arr_index] = src_arr[arr_index];
+	}
 }
 
 /* run counting sort */
 int Counting(int *arr, size_t size, int min, int max)
 {
-	size_t arr_index = 0;
 	size_t arr_size = size;
-	size_t hist_index = 0;
-	size_t hist_size = (size_t)(max - min + 1); /*TODO check +1 */
+	size_t hist_size = (size_t)(max - min + 1);
 	int *new_array = NULL;
+	size_t *hist = NULL;
 	
-	int *hist = (int *)calloc(hist_size, sizeof(int));
+	assert(NULL != arr);
+	
+	hist = (size_t *)calloc(hist_size, sizeof(size_t));
 	if (NULL == hist)
 	{
 		perror("hist calloc failed.\n");
@@ -142,38 +205,19 @@ int Counting(int *arr, size_t size, int min, int max)
 	new_array = (int *) malloc (arr_size * sizeof(int));
 	if (NULL == new_array)
 	{
-		free(hist); hist = NULL;
+		free(hist);
+		hist = NULL;
 		perror("malloc new_array failed.\n");
 		return FAIL;
 	}
 	
-	/*TODO function fill hist*/
-	PrintArray(arr, arr_size, "original array");	
-	PrintArray(hist, hist_size, "unfilled hist");
-	for (arr_index = 0; arr_index < arr_size; ++arr_index)
-	{
-		++hist[arr[arr_index] - min]; /* shift/align/adjust to 0 index using min */
-	}
-	PrintArray(hist, hist_size, "filled hist");
-	/* summate */
-	for (hist_index = 1; hist_index < hist_size; ++hist_index)
-	{
-		hist[hist_index] += hist[hist_index - 1];
-	}
-	PrintArray(hist, hist_size, "summated hist");	
+	FillHistogram(arr, arr_size, hist, min);
 	
-	/* fill new arr */
-	for (arr_index = arr_size; arr_index > 0; --arr_index)
-	{
-		new_array[hist[arr[arr_index - 1] - min ]- 1] = arr[arr_index - 1];
-		--hist[arr[arr_index - 1] - min];
-	}
-	PrintArray(new_array, arr_size, "new_array");
-	/* copy new array to given array */
-	for (arr_index = 0; arr_index < arr_size; ++arr_index)
-	{
-		arr[arr_index] = new_array[arr_index];
-	}
+	SummateHistogram(hist, hist_size);
+	
+	FillNewArr(new_array, arr, arr_size, hist, min);
+
+	CopyNewIntArrayToOriginal(arr, new_array, arr_size);
 	
 	free(hist);
 	hist = NULL;
