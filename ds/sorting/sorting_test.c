@@ -80,11 +80,12 @@ void Insertion_test();
 void Selection_test();
 void Bubble_test();
 void Counting_test();
+void Radix_test();
 
 int main()
 {
 	PREVENT_WARNINGS_FROM_UNUSED_FUNCS_FROM_TESTS_TEMPLATE
-	
+	/*
 	Insertion_test();
 
 	Selection_test();
@@ -92,8 +93,23 @@ int main()
 	Bubble_test();
 	
 	Counting_test();
+	*/
+	Radix_test();
 	
 	return 0;
+}
+
+void Radix_test()
+{	
+	int my_array_big_unsorted[] = {1,4,3,4,5,6,7,867,567,456,345,245,35,65,67,5678,56789,456,7345};
+	int qsort_big_unsorted[] =	  {1,4,3,4,5,6,7,867,567,456,345,245,35,65,67,5678,56789,456,7345};	
+	size_t my_array_big_unsorted_size = 19;
+	
+	Radix(my_array_big_unsorted, my_array_big_unsorted_size, 4);
+	qsort(qsort_big_unsorted, my_array_big_unsorted_size, sizeof(int), Qsort_Cmp_Wrapper);
+	
+	CompareTwoArrays(my_array_big_unsorted, qsort_big_unsorted, my_array_big_unsorted_size, "Radix big unsorted");		
+	
 }
 
 void Counting_test()

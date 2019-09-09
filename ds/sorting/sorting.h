@@ -45,6 +45,6 @@ int Counting(int *arr, size_t size, int min, int max);
  * @size: number of elements in arr.
  * Note: @max must be greater than @min.
  */
-int Radix(int *arr, size_t size);
+int Radix(int *arr, size_t size, unsigned int num_of_bits);
 
 #endif /* __ILRD_OL712_SORTING_H */

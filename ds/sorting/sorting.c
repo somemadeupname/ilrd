@@ -8,11 +8,15 @@
 #include <stdio.h> /* perror */
 #include <assert.h> /* assert */
 #include <stdlib.h> /* malloc calloc free */
+#include <string.h> /* memset for Radix */
+#include <limits.h> /* INT_MAX */
 
 #include "sorting.h"
 
 enum state {FALSE, TRUE};
 enum {SUCCESS, FAIL};
+
+const size_t BYTE_SIZE = 8;
 
 /* int * swap function */
 static void IntSwap(int *element1, int *element2)
@@ -113,7 +117,7 @@ void Bubble(int *arr, size_t size)
 	}
 }
 /* helper for counting */
-/*static void PrintArray(int* arr, size_t size, const char* arr_name)
+static void PrintArray(int* arr, size_t size, const char* arr_name)
 {
 	size_t index = 0;
 	printf("%s = {", arr_name);
@@ -122,7 +126,7 @@ void Bubble(int *arr, size_t size)
 		printf("%d ", arr[index]);
 	}
 	printf("}\n");	
-}*/
+}
 
 static void	FillHistogram(int *arr,
 						  size_t arr_size,
@@ -227,6 +231,150 @@ int Counting(int *arr, size_t size, int min, int max)
 	
 	free(new_array);
 	new_array = NULL;
+	
+	return SUCCESS;
+}
+
+/* TODO remove */
+static void PrintHist(size_t *hist, size_t size, char *hist_name)
+{
+	size_t index = 0;
+	printf("%s = {", hist_name);
+	for (index = 0; index < size; ++index)
+	{
+		printf("%d ", hist[index]);
+	}
+	printf("}\n");	
+}
+
+/* helper for new counting - fils histogram */
+static void	RadixFillHistogram(int *arr,
+						  size_t arr_size,
+						  size_t *hist,
+						  int mask,
+						  size_t shift_by)
+{		
+	size_t arr_index = 0;
+	
+	assert(NULL != arr);
+	assert(NULL != hist);
+	
+	for (arr_index = 0; arr_index < arr_size; ++arr_index)
+	{
+		++hist[(arr[arr_index] & mask) >> shift_by];
+	}
+}
+
+/*helper for new counting - fill new arr */
+static void RadixFillNewArr(int *new_arr,
+					   int *arr,
+					   size_t arr_size,
+					   size_t *hist,
+					   int mask,
+					   size_t shift_by)
+{
+	size_t arr_index = arr_size;
+	
+	assert(NULL != arr);
+	assert(NULL != hist);
+	assert(NULL != new_arr);	
+	
+	for (arr_index = arr_size; arr_index > 0; --arr_index)
+	{
+		new_arr[hist[((arr[arr_index - 1] & mask) >> shift_by)]- 1] = arr[arr_index - 1];
+		--hist[((arr[arr_index - 1] & mask) >> shift_by)];
+	}
+}
+
+/* new counting which takes mask */
+static void NewCounting(int *arr,
+						size_t arr_size,
+						size_t *hist,
+						size_t hist_size,
+						int *new_array,
+						int mask,
+						size_t shift_by)
+{
+	
+	assert(NULL != arr);
+	assert(NULL != hist);
+	
+	RadixFillHistogram(arr, arr_size, hist, mask, shift_by);
+	
+	SummateHistogram(hist, hist_size);
+	
+	RadixFillNewArr(new_array, arr, arr_size, hist, mask, shift_by);
+
+	CopyNewIntArrayToOriginal(arr, new_array, arr_size);
+}
+
+static int GenerateMask(unsigned int num_of_bits)
+{
+	int mask = INT_MAX;
+	mask <<= num_of_bits;
+
+	return ~mask;
+}
+
+static void	ClearHistogram(size_t *hist, size_t hist_size)
+{
+	memset(hist, 0, hist_size * sizeof(size_t));
+}
+
+int Radix(int *arr, size_t size, unsigned int num_of_bits)
+{
+	size_t *hist = NULL;
+	int* new_array = NULL;
+	int mask = 0;
+	size_t iteration = 0;
+	size_t num_iterations = 0;
+	size_t hist_size = (1 << num_of_bits);
+	
+	assert(NULL != arr);
+	assert(0 < num_of_bits && 32 > num_of_bits);/* system-dependant */
+	
+	mask = GenerateMask(num_of_bits);
+	num_iterations = (sizeof(int)*BYTE_SIZE)/(size_t)(num_of_bits);
+	
+	hist = (size_t *)calloc(hist_size, sizeof(size_t));
+	if (NULL == hist)
+	{
+		perror("Something went wrong.\n");
+		return FAIL;
+	}
+	
+	new_array = (int *)malloc(size * sizeof(int));
+	if (NULL == new_array)
+	{
+		free(hist);
+		hist = NULL;
+		perror("Something went wrong.\n");
+		return FAIL;
+	}
+	PrintArray(arr,size,"arr before for");						
+	for (iteration = 0;
+		 iteration < num_iterations;
+		 ++iteration, mask <<= num_of_bits
+		)
+	{
+		if ((iteration % 2) == 0)
+		{
+			NewCounting(arr, size, hist, hist_size, new_array, mask, iteration*num_of_bits);
+			PrintArray(new_array,size,"new_arr");			
+		}
+		else
+		{
+			NewCounting(new_array, size, hist, hist_size, arr, mask, iteration*num_of_bits);
+			PrintArray(arr,size,"arr");						
+		}
+		ClearHistogram(hist, hist_size);
+	}
+	
+	free(new_array);
+	new_array = NULL;
+	
+	free(hist);
+	hist = NULL;
 	
 	return SUCCESS;
 }
