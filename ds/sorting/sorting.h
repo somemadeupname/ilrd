@@ -39,4 +39,12 @@ void Bubble(int *arr, size_t size);
  */
 int Counting(int *arr, size_t size, int min, int max);
 
+/*
+ * Sorts @arr using counting sort.
+ * @arr: array to sort.
+ * @size: number of elements in arr.
+ * Note: @max must be greater than @min.
+ */
+int Radix(int *arr, size_t size);
+
 #endif /* __ILRD_OL712_SORTING_H */

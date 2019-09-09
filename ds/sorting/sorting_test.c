@@ -73,9 +73,8 @@ void PrintArr(int arr[], size_t arr_size)
 
 /* Forward Declarations */
 static int AreArraysEqual(const int arr1[], const int arr2[], size_t size);
-int Qsort_Cmp_Wrapper(const void *i1,const void *i2);
 void CompareTwoArrays(const int arr1[], const int arr2[], size_t size, const char *func_name);
-int Qsort_Cmp_Wrapper(const void *i1,const void *i2);
+static int Qsort_Cmp_Wrapper(const void *i1,const void *i2);
 
 void Insertion_test();
 void Selection_test();
@@ -129,16 +128,15 @@ void Counting_test()
 	Counting(my_array_sorted,my_array_sorted_size,1,202020202);
 	qsort(qsort_array_sorted, my_array_sorted_size, sizeof(int), Qsort_Cmp_Wrapper);
 	
-	
 	CompareTwoArrays(my_array_with_negatives, qsort_array_with_negatives, my_array_with_negatives_size, "Counting sort 1");
 	CompareTwoArrays(my_array_small_unsorted, qsort_small_unsorted, my_array_small_unsorted_size, "Counting sort 2");
 	CompareTwoArrays(my_array_big_unsorted, qsort_big_unsorted, my_array_big_unsorted_size, "Counting sort 3");		
-	CompareTwoArrays(my_array_sorted, qsort_array_sorted, my_array_sorted_size, "Counting sort 4");	
+	CompareTwoArrays(my_array_sorted, qsort_array_sorted, my_array_sorted_size, "Counting sort 4");
 	
 }
 
 /* IsBefore wrapper to be compatible with qsort() for tests */
-int Qsort_Cmp_Wrapper(const void *i1,const void *i2)
+static int Qsort_Cmp_Wrapper(const void *i1,const void *i2)
 {
 	return (*(int *)i2 < *(int *)i1);
 }
@@ -146,6 +144,7 @@ int Qsort_Cmp_Wrapper(const void *i1,const void *i2)
 static int AreArraysEqual(const int arr1[], const int arr2[], size_t size)
 {
 	size_t index = 0;
+	
 	assert(NULL != arr1);
 	assert(NULL != arr2);	
 	

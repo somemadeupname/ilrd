@@ -1,17 +1,18 @@
 
 /****************************
  *   Author   : Ran Shieber *
- *   Reviewer : Nitzan	    *
+ *   Reviewers: 1. Nitzan	*
+ *				2. Daya		*
  *	 Status   : Sent	    *
  ****************************/
 #include <stdio.h> /* perror */
 #include <assert.h> /* assert */
-#include <stdlib.h> /* calloc free */
+#include <stdlib.h> /* malloc calloc free */
 
 #include "sorting.h"
 
 enum state {FALSE, TRUE};
-enum return_status {SUCCESS, FAIL};
+enum {SUCCESS, FAIL};
 
 /* int * swap function */
 static void IntSwap(int *element1, int *element2)
@@ -138,7 +139,7 @@ static void	FillHistogram(int *arr,
 		++hist[arr[arr_index] - offset_to_first_index];
 	}
 }
-
+/* helper for counting - summate histogram */
 static void SummateHistogram(size_t *hist, size_t hist_size)
 {
 	size_t hist_index = 1;
@@ -151,7 +152,7 @@ static void SummateHistogram(size_t *hist, size_t hist_size)
 	}
 }
 
-/* fill new arr */
+/*helper for counting - fill new arr */
 static void FillNewArr(int *new_arr,
 					   int *arr,
 					   size_t arr_size,
@@ -172,6 +173,7 @@ static void FillNewArr(int *new_arr,
 	}
 }
 
+/* helper for counting - copy sorted array to original */
 static void CopyNewIntArrayToOriginal(int *dest_arr, int *src_arr, size_t size)
 {
 	size_t arr_index = 0;
@@ -194,6 +196,7 @@ int Counting(int *arr, size_t size, int min, int max)
 	size_t *hist = NULL;
 	
 	assert(NULL != arr);
+	assert(max >= min);
 	
 	hist = (size_t *)calloc(hist_size, sizeof(size_t));
 	if (NULL == hist)
