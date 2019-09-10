@@ -71,6 +71,30 @@ void PrintArr(int arr[], size_t arr_size)
 	printf("}\n");	
 }
 
+/* TODO remove */
+/*static void PrintHist(size_t *hist, size_t size, char *hist_name)-
+{
+	size_t index = 0;
+	printf("%s = {", hist_name);
+	for (index = 0; index < size; ++index)
+	{
+		printf("%d ", hist[index]);
+	}
+	printf("}\n");	
+}*/
+
+/* helper for counting */
+/*static void PrintArray(int* arr, size_t size, const char* arr_name)
+{
+	size_t index = 0;
+	printf("%s = {", arr_name);
+	for (index = 0; index < size; ++index)
+	{
+		printf("%d ", arr[index]);
+	}
+	printf("}\n");	
+}*/
+
 /* Forward Declarations */
 static int AreArraysEqual(const int arr1[], const int arr2[], size_t size);
 void CompareTwoArrays(const int arr1[], const int arr2[], size_t size, const char *func_name);
@@ -105,8 +129,35 @@ void Radix_test()
 	int qsort_big_unsorted[] =	  {1,4,3,4,5,6,7,867,567,456,345,245,35,65,67,5678,56789,456,7345};	
 	size_t my_array_big_unsorted_size = 19;
 	
-	Radix(my_array_big_unsorted, my_array_big_unsorted_size, 4);
+	int my_array_small_unsorted[] = {5,4,7,1};
+	int qsort_small_unsorted[] = 	{5,4,7,1};
+	size_t my_array_small_unsorted_size = 4;
+	
+	
+	int my_array_sorted[] =    {1,5,8,10,13,98,1001,202020202};
+	int qsort_array_sorted[] = {1,5,8,10,13,98,1001,202020202};	
+	size_t my_array_sorted_size = 8;
+	
+	int my_array_with_negatives[] = {3,1,7,9,3,2,0};
+	int qsort_array_with_negatives[] = {3,1,7,9,3,2,0};	
+	size_t my_array_with_negatives_size = 7;
+	
+	Radix(my_array_big_unsorted, my_array_big_unsorted_size, 16);
 	qsort(qsort_big_unsorted, my_array_big_unsorted_size, sizeof(int), Qsort_Cmp_Wrapper);
+	
+	Radix(my_array_with_negatives,my_array_with_negatives_size,16);
+	qsort(qsort_array_with_negatives, my_array_with_negatives_size, sizeof(int), Qsort_Cmp_Wrapper);
+	
+	Radix(my_array_small_unsorted,my_array_small_unsorted_size,16);
+	qsort(qsort_small_unsorted, my_array_small_unsorted_size, sizeof(int), Qsort_Cmp_Wrapper);
+	
+	Radix(my_array_sorted,my_array_sorted_size,16);
+	qsort(qsort_array_sorted, my_array_sorted_size, sizeof(int), Qsort_Cmp_Wrapper);
+	
+	CompareTwoArrays(my_array_with_negatives, qsort_array_with_negatives, my_array_with_negatives_size, "Radix with negatives");
+	CompareTwoArrays(my_array_small_unsorted, qsort_small_unsorted, my_array_small_unsorted_size, "Radix small unsorted");
+		
+	CompareTwoArrays(my_array_sorted, qsort_array_sorted, my_array_sorted_size, "Radix sorted");
 	
 	CompareTwoArrays(my_array_big_unsorted, qsort_big_unsorted, my_array_big_unsorted_size, "Radix big unsorted");		
 	

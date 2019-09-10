@@ -116,17 +116,6 @@ void Bubble(int *arr, size_t size)
 					   each iteration  */
 	}
 }
-/* helper for counting */
-static void PrintArray(int* arr, size_t size, const char* arr_name)
-{
-	size_t index = 0;
-	printf("%s = {", arr_name);
-	for (index = 0; index < size; ++index)
-	{
-		printf("%d ", arr[index]);
-	}
-	printf("}\n");	
-}
 
 static void	FillHistogram(int *arr,
 						  size_t arr_size,
@@ -201,7 +190,7 @@ int Counting(int *arr, size_t size, int min, int max)
 	
 	assert(NULL != arr);
 	assert(max >= min);
-	
+
 	hist = (size_t *)calloc(hist_size, sizeof(size_t));
 	if (NULL == hist)
 	{
@@ -233,18 +222,6 @@ int Counting(int *arr, size_t size, int min, int max)
 	new_array = NULL;
 	
 	return SUCCESS;
-}
-
-/* TODO remove */
-static void PrintHist(size_t *hist, size_t size, char *hist_name)
-{
-	size_t index = 0;
-	printf("%s = {", hist_name);
-	for (index = 0; index < size; ++index)
-	{
-		printf("%d ", hist[index]);
-	}
-	printf("}\n");	
 }
 
 /* helper for new counting - fils histogram */
@@ -281,12 +258,14 @@ static void RadixFillNewArr(int *new_arr,
 	
 	for (arr_index = arr_size; arr_index > 0; --arr_index)
 	{
-		new_arr[hist[((arr[arr_index - 1] & mask) >> shift_by)]- 1] = arr[arr_index - 1];
+		new_arr[hist[((arr[arr_index - 1] & mask) >> shift_by)]- 1] =
+															 arr[arr_index - 1];
 		--hist[((arr[arr_index - 1] & mask) >> shift_by)];
 	}
 }
 
-/* new counting which takes mask */
+/* new counting which takes mask. takes @mask and @shift_by to
+													  align to histogram size */
 static void NewCounting(int *arr,
 						size_t arr_size,
 						size_t *hist,
@@ -305,9 +284,9 @@ static void NewCounting(int *arr,
 	
 	RadixFillNewArr(new_array, arr, arr_size, hist, mask, shift_by);
 
-	CopyNewIntArrayToOriginal(arr, new_array, arr_size);
 }
 
+/* helper for Radix - generates a mask based on num_of_bits */
 static int GenerateMask(unsigned int num_of_bits)
 {
 	int mask = INT_MAX;
@@ -316,25 +295,43 @@ static int GenerateMask(unsigned int num_of_bits)
 	return ~mask;
 }
 
+/* helper for Radix - clears the histogram */
 static void	ClearHistogram(size_t *hist, size_t hist_size)
 {
 	memset(hist, 0, hist_size * sizeof(size_t));
 }
 
+/* helper for Radix */
+static void SwapPointers(int **arr1, int **arr2)
+{
+	int *temp = NULL;
+
+	assert(NULL != *arr1);
+	assert(NULL != *arr2);
+	
+	temp = *arr1;
+	*arr1 = *arr2;
+	*arr2 = temp;
+}
+
+static void *FreeObj(void *obj)
+{
+	free(obj);
+	return NULL;
+}
+
+/* radix sort an array using mask defined by @num_of_bits */
 int Radix(int *arr, size_t size, unsigned int num_of_bits)
 {
 	size_t *hist = NULL;
 	int* new_array = NULL;
-	int mask = 0;
+	int mask = GenerateMask(num_of_bits);
 	size_t iteration = 0;
-	size_t num_iterations = 0;
 	size_t hist_size = (1 << num_of_bits);
 	
 	assert(NULL != arr);
 	assert(0 < num_of_bits && 32 > num_of_bits);/* system-dependant */
-	
-	mask = GenerateMask(num_of_bits);
-	num_iterations = (sizeof(int)*BYTE_SIZE)/(size_t)(num_of_bits);
+	assert(0 == 32%num_of_bits);
 	
 	hist = (size_t *)calloc(hist_size, sizeof(size_t));
 	if (NULL == hist)
@@ -346,35 +343,25 @@ int Radix(int *arr, size_t size, unsigned int num_of_bits)
 	new_array = (int *)malloc(size * sizeof(int));
 	if (NULL == new_array)
 	{
-		free(hist);
-		hist = NULL;
 		perror("Something went wrong.\n");
+		hist = FreeObj(hist);
 		return FAIL;
 	}
-	PrintArray(arr,size,"arr before for");						
+
 	for (iteration = 0;
-		 iteration < num_iterations;
+		 mask != 0;
 		 ++iteration, mask <<= num_of_bits
 		)
 	{
-		if ((iteration % 2) == 0)
-		{
-			NewCounting(arr, size, hist, hist_size, new_array, mask, iteration*num_of_bits);
-			PrintArray(new_array,size,"new_arr");			
-		}
-		else
-		{
-			NewCounting(new_array, size, hist, hist_size, arr, mask, iteration*num_of_bits);
-			PrintArray(arr,size,"arr");						
-		}
+		NewCounting(arr, size, hist, hist_size, new_array, mask,
+													   iteration * num_of_bits);
+		SwapPointers(&arr, &new_array);
+		
 		ClearHistogram(hist, hist_size);
 	}
 	
-	free(new_array);
-	new_array = NULL;
-	
-	free(hist);
-	hist = NULL;
+	new_array = FreeObj(new_array);
+	hist = FreeObj(hist);
 	
 	return SUCCESS;
 }
