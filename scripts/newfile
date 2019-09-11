@@ -28,7 +28,7 @@ echo -e "CC=gcc
 RELEASE_FLAGS=-ansi -pedantic-errors -Wall -Wextra -DNDEBUG -O3
 DEBUG_FLAGS=-ansi -pedantic-errors -Wall -Wextra -g
 
-DEPS= $1.c $1.c
+DEPS= $1_test.c $1.c
 
 all: $1_release $1_debug
 

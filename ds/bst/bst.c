@@ -5,49 +5,62 @@
  *	 Status   : Sent	    *
  ****************************/
 #include <assert.h> /* assert */
+#include <stdlib.h> /* free malloc */
 
 #include "bst.h"
 
-typedef struct node
+#define UNUSED(x) (void)(x)
+
+#define TRUE 1
+#define FALSE 0
+
+typedef struct bst_node bst_node;
+
+struct bst_node
 {
 	bst_node *left;
 	bst_node *right;
 	bst_node *parent;	
 	void *data;
-} bst_node;
+};
 
-typedef struct bst
+struct bst
 {
-	cmp_func_t *cmp_func;
-	bst_node *dummy_head;
-} bst_t;
+	cmp_func_t cmp_func;
+	void *param;
+	bst_iter_t dummy_head;
+};
 
-/* Forward Declarations */
+/*************************************************************************
+																		 *
+				      FORWARD DECLARATIONS								 *
+																		 *
+*************************************************************************/
 static bst_node *CreateBSTNode(bst_node *left,
 						 		bst_node *right,
 						 		bst_node *parent,
 						 		void *data);
-static void DestroyBSTNode(bst_node *node_to_destroy);						 		
-						 
-typedef int (*cmp_func_t)(void *iter_data, void *new_data, void *param);
-/*
- * Create new binary search tree
- * Param @cmp_func - user comparison function. returns 0 if <iter_data> and 
- *					 <new_data> are equal, positive if <iter_data> is larger 
- *					 or negative if its smaller.
- * Param @param - user param for <is_before> function
- * Return: pointer to new binary search tree
- * Errors: if creation failed, return NULL
- */
- 
+static void *DestroyBSTNode(bst_node *node_to_destroy);
+
+static int HasLeftChild(bst_iter_t iter);
+static int HasRightChild(bst_iter_t iter);
+static bst_iter_t GetLeftChild(bst_iter_t iter);
+static bst_iter_t GetRightChild(bst_iter_t iter);
+static bst_iter_t GetParent(bst_iter_t iter);
+static int IsLeftChild(bst_iter_t iter);
+static int IsRightChild(bst_iter_t iter);
+static int IsLeaf(bst_iter_t iter);				 		
+
+/* Create new binary search tree */
 bst_t *BSTCreate(cmp_func_t cmp_func, void *param)
 {
 
 	bst_t *new_bst = NULL;
-	bst_node *dummy_head = NULL;
+	bst_iter_t dummy_head = NULL;
+
 	assert(NULL != cmp_func);
 	
-	dummy_head = CreateBSTNode(NULL,NULL,NULL,NULL);
+	dummy_head = (bst_iter_t) CreateBSTNode(NULL,NULL,NULL,NULL);
 	if (NULL == dummy_head)
 	{
 		return NULL;
@@ -56,26 +69,191 @@ bst_t *BSTCreate(cmp_func_t cmp_func, void *param)
 	new_bst = (bst_t *)malloc(sizeof(bst_t));
 	if (NULL == new_bst)
 	{
+		dummy_head = DestroyBSTNode((bst_node *)dummy_head);
 		return NULL;
 	}
 	
 	/* init bst */
 	new_bst->cmp_func = cmp_func;
 	new_bst->dummy_head = dummy_head;
+	new_bst->param = param;	
 	
 	return new_bst;
 }
 
-/*
- * Check if tree is empty
- * Param  @bst - binary search tree
- * Return : 1 if bst is empty, 0 otherwise
- * Errors : --
- */
-int BSTIsEmpty(const bst_t *bst);
+/* Insert new element to tree */
+bst_iter_t BSTInsert(bst_t *bst, void *data)
+{
+	bst_iter_t new_node = NULL;
+	assert(NULL != bst);
+	
+	new_node = (bst_iter_t)CreateBSTNode(NULL, NULL, NULL, data);
+	
+	if (NULL == new_node)
+	{
+		return NULL;
+	}
+	
+	if (BSTIsEmpty(bst))
+	{
+		new_node->parent = bst->dummy_head;
+		bst->dummy_head->left = new_node;
+	}
+	
+	else
+	{
+		bst_iter_t cur_tree_node = GetLeftChild(bst->dummy_head);
+		int insertion_done = FALSE;
+		
+		while (FALSE == insertion_done)
+		{
+			int result = bst->cmp_func(BSTGetData(cur_tree_node),BSTGetData(new_node), NULL);
+			
+			if (1 == result)
+			{
+				if (HasLeftChild(cur_tree_node))
+				{
+					cur_tree_node = GetLeftChild(cur_tree_node);
+				}
+				else
+				{
+					new_node->parent = cur_tree_node;
+					cur_tree_node->left = new_node;
+					insertion_done = TRUE;
+				}
+			}
+			else /* if equals or is after */
+			{
+				if (HasRightChild(cur_tree_node))
+				{
+					cur_tree_node = GetRightChild(cur_tree_node);
+				}
+				else
+				{
+					new_node->parent = cur_tree_node;
+					cur_tree_node->right = new_node;
+					
+					insertion_done = TRUE;
+				}
+			}
+		}
+	}
+	
+	return new_node;
+}
+
+/* Perform <action_func> for each element in <bst>, stops if action returns
+non-zero. */
+int BSTForEach(bst_t *bst,
+			   void *param,
+			   bst_iter_t from,
+			   bst_iter_t to, 
+			   action_func_t action_func)
+{
+	bst_iter_t cur_iter = NULL;
+	int return_status = 0;
+	
+	assert(NULL != bst);
+	assert(NULL != action_func);
+	assert(NULL != from);
+	assert(NULL != to);
+	
+	for (cur_iter = from;
+		 (!BSTIsSameIter(cur_iter, to)) && (0 == return_status);
+		 cur_iter = BSTNext(cur_iter)
+		)
+	{
+		return_status = action_func(BSTGetData(cur_iter), param);
+	}
+	
+	return return_status;
+}			   
+
+/* helper for BSTSize */
+static int NodeCounter(void *iter_data, void *param)
+{
+	UNUSED(iter_data);
+	*(size_t *)param += 1;
+	return 0;
+}
+
+static bst_iter_t BSTGetRoot(const bst_t *bst)
+{
+	assert (NULL != bst);
+	
+	return bst->dummy_head->left;
+}
+
+bst_iter_t BSTFind(bst_t *bst, void *data_to_find)
+{
+	
+	int continue_search = 1;
+	bst_iter_t result_iter = NULL;
+	bst_iter_t cur_node = NULL;
+	assert(NULL != bst);
+	
+	cur_node = BSTGetRoot(bst);
+	
+	while (continue_search)
+	{
+		int cmp = bst->cmp_func(BSTGetData(cur_node), data_to_find, NULL);
+		if (1 == cmp)
+		{
+			if (HasLeftChild(cur_node))
+			{
+				cur_node = GetLeftChild(cur_node);
+			}
+			else
+			{
+				continue_search = FALSE;
+			}
+		}
+		
+		else if (-1 == cmp)
+		{
+			if (HasRightChild(cur_node))
+			{
+				cur_node = GetRightChild(cur_node);
+			}
+			else
+			{
+				continue_search = FALSE;
+			}
+		}
+		else /* found a match */
+		{
+			result_iter = cur_node;
+			continue_search = FALSE;
+		}
+	}
+	
+	return result_iter;	
+}
+
+/* Count how many nodes in given binary search tree */
+size_t BSTSize(const bst_t *bst)
+{
+	bst_iter_t from = NULL;
+	bst_iter_t to = NULL;	
+	size_t counter_init_value = 0;
+	size_t *counter = &counter_init_value;
+	
+	assert(NULL != bst);
+	
+	from = BSTBegin(bst);
+	to = BSTEnd(bst);
+	
+	BSTForEach((bst_t *)bst, counter, from, to, NodeCounter);
+	
+	return *counter;
+}
+
+/* Check if tree is empty */
+int BSTIsEmpty(const bst_t *bst)
 {
 	assert(NULL != bst);
-	return (NULL == BSTNext(bst->dummy_head));
+	
+	return (NULL == GetLeftChild(bst->dummy_head));
 }
 
 
@@ -108,6 +286,7 @@ static bst_node *CreateBSTNode(bst_node *left,
 static void *DestroyBSTNode(bst_node *node_to_destroy)
 {
 	free(node_to_destroy);
+	
 	return NULL;
 }
 
@@ -120,21 +299,36 @@ static void *DestroyBSTNode(bst_node *node_to_destroy)
 /*  */
 static int HasLeftChild(bst_iter_t iter)
 {
+	int result = FALSE;
 	assert(NULL != iter);
-	return (NULL != iter->left);
+	
+	if (NULL != iter->left)
+	{
+		result = TRUE;
+	}
+	
+	return result;
 }
 
 /*  */
 static int HasRightChild(bst_iter_t iter)
 {
+	int result = FALSE;
 	assert(NULL != iter);
-	return (NULL != iter->right);
+	
+	if (NULL != iter->right)
+	{
+		result = TRUE;
+	}
+	
+	return result;
 }
 
 /*  */
 static bst_iter_t GetLeftChild(bst_iter_t iter)
 {
 	assert(NULL != iter);
+	
 	return iter->left;
 }
 
@@ -142,6 +336,7 @@ static bst_iter_t GetLeftChild(bst_iter_t iter)
 static bst_iter_t GetRightChild(bst_iter_t iter)
 {
 	assert(NULL != iter);
+	
 	return iter->right;
 }
 
@@ -149,6 +344,7 @@ static bst_iter_t GetRightChild(bst_iter_t iter)
 static bst_iter_t GetParent(bst_iter_t iter)
 {
 	assert(NULL != iter);
+	
 	return iter->parent;
 }
 
@@ -156,21 +352,34 @@ static bst_iter_t GetParent(bst_iter_t iter)
 static int IsLeftChild(bst_iter_t iter)
 {
 	assert(NULL != iter);
-	return IsSameIter(iter, GetLeftChild(GetParent(iter)));
+	
+	if (NULL == GetLeftChild(GetParent(iter)))
+	{
+		return FALSE;
+	}
+	
+	return BSTIsSameIter(iter, GetLeftChild(GetParent(iter)));
 }
 
 /*  */
 static int IsRightChild(bst_iter_t iter)
 {
 	assert(NULL != iter);
-	return IsSameIter(iter, GetRightChild(GetParent(iter)));	
+	
+	if (NULL == GetRightChild(GetParent(iter)))
+	{
+		return FALSE;
+	}
+	
+	return BSTIsSameIter(iter, GetRightChild(GetParent(iter)));	
 }
 
 /*  */
 static int IsLeaf(bst_iter_t iter)
 {
 	assert(NULL != iter);
-	return (NULL == GetRightChild(iter) && (NULL ==GetLeftChild(iter)));
+	
+	return (NULL == GetRightChild(iter) && (NULL == GetLeftChild(iter)));
 }
 
 /*************************************************************************
@@ -178,27 +387,53 @@ static int IsLeaf(bst_iter_t iter)
 				      		ITER FUNCTIONS							 	 *
 																		 *
 *************************************************************************/
-/*
- * get iter to next larger value
- * Param @Iter - current iter
- * Return : iter to next larger value
- * Errors : if no next iter, return END
- */
-bst_iter_t BSTNext(bst_iter_t iter);
+/* get iter to next value */
+bst_iter_t BSTNext(bst_iter_t iter)
+{
+	bst_iter_t next = NULL;
+	
+	assert(NULL != iter);
+	
+	if (HasRightChild(iter))
+	{
+		bst_iter_t cur_iter = GetRightChild(iter);
+		
+		while (HasLeftChild(cur_iter))
+		{
+			cur_iter = GetLeftChild(cur_iter);
+		}
+		
+		next = cur_iter;
+	}
+	
+	else if (!HasRightChild(iter) && IsLeftChild(iter))
+	{
+		next = GetParent(iter);
+	}
 
-/*
- * get iter to prev smaller value
- * Param @Iter - current iter
- * Return : iter to prev smaller value
- * Errors : if iter is first, undefined behaviour
- */
+	else if (IsLeaf(iter) && IsRightChild(iter))
+	{
+		bst_iter_t cur_iter = iter;
+		
+		while (IsRightChild(cur_iter))
+		{
+			cur_iter = GetParent(cur_iter);
+		}
+		
+		next = GetParent(cur_iter);
+	}
+	
+	return next;
+}
+
+/* get iter to prev value */
 bst_iter_t BSTPrev(bst_iter_t iter)
 {
 	bst_iter_t prev = NULL;
 
 	assert(NULL != iter);
 	
-	if (HasLeftChild(iter)/* || (IsLeaf(iter) && IsRightChild(iter))*/)
+	if (HasLeftChild(iter)/* || (IsLeaf(iter) && IsRightChild(iter))*/)/*TODO*/
 	{
 		bst_iter_t cur_iter = GetLeftChild(iter);
 		
@@ -209,7 +444,7 @@ bst_iter_t BSTPrev(bst_iter_t iter)
 		prev = cur_iter;
 	}
 	
-	else if (HasRightChild(iter)/* || (IsLeaf(iter) && IsLeftChild(iter))*/)
+	else if (HasRightChild(iter)/* || (IsLeaf(iter) && IsLeftChild(iter))*/)/*TODO*/
 	{
 		if (IsRightChild(iter))
 		{
@@ -227,6 +462,23 @@ bst_iter_t BSTPrev(bst_iter_t iter)
 
 			prev = GetParent(cur_iter);
 		}
+	}
+	
+	else if ((IsLeaf(iter) && IsRightChild(iter)))
+	{
+		prev = GetParent(iter);
+	}
+	
+	else if ((IsLeaf(iter) && IsLeftChild(iter)))
+	{
+		bst_iter_t cur_iter = iter;
+			
+		while(IsLeftChild(cur_iter))
+		{
+			cur_iter = GetParent(cur_iter);
+		}
+
+		prev = GetParent(cur_iter);
 	}
 	
 	return prev;
@@ -256,4 +508,19 @@ bst_iter_t BSTBegin(const bst_t *bst)
 	return cur_iter;	
 }
 
-int BSTIsSameIter(bst_iter_t iter1, bst_iter_t iter2);
+/* Get data of iter */
+void *BSTGetData(bst_iter_t iter)
+{
+	assert(NULL != iter);
+	
+	return iter->data;	
+}
+
+int BSTIsSameIter(bst_iter_t iter1, bst_iter_t iter2)
+{
+	assert(NULL != iter1);	
+	assert(NULL != iter2);	
+	
+	return ((BSTGetData(iter1) == BSTGetData(iter2)) &&
+									    (GetParent(iter1) == GetParent(iter2)));
+}

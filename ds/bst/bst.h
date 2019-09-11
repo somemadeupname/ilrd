@@ -33,7 +33,7 @@ void BSTDestroy(bst_t *bst);
  * Param @bst - pointer to binary search tree  
  * Param @data - pointer to data to insert
  * Return : pointer to new leaf
- * Errors : if memory allocation failed, return NULL
+ * Errors : if insert failed, return NULL
  */
 bst_iter_t BSTInsert(bst_t *bst, void *data); 
 

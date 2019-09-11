@@ -3,6 +3,7 @@
 
 #include "bst.h"
 
+#define UNUSED(x) (void)(x)
 #define START_RED printf("\033[1;31m");
 #define END_RED printf("\033[0m");
 #define TRUE 1
@@ -61,13 +62,134 @@ void expect_Not_NULL(void *pointer, char *func_name)
 		printf("pointer isn't NULL.\n");
 	}	
 }
-/* Forward Declarations */
+/*************************************************************************
+																		 *
+				      FORWARD DECLARATIONS								 *
+																		 *
+*************************************************************************/
+int Int_Node_Compare(void *iter_data, void *new_data, void *param);
+
+void BSTCreate_test();
+
+void BSTInsertMiddleSmallerBigger_test();
+void BSTInsertSmallSmallSmall_test();
+void BSTInsertBigBigBig_test();
+
+
 
 int main()
 {
 	PREVENT_WARNINGS_FROM_UNUSED_FUNCS_FROM_TESTS_TEMPLATE
 	
+	BSTCreate_test();
 	
+	BSTInsertMiddleSmallerBigger_test();		
+
+	BSTInsertSmallSmallSmall_test();	
+	
+	BSTInsertBigBigBig_test();
 	
 	return 0;
+}
+
+void BSTInsertBigBigBig_test()
+{
+	bst_t *bst = BSTCreate(Int_Node_Compare, NULL);
+	
+	int a = 15;
+	int b = 97;
+	int c = 301;
+	
+	expect_int(BSTIsEmpty(bst), TRUE, "BSTInsert_test1");
+	
+	BSTInsert(bst, &a);
+	
+	expect_int(BSTIsEmpty(bst), FALSE, "BSTInsert_test2");	
+	
+	BSTInsert(bst, &b);
+	
+	expect_size_t(BSTSize(bst), 2, "BSTInsert_test3");
+	
+	BSTInsert(bst, &c);	
+	
+	expect_size_t(BSTSize(bst), 3, "BSTInsert_test3");
+}
+
+void BSTInsertSmallSmallSmall_test()
+{
+	bst_t *bst = BSTCreate(Int_Node_Compare, NULL);
+	
+	int a = 3;
+	int b = 2;
+	int c = 1;
+	
+	expect_int(BSTIsEmpty(bst), TRUE, "BSTInsert_test1");
+	
+	BSTInsert(bst, &a);
+	
+	expect_int(BSTIsEmpty(bst), FALSE, "BSTInsert_test2");	
+	
+	BSTInsert(bst, &b);
+	
+	expect_size_t(BSTSize(bst), 2, "BSTInsert_test3");
+	
+	BSTInsert(bst, &c);	
+	
+	expect_size_t(BSTSize(bst), 3, "BSTInsert_test3");	
+}
+
+void BSTInsertMiddleSmallerBigger_test()
+{
+	bst_t *bst = BSTCreate(Int_Node_Compare, NULL);
+	
+	int a = 5;
+	int b = 4;
+	int c = 7;
+	
+	expect_int(BSTIsEmpty(bst), TRUE, "BSTInsert_test1");
+	
+	BSTInsert(bst, &a);
+	
+	expect_int(BSTIsEmpty(bst), FALSE, "BSTInsert_test2");	
+	
+	BSTInsert(bst, &b);
+	
+	expect_size_t(BSTSize(bst), 2, "BSTInsert_test3");
+	
+	BSTInsert(bst, &c);	
+	
+	expect_size_t(BSTSize(bst), 3, "BSTInsert_test3");	
+
+}
+
+void BSTCreate_test()
+{
+	bst_t *new_bst = BSTCreate(Int_Node_Compare, NULL);
+}
+
+int Int_Node_Compare(void *iter_data, void *new_data, void *param)
+{
+	int result = 0;
+	int iter_int_data = *(int *)iter_data;
+	int new_int_data = *(int *)new_data;	
+	UNUSED(param);
+
+	assert(NULL != iter_data);
+	assert(NULL != new_data);
+	
+	if (iter_int_data > new_int_data)
+	{
+		result = 1;
+	}
+
+	else if (iter_int_data < new_int_data)
+	{
+		result = -1;
+	}
+	else /* iter_int_data == new_int_data */
+	{
+		result = 0;
+	}
+	
+	return result;
 }
