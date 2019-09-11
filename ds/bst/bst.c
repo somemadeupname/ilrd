@@ -503,7 +503,7 @@ bst_iter_t BSTBegin(const bst_t *bst)
 	for (cur_iter = GetLeftChild(bst->dummy_head);/*TODO needs to be implemented in insert of first node (root)*/
 		 HasLeftChild(cur_iter);
 		 cur_iter = GetLeftChild(cur_iter))
-		 { /* Empty Body*/ }
+		 { /* Empty Body */ }
 		 
 	return cur_iter;	
 }
