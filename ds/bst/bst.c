@@ -156,11 +156,16 @@ bst_iter_t BSTInsert(bst_t *bst, void *data)
 	return new_node;
 }
 
-/*
- * Removes iter from tree
- * Param @iter_to_remove - iter to remove
- * Return : --
- */
+/* helper for remove */
+void CopyDataFromNodeToNode(bst_iter_t dest, bst_iter_t src)
+{
+	assert(NULL != dest);
+	assert(NULL != src);	
+	
+	dest->data = BSTGetData(src);
+}
+
+/* Removes iter from tree */
 void BSTRemove(bst_iter_t iter_to_remove)
 {
 	assert(NULL != iter_to_remove);
@@ -173,7 +178,7 @@ void BSTRemove(bst_iter_t iter_to_remove)
 	
 	if (IsLeaf(iter_to_remove))
 	{
-		bst_iter_t parent = GetParent(iter_to_remove);
+		bst_iter_t parent = GetParent(iter_to_remove); /*TODO consider moving upwards*/
 		
 		if (IsLeftChild(iter_to_remove))
 		{
@@ -183,13 +188,71 @@ void BSTRemove(bst_iter_t iter_to_remove)
 		{
 			parent->right = NULL;
 		}
+		
 		DestroyBSTNode(iter_to_remove);
 	}
-	/* if only has one child */
-	else if ()
+	/* only has one child */
+	else if (HasLeftChild(iter_to_remove) && !HasRightChild(iter_to_remove))
+	{
+		bst_iter_t parent = GetParent(iter_to_remove);
+		if (IsLeftChild(iter_to_remove))
+		{
+			parent->left = GetLeftChild(iter_to_remove);
+		}
+		else /* IsRightChild */
+		{
+			parent->right = GetLeftChild(iter_to_remove);
+		}
+		
+		DestroyBSTNode(iter_to_remove);
+	}
 	
-	
-	
+	else if (HasRightChild(iter_to_remove) && !HasLeftChild(iter_to_remove))
+	{
+		bst_iter_t parent = GetParent(iter_to_remove);
+		if (IsLeftChild(iter_to_remove))
+		{
+			parent->left = GetRightChild(iter_to_remove);
+		}
+		else /* IsRightChild */
+		{
+			parent->right = GetRightChild(iter_to_remove);
+		}
+		
+		DestroyBSTNode(iter_to_remove);
+	}
+	else /* has two children */
+	{
+		bst_iter_t prev = BSTPrev(iter_to_remove);
+		bst_iter_t prev_parent = GetParent(prev);
+
+		CopyDataFromNodeToNode(iter_to_remove, prev);		
+		
+		if (IsLeaf(prev))
+		{
+			if (IsLeftChild(prev))
+			{
+				parent->left = NULL;
+			}
+			else /* IsRightChild */
+			{
+				parent->right = NULL;
+			}
+		
+		DestroyBSTNode(prev);
+		}
+		
+		else /* prev has a child */
+		{
+			/* can only be left child otherwise its right
+			   child will be the prev iter				 */			
+			bst_iter_t child = GetLeftChild(prev);
+			prev_parent->left = child;
+			child->parent = prev_parent;
+
+			DestroyBSTNode(prev);
+		}
+	}
 }
 
 /* Perform <action_func> for each element in <bst>, stops if action returns
@@ -338,6 +401,7 @@ static void DestroyBSTNode(bst_node *node_to_destroy)
 	{
 		return;
 	}
+	
 	DestroyBSTNode(GetLeftChild(node_to_destroy));
 	DestroyBSTNode(GetRightChild(node_to_destroy));	
 	free(node_to_destroy);
