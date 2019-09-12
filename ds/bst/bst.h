@@ -74,7 +74,7 @@ int BSTIsEmpty(const bst_t *bst);
  */
 typedef int (*action_func_t)(void *iter_data, void *param);
 
-int BSTForEach(bst_t *bst, void *param, bst_iter_t from, bst_iter_t to, 
+int BSTForEach(void *param, bst_iter_t from, bst_iter_t to, 
 			   action_func_t action_func);
 
 /*

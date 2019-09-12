@@ -1,7 +1,7 @@
 
 /****************************
  *   Author   : Ran Shieber *
- *   Reviewer : 		    *
+ *   Reviewer : Dor Tambour *
  *	 Status   : Sent	    *
  ****************************/
 #include <assert.h> /* assert */
@@ -50,7 +50,15 @@ static bst_iter_t GetRightChild(bst_iter_t iter);
 static bst_iter_t GetParent(bst_iter_t iter);
 static int IsLeftChild(bst_iter_t iter);
 static int IsRightChild(bst_iter_t iter);
-static int IsLeaf(bst_iter_t iter);				 		
+static int IsLeaf(bst_iter_t iter);	
+
+static void CopyDataFromNodeToNode(bst_iter_t dest, bst_iter_t src);			 		
+
+/*************************************************************************
+																		 *
+				      		MAIN FUNCTIONS							 	 *
+																		 *
+*************************************************************************/
 
 /* Create new binary search tree */
 bst_t *BSTCreate(cmp_func_t cmp_func, void *param)
@@ -86,11 +94,38 @@ bst_t *BSTCreate(cmp_func_t cmp_func, void *param)
 /* Destroy binary search tree  */
 void BSTDestroy(bst_t *bst)
 {
+	bst_iter_t cur = BSTGetRoot(bst);
+
 	assert(NULL != bst);
 	
-	if (!BSTIsEmpty(bst))
+	while (!BSTIsEmpty(bst))
 	{
-		DestroyBSTNode(BSTGetRoot(bst));
+		if (IsLeaf(cur))
+		{
+			bst_iter_t prev_parent = GetParent(cur);
+			if (IsRightChild(cur))
+			{
+				prev_parent->right = NULL;
+			}
+			else /* cur is left child */
+			{
+				prev_parent->left = NULL;
+			}
+			
+			DestroyBSTNode(cur);
+			cur = prev_parent;
+		}
+		else /* cur is parent */
+		{
+			if (HasLeftChild(cur))
+			{
+				cur = GetLeftChild(cur);
+			}
+			else /* has right child */
+			{
+				cur = GetRightChild(cur);
+			}
+		}
 	}
 	
 	free(bst->dummy_head);
@@ -101,10 +136,10 @@ void BSTDestroy(bst_t *bst)
 bst_iter_t BSTInsert(bst_t *bst, void *data)
 {
 	bst_iter_t new_node = NULL;
+	
 	assert(NULL != bst);
 	
 	new_node = (bst_iter_t)CreateBSTNode(NULL, NULL, NULL, data);
-	
 	if (NULL == new_node)
 	{
 		return NULL;
@@ -117,14 +152,14 @@ bst_iter_t BSTInsert(bst_t *bst, void *data)
 	}
 	else
 	{
-		bst_iter_t cur_tree_node = GetLeftChild(bst->dummy_head);
+		bst_iter_t cur_tree_node = BSTGetRoot(bst);
 		int is_insertion_done = FALSE;
 		
 		while (FALSE == is_insertion_done)
 		{
 			int result = bst->cmp_func(BSTGetData(cur_tree_node),
-													BSTGetData(new_node), NULL);
-			if (1 == result)
+											  BSTGetData(new_node), bst->param);
+			if (0 < result)
 			{
 				if (HasLeftChild(cur_tree_node))
 				{
@@ -156,13 +191,14 @@ bst_iter_t BSTInsert(bst_t *bst, void *data)
 	return new_node;
 }
 
-/* helper for remove */
-void CopyDataFromNodeToNode(bst_iter_t dest, bst_iter_t src)
+/* helper for remove TODO swap Nodes */
+static void CopyDataFromNodeToNode(bst_iter_t dest, bst_iter_t src)
 {
 	assert(NULL != dest);
-	assert(NULL != src);	
+	assert(NULL != src);
 	
 	dest->data = BSTGetData(src);
+	
 }
 
 /* Removes iter from tree */
@@ -170,15 +206,9 @@ void BSTRemove(bst_iter_t iter_to_remove)
 {
 	assert(NULL != iter_to_remove);
 	
-	/* if iter_to_remove is not in the bst */
-	if (NULL == BSTFind(iter_to_remove))
-	{
-		return;
-	}
-	
 	if (IsLeaf(iter_to_remove))
 	{
-		bst_iter_t parent = GetParent(iter_to_remove); /*TODO consider moving upwards*/
+		bst_iter_t parent = GetParent(iter_to_remove);
 		
 		if (IsLeftChild(iter_to_remove))
 		{
@@ -195,30 +225,37 @@ void BSTRemove(bst_iter_t iter_to_remove)
 	else if (HasLeftChild(iter_to_remove) && !HasRightChild(iter_to_remove))
 	{
 		bst_iter_t parent = GetParent(iter_to_remove);
+		bst_iter_t child = GetLeftChild(iter_to_remove);
+		
 		if (IsLeftChild(iter_to_remove))
 		{
-			parent->left = GetLeftChild(iter_to_remove);
+			parent->left = child;
+
 		}
 		else /* IsRightChild */
 		{
-			parent->right = GetLeftChild(iter_to_remove);
+			parent->right = child;
 		}
 		
+		child->parent = parent;
 		DestroyBSTNode(iter_to_remove);
 	}
 	
 	else if (HasRightChild(iter_to_remove) && !HasLeftChild(iter_to_remove))
 	{
 		bst_iter_t parent = GetParent(iter_to_remove);
+		bst_iter_t child = GetRightChild(iter_to_remove);
+				
 		if (IsLeftChild(iter_to_remove))
 		{
-			parent->left = GetRightChild(iter_to_remove);
+			parent->left = child;
 		}
 		else /* IsRightChild */
 		{
-			parent->right = GetRightChild(iter_to_remove);
+			parent->right = child;
 		}
 		
+		child->parent = parent;
 		DestroyBSTNode(iter_to_remove);
 	}
 	else /* has two children */
@@ -232,13 +269,13 @@ void BSTRemove(bst_iter_t iter_to_remove)
 		{
 			if (IsLeftChild(prev))
 			{
-				parent->left = NULL;
+				prev_parent->left = NULL;
 			}
 			else /* IsRightChild */
 			{
-				parent->right = NULL;
+				prev_parent->right = NULL;
 			}
-		
+
 		DestroyBSTNode(prev);
 		}
 		
@@ -250,15 +287,14 @@ void BSTRemove(bst_iter_t iter_to_remove)
 			prev_parent->left = child;
 			child->parent = prev_parent;
 
-			DestroyBSTNode(prev);
+		DestroyBSTNode(prev);
 		}
 	}
 }
 
 /* Perform <action_func> for each element in <bst>, stops if action returns
 non-zero. */
-int BSTForEach(bst_t *bst,
-			   void *param,
+int BSTForEach(void *param,
 			   bst_iter_t from,
 			   bst_iter_t to, 
 			   action_func_t action_func)
@@ -266,7 +302,6 @@ int BSTForEach(bst_t *bst,
 	bst_iter_t cur_iter = NULL;
 	int return_status = 0;
 	
-	assert(NULL != bst);
 	assert(NULL != action_func);
 	assert(NULL != from);
 	assert(NULL != to);
@@ -282,7 +317,7 @@ int BSTForEach(bst_t *bst,
 	return return_status;
 }			   
 
-/* helper for BSTSize */
+/* helper for BSTSize - increases counter(param) when entering the function */
 static int NodeCounter(void *iter_data, void *param)
 {
 	UNUSED(iter_data);
@@ -292,11 +327,19 @@ static int NodeCounter(void *iter_data, void *param)
 
 static bst_iter_t BSTGetRoot(const bst_t *bst)
 {
+	bst_iter_t root = bst->dummy_head;
+	
 	assert (NULL != bst);
 	
-	return bst->dummy_head->left;
+	if (NULL != bst->dummy_head->left)
+	{
+		root = bst->dummy_head->left;
+	}
+	
+	return root;
 }
 
+/* Find <data> in binary tree <bst> */
 bst_iter_t BSTFind(bst_t *bst, void *data_to_find)
 {
 	
@@ -305,12 +348,13 @@ bst_iter_t BSTFind(bst_t *bst, void *data_to_find)
 	bst_iter_t cur_iter = NULL;
 	assert(NULL != bst);
 	
+	result_iter = BSTEnd(bst);
 	cur_iter = BSTGetRoot(bst);
 	
 	while (continue_search)
 	{
-		int cmp = bst->cmp_func(BSTGetData(cur_iter), data_to_find, NULL);
-		if (1 == cmp)
+		int cmp = bst->cmp_func(BSTGetData(cur_iter), data_to_find, bst->param);
+		if (0 < cmp)
 		{
 			if (HasLeftChild(cur_iter))
 			{
@@ -321,7 +365,7 @@ bst_iter_t BSTFind(bst_t *bst, void *data_to_find)
 				continue_search = FALSE;
 			}
 		}
-		else if (-1 == cmp)
+		else if (0 > cmp)
 		{
 			if (HasRightChild(cur_iter))
 			{
@@ -355,7 +399,7 @@ size_t BSTSize(const bst_t *bst)
 	from = BSTBegin(bst);
 	to = BSTEnd(bst);
 	
-	BSTForEach((bst_t *)bst, counter, from, to, NodeCounter);
+	BSTForEach(counter, from, to, NodeCounter);
 	
 	return *counter;
 }
@@ -397,13 +441,6 @@ static bst_node *CreateBSTNode(bst_node *left,
 /* Destroy a bst node */
 static void DestroyBSTNode(bst_node *node_to_destroy)
 {
-	if (NULL == node_to_destroy)
-	{
-		return;
-	}
-	
-	DestroyBSTNode(GetLeftChild(node_to_destroy));
-	DestroyBSTNode(GetRightChild(node_to_destroy));	
 	free(node_to_destroy);
 }
 
@@ -413,7 +450,7 @@ static void DestroyBSTNode(bst_node *node_to_destroy)
 																		 *
 *************************************************************************/
 
-/*  */
+/* check if iter has a left child  */
 static int HasLeftChild(bst_iter_t iter)
 {
 	int result = FALSE;
@@ -427,7 +464,7 @@ static int HasLeftChild(bst_iter_t iter)
 	return result;
 }
 
-/*  */
+/* check if iter has a right child  */
 static int HasRightChild(bst_iter_t iter)
 {
 	int result = FALSE;
@@ -441,7 +478,7 @@ static int HasRightChild(bst_iter_t iter)
 	return result;
 }
 
-/*  */
+/* left child getter */
 static bst_iter_t GetLeftChild(bst_iter_t iter)
 {
 	assert(NULL != iter);
@@ -449,7 +486,7 @@ static bst_iter_t GetLeftChild(bst_iter_t iter)
 	return iter->left;
 }
 
-/*  */
+/* right child getter */
 static bst_iter_t GetRightChild(bst_iter_t iter)
 {
 	assert(NULL != iter);
@@ -457,7 +494,7 @@ static bst_iter_t GetRightChild(bst_iter_t iter)
 	return iter->right;
 }
 
-/*  */
+/* parent getter */
 static bst_iter_t GetParent(bst_iter_t iter)
 {
 	assert(NULL != iter);
@@ -465,7 +502,7 @@ static bst_iter_t GetParent(bst_iter_t iter)
 	return iter->parent;
 }
 
-/*  */
+/* checks if iter is a left child */
 static int IsLeftChild(bst_iter_t iter)
 {
 	assert(NULL != iter);
@@ -478,7 +515,7 @@ static int IsLeftChild(bst_iter_t iter)
 	return BSTIsSameIter(iter, GetLeftChild(GetParent(iter)));
 }
 
-/*  */
+/* checks if iter is a right child */
 static int IsRightChild(bst_iter_t iter)
 {
 	assert(NULL != iter);
@@ -491,7 +528,7 @@ static int IsRightChild(bst_iter_t iter)
 	return BSTIsSameIter(iter, GetRightChild(GetParent(iter)));	
 }
 
-/*  */
+/* checks if iter is a leaf */
 static int IsLeaf(bst_iter_t iter)
 {
 	assert(NULL != iter);
@@ -499,11 +536,11 @@ static int IsLeaf(bst_iter_t iter)
 	return (NULL == GetRightChild(iter) && (NULL == GetLeftChild(iter)));
 }
 
-/*************************************************************************
-																		 *
-				      		ITER FUNCTIONS							 	 *
-																		 *
-*************************************************************************/
+/******************************************************************************
+																		      *
+				      		ITER FUNCTIONS							 	      *
+																		      *
+******************************************************************************/
 /* get iter to next value */
 bst_iter_t BSTNext(bst_iter_t iter)
 {
@@ -522,13 +559,11 @@ bst_iter_t BSTNext(bst_iter_t iter)
 		
 		next = cur_iter;
 	}
-	
-	else if (!HasRightChild(iter) && IsLeftChild(iter))
+	else if (IsLeftChild(iter))
 	{
 		next = GetParent(iter);
 	}
-
-	else if (IsLeaf(iter) && IsRightChild(iter))
+	else if (IsRightChild(iter))
 	{
 		bst_iter_t cur_iter = iter;
 		
@@ -550,7 +585,7 @@ bst_iter_t BSTPrev(bst_iter_t iter)
 
 	assert(NULL != iter);
 	
-	if (HasLeftChild(iter)/* || (IsLeaf(iter) && IsRightChild(iter))*/)/*TODO*/
+	if (HasLeftChild(iter))
 	{
 		bst_iter_t cur_iter = GetLeftChild(iter);
 		
@@ -558,10 +593,11 @@ bst_iter_t BSTPrev(bst_iter_t iter)
 		{
 			cur_iter = GetRightChild(cur_iter);
 		}
+		
 		prev = cur_iter;
 	}
 	
-	else if (HasRightChild(iter)/* || (IsLeaf(iter) && IsLeftChild(iter))*/)/*TODO*/
+	else if (HasRightChild(iter))
 	{
 		if (IsRightChild(iter))
 		{
@@ -615,9 +651,8 @@ bst_iter_t BSTBegin(const bst_t *bst)
 	bst_iter_t cur_iter = NULL;
 	
 	assert(NULL != bst);
-	assert(FALSE == BSTIsEmpty(bst));
 	
-	for (cur_iter = GetLeftChild(bst->dummy_head);/*TODO needs to be implemented in insert of first node (root)*/
+	for (cur_iter = BSTGetRoot(bst);
 		 HasLeftChild(cur_iter);
 		 cur_iter = GetLeftChild(cur_iter))
 		 { /* Empty Body */ }
