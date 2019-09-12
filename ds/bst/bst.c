@@ -36,11 +36,12 @@ struct bst
 				      FORWARD DECLARATIONS								 *
 																		 *
 *************************************************************************/
+static bst_iter_t BSTGetRoot(const bst_t *bst);
 static bst_node *CreateBSTNode(bst_node *left,
 						 		bst_node *right,
 						 		bst_node *parent,
 						 		void *data);
-static void *DestroyBSTNode(bst_node *node_to_destroy);
+static void DestroyBSTNode(bst_node *node_to_destroy);
 
 static int HasLeftChild(bst_iter_t iter);
 static int HasRightChild(bst_iter_t iter);
@@ -60,7 +61,7 @@ bst_t *BSTCreate(cmp_func_t cmp_func, void *param)
 
 	assert(NULL != cmp_func);
 	
-	dummy_head = (bst_iter_t) CreateBSTNode(NULL,NULL,NULL,NULL);
+	dummy_head = (bst_iter_t)CreateBSTNode(NULL,NULL,NULL,NULL);
 	if (NULL == dummy_head)
 	{
 		return NULL;
@@ -69,7 +70,8 @@ bst_t *BSTCreate(cmp_func_t cmp_func, void *param)
 	new_bst = (bst_t *)malloc(sizeof(bst_t));
 	if (NULL == new_bst)
 	{
-		dummy_head = DestroyBSTNode((bst_node *)dummy_head);
+		DestroyBSTNode((bst_node *)dummy_head);
+		dummy_head = NULL;
 		return NULL;
 	}
 	
@@ -79,6 +81,20 @@ bst_t *BSTCreate(cmp_func_t cmp_func, void *param)
 	new_bst->param = param;	
 	
 	return new_bst;
+}
+
+/* Destroy binary search tree  */
+void BSTDestroy(bst_t *bst)
+{
+	assert(NULL != bst);
+	
+	if (!BSTIsEmpty(bst))
+	{
+		DestroyBSTNode(BSTGetRoot(bst));
+	}
+	
+	free(bst->dummy_head);
+	free(bst);
 }
 
 /* Insert new element to tree */
@@ -99,16 +115,15 @@ bst_iter_t BSTInsert(bst_t *bst, void *data)
 		new_node->parent = bst->dummy_head;
 		bst->dummy_head->left = new_node;
 	}
-	
 	else
 	{
 		bst_iter_t cur_tree_node = GetLeftChild(bst->dummy_head);
-		int insertion_done = FALSE;
+		int is_insertion_done = FALSE;
 		
-		while (FALSE == insertion_done)
+		while (FALSE == is_insertion_done)
 		{
-			int result = bst->cmp_func(BSTGetData(cur_tree_node),BSTGetData(new_node), NULL);
-			
+			int result = bst->cmp_func(BSTGetData(cur_tree_node),
+													BSTGetData(new_node), NULL);
 			if (1 == result)
 			{
 				if (HasLeftChild(cur_tree_node))
@@ -119,7 +134,7 @@ bst_iter_t BSTInsert(bst_t *bst, void *data)
 				{
 					new_node->parent = cur_tree_node;
 					cur_tree_node->left = new_node;
-					insertion_done = TRUE;
+					is_insertion_done = TRUE;
 				}
 			}
 			else /* if equals or is after */
@@ -132,14 +147,49 @@ bst_iter_t BSTInsert(bst_t *bst, void *data)
 				{
 					new_node->parent = cur_tree_node;
 					cur_tree_node->right = new_node;
-					
-					insertion_done = TRUE;
+					is_insertion_done = TRUE;
 				}
 			}
 		}
 	}
 	
 	return new_node;
+}
+
+/*
+ * Removes iter from tree
+ * Param @iter_to_remove - iter to remove
+ * Return : --
+ */
+void BSTRemove(bst_iter_t iter_to_remove)
+{
+	assert(NULL != iter_to_remove);
+	
+	/* if iter_to_remove is not in the bst */
+	if (NULL == BSTFind(iter_to_remove))
+	{
+		return;
+	}
+	
+	if (IsLeaf(iter_to_remove))
+	{
+		bst_iter_t parent = GetParent(iter_to_remove);
+		
+		if (IsLeftChild(iter_to_remove))
+		{
+			parent->left = NULL;
+		}
+		else /* IsRightChild */
+		{
+			parent->right = NULL;
+		}
+		DestroyBSTNode(iter_to_remove);
+	}
+	/* if only has one child */
+	else if ()
+	
+	
+	
 }
 
 /* Perform <action_func> for each element in <bst>, stops if action returns
@@ -189,31 +239,30 @@ bst_iter_t BSTFind(bst_t *bst, void *data_to_find)
 	
 	int continue_search = 1;
 	bst_iter_t result_iter = NULL;
-	bst_iter_t cur_node = NULL;
+	bst_iter_t cur_iter = NULL;
 	assert(NULL != bst);
 	
-	cur_node = BSTGetRoot(bst);
+	cur_iter = BSTGetRoot(bst);
 	
 	while (continue_search)
 	{
-		int cmp = bst->cmp_func(BSTGetData(cur_node), data_to_find, NULL);
+		int cmp = bst->cmp_func(BSTGetData(cur_iter), data_to_find, NULL);
 		if (1 == cmp)
 		{
-			if (HasLeftChild(cur_node))
+			if (HasLeftChild(cur_iter))
 			{
-				cur_node = GetLeftChild(cur_node);
+				cur_iter = GetLeftChild(cur_iter);
 			}
 			else
 			{
 				continue_search = FALSE;
 			}
 		}
-		
 		else if (-1 == cmp)
 		{
-			if (HasRightChild(cur_node))
+			if (HasRightChild(cur_iter))
 			{
-				cur_node = GetRightChild(cur_node);
+				cur_iter = GetRightChild(cur_iter);
 			}
 			else
 			{
@@ -222,7 +271,7 @@ bst_iter_t BSTFind(bst_t *bst, void *data_to_find)
 		}
 		else /* found a match */
 		{
-			result_iter = cur_node;
+			result_iter = cur_iter;
 			continue_search = FALSE;
 		}
 	}
@@ -283,11 +332,15 @@ static bst_node *CreateBSTNode(bst_node *left,
 }
 
 /* Destroy a bst node */
-static void *DestroyBSTNode(bst_node *node_to_destroy)
+static void DestroyBSTNode(bst_node *node_to_destroy)
 {
+	if (NULL == node_to_destroy)
+	{
+		return;
+	}
+	DestroyBSTNode(GetLeftChild(node_to_destroy));
+	DestroyBSTNode(GetRightChild(node_to_destroy));	
 	free(node_to_destroy);
-	
-	return NULL;
 }
 
 /*************************************************************************

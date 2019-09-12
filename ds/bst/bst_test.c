@@ -87,7 +87,7 @@ int main()
 	BSTCreate_test();
 	
 	BSTInsertMiddleSmallerBigger_test();		
-
+	
 	BSTInsertSmallSmallSmall_test();	
 	
 	BSTInsertBigBigBig_test();
@@ -115,6 +115,8 @@ void BSTFind_element_is_in_tree_test()
 	BSTInsert(bst, &c);
 
 	expect_NULL(BSTFind(bst,&unadded), "BSTFind_element_is_in_tree_test1");
+	
+	BSTDestroy(bst);		
 }
 
 void BSTFind_element_is_NOT_in_tree_test()
@@ -125,8 +127,6 @@ bst_t *bst = BSTCreate(Int_Node_Compare, NULL);
 	int b = 97;
 	int c = 301;
 	int g = 13;
-	
-	expect_size_t(BSTSize(bst), 0, "BSTFind_element_is_NOT_in_tree_test");
 	
 	BSTInsert(bst, &a);
 	
@@ -144,7 +144,7 @@ bst_t *bst = BSTCreate(Int_Node_Compare, NULL);
 	
 	expect_int(g, b, "BSTFind_element_is_NOT_in_tree_test4");
 	
-	
+	BSTDestroy(bst);	
 }
 
 void BSTInsertBigBigBig_test()
@@ -168,6 +168,8 @@ void BSTInsertBigBigBig_test()
 	BSTInsert(bst, &c);	
 	
 	expect_size_t(BSTSize(bst), 3, "BSTInsert_test3");
+	
+	BSTDestroy(bst);		
 }
 
 void BSTInsertSmallSmallSmall_test()
@@ -191,6 +193,8 @@ void BSTInsertSmallSmallSmall_test()
 	BSTInsert(bst, &c);	
 	
 	expect_size_t(BSTSize(bst), 3, "BSTInsert_test3");	
+	
+	BSTDestroy(bst);		
 }
 
 void BSTInsertMiddleSmallerBigger_test()
@@ -214,12 +218,16 @@ void BSTInsertMiddleSmallerBigger_test()
 	BSTInsert(bst, &c);	
 	
 	expect_size_t(BSTSize(bst), 3, "BSTInsert_test3");	
+	
+	BSTDestroy(bst);	
 
 }
 
 void BSTCreate_test()
 {
 	bst_t *new_bst = BSTCreate(Int_Node_Compare, NULL);
+	
+	BSTDestroy(new_bst);
 }
 
 int Int_Node_Compare(void *iter_data, void *new_data, void *param)
