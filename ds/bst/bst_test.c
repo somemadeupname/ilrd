@@ -78,6 +78,8 @@ void BSTInsertBigBigBig_test();
 void BSTFind_element_is_in_tree_test();
 void BSTFind_element_is_NOT_in_tree_test();
 
+void BSTRemove_test();
+
 
 
 int main()
@@ -96,7 +98,33 @@ int main()
 	
 	BSTFind_element_is_NOT_in_tree_test();
 	
+	BSTRemove_test();
+	
 	return 0;
+}
+
+void BSTRemove_test()
+{
+	bst_t *bst = BSTCreate(Int_Node_Compare, NULL);	
+	
+	int a = 15;
+	int b = 97;
+	int c = 301;
+	bst_iter_t iter_to_remove = NULL;
+	
+	iter_to_remove = BSTInsert(bst, &a);
+	
+	BSTInsert(bst, &b);
+	
+	BSTInsert(bst, &c);	
+	
+	expect_size_t(BSTSize(bst), 3, "BSTInsert_test1");
+	
+	BSTRemove(iter_to_remove);
+	
+	expect_size_t(BSTSize(bst), 2, "BSTInsert_test1");	
+	
+	BSTDestroy(bst);			
 }
 
 void BSTFind_element_is_in_tree_test()
