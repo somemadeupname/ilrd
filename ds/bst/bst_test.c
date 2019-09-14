@@ -333,7 +333,7 @@ void BSTFind_element_is_in_tree_test()
 	
 	BSTInsert(bst, &c);
 
-	expect_NULL(BSTFind(bst,&unadded), "BSTFind_element_is_in_tree_test1");
+	expect_int(BSTFind(bst,&unadded) == BSTEnd(bst), TRUE, "BSTFind_element_is_in_tree_test1");
 	
 	BSTDestroy(bst);		
 }
