@@ -28,14 +28,14 @@ echo -e "CC=gcc
 RELEASE_FLAGS=-ansi -pedantic-errors -Wall -Wextra -DNDEBUG -O3
 DEBUG_FLAGS=-ansi -pedantic-errors -Wall -Wextra -g
 
-DEPS= $1.c $1.c
+DEPS= $1_test.c $1.c
 
 all: $1_release $1_debug
 
-sorting_release: $1.c $1_test.c
+$1_release: $1.c $1_test.c
 	\$(CC) \$(RELEASE_FLAGS) \$(DEPS) -o $1_release.out
 
-sorting_debug: $1.c $1_test.c
+$1_debug: $1.c $1_test.c
 	\$(CC) \$(DEBUG_FLAGS) \$(DEPS) -o $1_debug.out
 
 clean:
