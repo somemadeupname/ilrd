@@ -1,10 +1,8 @@
 #include <math.h> /* pow */
 
-typedef enum calculation_status /*TODO should go to h file */
-{
-	CALCULATION_SUCCESS,
-	CALCULATION_FAIL
-} calculation_status_t;
+#include "arithmetic_functions.h"
+
+#define UNUSED(x) (void)(x)
 
 /*************************************************************************
 								 										 *
@@ -34,7 +32,7 @@ calculation_status_t ArithmeticFunctionsDefault(double **left_operand, double ri
 }
 
 /* addition */
-calculation_status_t ArithmeticFunctionsAdd(double *left_operand, double right_operand)
+calculation_status_t ArithmeticFunctionsAdd(double **left_operand, double right_operand)
 {
 	**left_operand += right_operand;
 	
@@ -42,7 +40,7 @@ calculation_status_t ArithmeticFunctionsAdd(double *left_operand, double right_o
 }
 
 /* subtraction */
-calculation_status_t ArithmeticFunctionsSubtract(double *left_operand, double right_operand)
+calculation_status_t ArithmeticFunctionsSubtract(double **left_operand, double right_operand)
 {
 	**left_operand -= right_operand;
 	
@@ -50,7 +48,7 @@ calculation_status_t ArithmeticFunctionsSubtract(double *left_operand, double ri
 }
 
 /* multiplication */
-calculation_status_t ArithmeticFunctionsMultiply(double *left_operand, double right_operand)
+calculation_status_t ArithmeticFunctionsMultiply(double **left_operand, double right_operand)
 {
 	**left_operand *= right_operand;
 	
@@ -58,7 +56,7 @@ calculation_status_t ArithmeticFunctionsMultiply(double *left_operand, double ri
 }
 
 /* division */
-calculation_status_t ArithmeticFunctionsDivide(double *left_operand, double right_operand)
+calculation_status_t ArithmeticFunctionsDivide(double **left_operand, double right_operand)
 {
 	if (0 == right_operand)
 	{
@@ -71,7 +69,7 @@ calculation_status_t ArithmeticFunctionsDivide(double *left_operand, double righ
 }
 
 /* power */
-calculation_status_t ArithmeticFunctionsPower(double *base, double power)
+calculation_status_t ArithmeticFunctionsPower(double **base, double power)
 {
 	double temp_base = **base;
 	
