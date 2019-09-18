@@ -93,11 +93,19 @@ static void SetChild(bst_iter_t parent, child_side, bst_iter_t child)
 	switch (child_side)
 	{
 		case (LEFT):
-		parent->left_child = child;
-		break;
-		case (RIGHT)
-		parent->right_child = child;
-		break;
+		{
+			parent->left_child = child;
+			break;
+		}
+		case (RIGHT):
+		{
+			parent->right_child = child;
+			break;
+		}
+		default:
+		{
+			break;
+		}
 	}
 }
 
