@@ -226,7 +226,7 @@ calc_errno_t Fold(calc_stack_t *calc_stack)
 	
 	left_operand = StackPeek(calc_stack[NUMBERS]);
 	
-	calc_result = Precedence_Calc_LUT[operator].arith_fun(&left_operand, right_operand);
+	calc_result = ArithmeticLUT[operator].arith_fun(&left_operand, right_operand);
 	
 	return calc_result;
 }
@@ -266,9 +266,16 @@ calc_errno_t DefaultAction(char **input, calc_stack_t *calc_stack)
 }
 
 /*  PARSER *//* TODO */
-static char *ParseInput(char *input)
+static char *ParseSpaces(char *input)
 {
-	return strtod(input);
+	assert(NULL != input);
+	
+	while (isspace(input))
+	{
+		++(input);
+	}
+	
+	return input;
 }
 
 static void AdvanceExpression(char **expression)
@@ -283,7 +290,7 @@ static void AdvanceExpression(char **expression)
 *************************************************************************/
 calc_errno_t Calculator(const char *expression, double *result)
 {
-	char *input = *(char **)expression;
+	char *input = (char *)expression;
 	enum state current_state = WAIT_FOR_NUM;
 	calc_errno_t calc_errno = CALC_SUCCESS;
 	size_t stack_size = strlen(expression);
@@ -297,7 +304,7 @@ calc_errno_t Calculator(const char *expression, double *result)
 	
 	while ((CALC_SUCCESS == my_errno) && (END != current_state))
 	{
-		char *parsed_input = ParseInput(input);
+		char *parsed_input = ParseSpaces(input);
 		next_state = STATE_LUT[*input][current_state].func(input, &calc_errno, result);
 	}
 	
