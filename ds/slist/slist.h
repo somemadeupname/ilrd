@@ -135,5 +135,7 @@ slist_node_t *SListFindIntersection(const slist_node_t *node1,
 									const slist_node_t *node2);
 
 
+slist_node_t *SListFlipRecursive(slist_node_t *head);
+
 #endif /* __OL71_SLIST_H */
 

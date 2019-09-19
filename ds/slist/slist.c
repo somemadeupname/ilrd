@@ -20,8 +20,10 @@ slist_node_t *SListCreateNode(void *data, slist_node_t *next)
 	{
 		return NULL;
 	}
+	
 	head->next_node = next;
 	head->data = data;
+	
 	return head;
 }
 
@@ -169,6 +171,22 @@ slist_node_t *SListFlip(slist_node_t *head)
 		cur = next;
 	}
 	return prev;
+}
+
+slist_node_t *SListFlipRecursive(slist_node_t *head)
+{
+	slist_node_t *new_head = NULL;
+	
+	if (NULL == head->next_node)
+	{
+		return head;	
+	}
+	
+	new_head = SListFlip(head->next_node);
+	head->next_node->next_node = head;
+	head->next_node = NULL;
+
+	return new_head;
 }
 
 int SListHasLoop(const slist_node_t *head)
