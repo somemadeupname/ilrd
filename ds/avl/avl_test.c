@@ -1,3 +1,7 @@
+#include <stdio.h>
+#include <assert.h>
+
+#include "avl.h"
 
 #define START_RED printf("\033[1;31m");
 #define END_RED printf("\033[0m");
