@@ -142,7 +142,7 @@ typedef enum precedence
 	LOW,
 	MEDIUM,
 	HIGH,
-	HIGHEST/*RELEVANT? FIXME*/
+	HIGHEST
 } precedence_t;
 
 typedef calculation_status_t (*arithmetic_function)(double **left_operand, double right_num);
@@ -168,20 +168,23 @@ void InitArithmeticFuncLUT()
 	ArithmeticLUT['+'].precedence = LOW;
 	ArithmeticLUT['+'].arith_fun = ArithmeticFunctionsAdd;
 	
-	ArithmeticLUT['-'].precedence = DEFAULT;
+	ArithmeticLUT['-'].precedence = LOW;
 	ArithmeticLUT['-'].arith_fun = ArithmeticFunctionsSubtract;
 	
-	ArithmeticLUT['*'].precedence = DEFAULT;
+	ArithmeticLUT['*'].precedence = MEDIUM;
 	ArithmeticLUT['*'].arith_fun = ArithmeticFunctionsMultiply;
 
 	ArithmeticLUT['/'].precedence = MEDIUM;
 	ArithmeticLUT['/'].arith_fun = ArithmeticFunctionsDivide;
 	
-/*	ArithmeticLUT['('].precedence = DEFAULT;*/
+	ArithmeticLUT['('].precedence = LOWEST;
 /*	ArithmeticLUT['('].arith_fun = ArithmeticFunctionsDefault;*/
 
 	ArithmeticLUT[')'].precedence = LOWEST;
-	ArithmeticLUT[')'].arith_fun = ArithmeticFunctionsDefault;
+/*	ArithmeticLUT[')'].arith_fun = ArithmeticFunctionsDefault;*/
+	
+	ArithmeticLUT['^'].precedence = HIGHEST;
+	ArithmeticLUT['^'].arith_fun = ArithmeticFunctionsDefault;	
 }
 
 /*************************************************************************
