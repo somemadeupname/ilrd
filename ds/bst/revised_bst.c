@@ -31,7 +31,7 @@ struct bst
 	bst_iter_t dummy_head;
 };
 
-enum child_side{LEFT, RIGHT};
+typedef enum{LEFT, RIGHT} child_side;
 
 /*************************************************************************
 																		 *
@@ -53,6 +53,7 @@ static bst_iter_t GetParent(bst_iter_t iter);
 static int IsLeftChild(bst_iter_t iter);
 static int IsRightChild(bst_iter_t iter);
 static int IsLeaf(bst_iter_t iter);	
+static child_side GetChildSide(bst_iter_t iter);
 
 static void CopyDataFromNodeToNode(bst_iter_t dest, bst_iter_t src);
 
@@ -64,8 +65,9 @@ bst_t *BSTCreate(cmp_func_t cmp_func, void *param)
 
 	assert(NULL != cmp_func);
 	
-	dummy_head = (bst_iter_t)CreateBSTNode(NULL,NULL,NULL,NULL); /* XXX usually if casting is needed that means that the design is wrong. why not use dummy_head has pointer to iter? */
-	if (NULL == dummy_head) /* XXX the confusion comes here. what if we need to change the iter to something else than pointer to node? in case we had pointer to iter this statement would be valid and it wouldn't be valid otherwise */
+	dummy_head = CreateBSTNode(NULL,NULL,NULL,NULL);
+	
+	if (NULL == dummy_head) /* XXX the confusion comes here. what if we need to change the iter to something else than pointer to node? in case we had pointer to iter this statement would be valid and it wouldn't be valid otherwise */ /*XXX answer: normally i would agree but it's in the h file so it's been established.*/
 	{
 		return NULL;
 	}
@@ -73,7 +75,7 @@ bst_t *BSTCreate(cmp_func_t cmp_func, void *param)
 	new_bst = (bst_t *)malloc(sizeof(bst_t)); /* XXX more professional would be sizeof(*new_bst) */ /*TODO me: disagree */
 	if (NULL == new_bst)
 	{
-		DestroyBSTNode((bst_node_t *)dummy_head);
+		DestroyBSTNode(dummy_head);
 		dummy_head = NULL;
 		return NULL;
 	}
@@ -86,11 +88,9 @@ bst_t *BSTCreate(cmp_func_t cmp_func, void *param)
 	return new_bst;
 }
 
-static void SetChild(bst_iter_t parent, child_side, bst_iter_t child)
+static void SetChild(bst_iter_t parent, child_side side, bst_iter_t child)
 {
-	assert(NULL != iter);
-	
-	switch (child_side)
+	switch (side)
 	{
 		case (LEFT):
 		{
@@ -125,7 +125,6 @@ void BSTDestroy(bst_t *bst)
 			bst_iter_t prev_parent = GetParent(cur);
 			if (IsRightChild(cur))
 			{
-				/*prev_parent->right_child = NULL;*/ /*FIXME we would want to avoid that kind of assumptions that iter is pointer to node and make this set as a function that gets iterator and set it's right_child*/
 				SetChild(prev_parent, RIGHT, NULL);
 			}
 			else /* cur is left child */
@@ -153,6 +152,12 @@ void BSTDestroy(bst_t *bst)
 	free(bst); bst = NULL;
 }
 
+static void InsertNewChild(bst_iter_t new_node, bst_iter_t tree_node, child_side side)
+{
+	new_node->parent = tree_node;
+	SetChild(tree_node, side, new_node);
+}
+
 /* Insert new element to tree */
 bst_iter_t BSTInsert(bst_t *bst, void *data)
 {
@@ -160,7 +165,7 @@ bst_iter_t BSTInsert(bst_t *bst, void *data)
 	
 	assert(NULL != bst);
 	
-	new_node = (bst_iter_t)CreateBSTNode(NULL, NULL, NULL, data); /*XXX see line 66 but more than this. new node is not iter but bst_node. using it has iter is none-logical*/
+	new_node = CreateBSTNode(NULL, NULL, NULL, data);
 	if (NULL == new_node)
 	{
 		return NULL;
@@ -182,14 +187,13 @@ bst_iter_t BSTInsert(bst_t *bst, void *data)
 													BSTGetData(new_node), bst->param);
 			if (0 < cmp_result)
 			{
-				if (HasLeftChild(cur_tree_node)) /*XXX lines 158-167 and lines 171-180 is double code*/
+				if (HasLeftChild(cur_tree_node)) /*XXX lines 158-167 and lines 171-180 is double code*/ /*XXX answer: expedited to new service funcion InsertNewChild. doing more would have forced a greater change in implementation. */
 				{
 					cur_tree_node = GetLeftChild(cur_tree_node);
 				}
 				else
 				{
-					new_node->parent = cur_tree_node;
-					cur_tree_node->left_child = new_node;
+					InsertNewChild(new_node, cur_tree_node, LEFT);
 					is_insertion_done = TRUE;
 				}
 			}
@@ -201,8 +205,7 @@ bst_iter_t BSTInsert(bst_t *bst, void *data)
 				}
 				else
 				{
-					new_node->parent = cur_tree_node;
-					cur_tree_node->right_child = new_node;
+					InsertNewChild(new_node, cur_tree_node, RIGHT);
 					is_insertion_done = TRUE;
 				}
 			}
@@ -228,75 +231,33 @@ void BSTRemove(bst_iter_t iter_to_remove)
 	
 	if (IsLeaf(iter_to_remove))
 	{
-		bst_iter_t parent = GetParent(iter_to_remove);
-		
-		if (IsLeftChild(iter_to_remove))
-		{
-			parent->left_child = NULL;
-		}
-		else /* IsRightChild */
-		{
-			parent->right_child = NULL;
-		}
-		
-		DestroyBSTNode(iter_to_remove);
+		SetChild(GetParent(iter_to_remove), GetChildSide(iter_to_remove), NULL);
 	}
-	/* only has one child */
+		/* only has one child */
 	else if (HasLeftChild(iter_to_remove) && !HasRightChild(iter_to_remove))
 	{
 		bst_iter_t parent = GetParent(iter_to_remove);
 		bst_iter_t child = GetLeftChild(iter_to_remove);
-		
-		if (IsLeftChild(iter_to_remove))
-		{
-			parent->left_child = child;
-
-		}
-		else /* IsRightChild */
-		{
-			parent->right_child = child;
-		}
-		
-		child->parent = parent;
-		DestroyBSTNode(iter_to_remove);
+		SetChild(parent, GetChildSide(iter_to_remove), child);
+		child->parent = parent;		
 	}
 	
 	else if (HasRightChild(iter_to_remove) && !HasLeftChild(iter_to_remove))
 	{
-		bst_iter_t parent = GetParent(iter_to_remove);
-		bst_iter_t child = GetRightChild(iter_to_remove);
-				
-		if (IsLeftChild(iter_to_remove))
-		{
-			parent->left_child = child;
-		}
-		else /* IsRightChild */
-		{
-			parent->right_child = child;
-		}
-		
-		child->parent = parent;
-		DestroyBSTNode(iter_to_remove);
+		bst_iter_t child = GetRightChild(iter_to_remove);		
+		SetChild(GetParent(iter_to_remove), GetChildSide(iter_to_remove), child);
+		child->parent = GetParent(iter_to_remove);
 	}
 	else /* has two children */
 	{
 		bst_iter_t prev = BSTPrev(iter_to_remove);
-		bst_iter_t prev_parent = GetParent(prev);
 
 		CopyDataFromNodeToNode(iter_to_remove, prev);
 
 		if (IsLeaf(prev))
 		{
-			if (IsLeftChild(prev))
-			{
-				prev_parent->left_child = NULL;
-			}
-			else /* IsRightChild */
-			{
-				prev_parent->right_child = NULL;
-			}
-
-		DestroyBSTNode(prev);
+			SetChild(GetParent(prev), GetChildSide(prev), NULL);
+			iter_to_remove = prev;
 		}
 		
 		else /* prev has a child */
@@ -304,12 +265,12 @@ void BSTRemove(bst_iter_t iter_to_remove)
 			/* can only be left child otherwise its right
 			   child will be the prev iter				 */			
 			bst_iter_t child = GetLeftChild(prev);
-			prev_parent->left_child = child;
-			child->parent = prev_parent;
-
-		DestroyBSTNode(prev);
+			SetChild(GetParent(prev), GetChildSide(prev), child);
+			child->parent = GetParent(prev);
+			iter_to_remove = prev;
 		}
 	}
+	DestroyBSTNode(iter_to_remove);
 } /*XXX Jesus Christ i don't even know where to begin. many double codes that you can take out to functions*/
 
 /* Perform <action_func> for each element in <bst>, stops if action returns
@@ -353,7 +314,7 @@ static bst_iter_t BSTGetRoot(const bst_t *bst)
 	
 	root = bst->dummy_head;
 	
-	if (NULL != bst->dummy_head->left_child) /*XXX do we really need to check that each time we want the root? it's wasty condition, who are you defending?*/
+	if (NULL != bst->dummy_head->left_child) /*XXX do we really need to check that each time we want the root? it's wasty condition, who are you defending?*/ /*XXX answer: I'm not sure but it crashes if i don't do it and i need to do calculator */
 	{
 		root = bst->dummy_head->left_child;
 	}
@@ -556,6 +517,16 @@ static int IsLeaf(bst_iter_t iter)
 	assert(NULL != iter);
 
 	return (NULL == GetRightChild(iter) && (NULL == GetLeftChild(iter)));
+}
+
+static child_side GetChildSide(bst_iter_t iter)
+{
+	if (IsLeftChild(iter))
+	{
+		return LEFT;
+	}
+	
+	return RIGHT;
 }
 
 /******************************************************************************

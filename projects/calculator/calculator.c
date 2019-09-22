@@ -1,10 +1,9 @@
 
 /****************************
  *   Author   : Ran Shieber *
- *   Reviewer : 		    *
+ *   Reviewer : Shaddad	    *
  *	 Status   : Sent	    *
- *	 Project  : Calculator
- *			  State Machine *
+ *	 Project  : Calculator  *
  ****************************/
 
 #include <stddef.h> /* size_t */
@@ -12,9 +11,9 @@
 #include <string.h> /* strlen */
 #include <stdlib.h> /* strtod */
 #include <ctype.h> /* isspace */
+#include <assert.h> /* assert */
 
 #include "stack.h"
-#include "stack.c"
 #include "arithmetic_functions.h"
 #include "calculator.h"
 
@@ -24,22 +23,25 @@
 
 enum state{WAIT_FOR_NUM, WAIT_FOR_OP, ERROR, END};
 
-typedef stack_t *calc_stack_t;
-
-typedef calc_errno_t (*operation_function)(char **input, calc_stack_t calc_stack);
+typedef calc_errno_t (*operation_function)(char **input, stack_t *stack[]);
 
 /*************************************************************************
 								 										 *
 				      Forward Declarations								 *
 																		 *
 *************************************************************************/
-calc_errno_t DefaultAction(char **input, calc_stack_t calc_stack);
-calc_errno_t PushNumber(char **input, calc_stack_t calc_stack);
-calc_errno_t PushOperator(char **input, calc_stack_t calc_stack);
-calc_errno_t PushUnary(char **input, calc_stack_t calc_stack);
-calc_errno_t Fold(char **input, calc_stack_t calc_stack);
-calc_errno_t ClosedParenFold(char **input, calc_stack_t calc_stack);
-calc_errno_t PushOperatorAndFold(char **input, calc_stack_t calc_stack);
+static calc_errno_t CheckIfUnary(char **input, stack_t *stacks[]);
+static calc_errno_t PushNumber(char **input, stack_t *stacks[]);
+static calc_errno_t PushOperator(char **input, stack_t *stacks[]);
+static calc_errno_t Fold(stack_t *stacks[]);
+static int IsLowerPrecedence(char **input, stack_t *stacks[]);
+static calc_errno_t FoldStack(char **input, stack_t *stacks[]);
+static calc_errno_t PushParenthesis(char **input, stack_t *stacks[]);
+static calc_errno_t FoldParenthesis(char **input, stack_t *stacks[]);
+static calc_errno_t InvalidExpressionError(char **input, stack_t *stacks[]);
+
+static char *ParseSpaces(char *input);
+static void AdvanceExpression(char **expression);
 
 /*************************************************************************
 								 										 *
@@ -64,8 +66,8 @@ static void InitStateAndFuncLUT()
 		StateAndFuncLUT[c][WAIT_FOR_NUM].next_state = ERROR;
 		StateAndFuncLUT[c][WAIT_FOR_OP].next_state = ERROR;
 		
-		StateAndFuncLUT[c][WAIT_FOR_NUM].operation_func = DefaultAction;
-		StateAndFuncLUT[c][WAIT_FOR_OP].operation_func = DefaultAction;
+		StateAndFuncLUT[c][WAIT_FOR_NUM].operation_func = InvalidExpressionError;
+		StateAndFuncLUT[c][WAIT_FOR_OP].operation_func = InvalidExpressionError;
 	}
 	
 	StateAndFuncLUT['1'][WAIT_FOR_NUM].operation_func = PushNumber;
@@ -78,7 +80,10 @@ static void InitStateAndFuncLUT()
 	StateAndFuncLUT['3'][WAIT_FOR_NUM].next_state = WAIT_FOR_OP;
 	
 	StateAndFuncLUT['4'][WAIT_FOR_NUM].operation_func = PushNumber;
-	StateAndFuncLUT['5'][WAIT_FOR_NUM].next_state = WAIT_FOR_OP;
+	StateAndFuncLUT['4'][WAIT_FOR_NUM].next_state = WAIT_FOR_OP;
+	
+	StateAndFuncLUT['5'][WAIT_FOR_NUM].operation_func = PushNumber;
+	StateAndFuncLUT['5'][WAIT_FOR_NUM].next_state = WAIT_FOR_OP;	
 	
 	StateAndFuncLUT['6'][WAIT_FOR_NUM].operation_func = PushNumber;
 	StateAndFuncLUT['6'][WAIT_FOR_NUM].next_state = WAIT_FOR_OP;
@@ -95,34 +100,34 @@ static void InitStateAndFuncLUT()
 	StateAndFuncLUT['0'][WAIT_FOR_NUM].operation_func = PushNumber;
 	StateAndFuncLUT['0'][WAIT_FOR_NUM].next_state = WAIT_FOR_OP;
 	
-	StateAndFuncLUT['('][WAIT_FOR_NUM].operation_func = PushOperator;
+	StateAndFuncLUT['('][WAIT_FOR_NUM].operation_func = PushParenthesis;
 	StateAndFuncLUT['('][WAIT_FOR_NUM].next_state = WAIT_FOR_NUM;
 	
 	StateAndFuncLUT['.'][WAIT_FOR_NUM].operation_func = PushNumber;
 	StateAndFuncLUT['.'][WAIT_FOR_NUM].next_state = WAIT_FOR_OP;
 	
-	StateAndFuncLUT['+'][WAIT_FOR_NUM].operation_func = PushUnary;
+	StateAndFuncLUT['+'][WAIT_FOR_NUM].operation_func = CheckIfUnary;
 	StateAndFuncLUT['+'][WAIT_FOR_NUM].next_state = WAIT_FOR_OP;	
 	
-	StateAndFuncLUT['-'][WAIT_FOR_NUM].operation_func = PushUnary;
+	StateAndFuncLUT['-'][WAIT_FOR_NUM].operation_func = CheckIfUnary;
 	StateAndFuncLUT['-'][WAIT_FOR_NUM].next_state = WAIT_FOR_OP;		
 	
-	StateAndFuncLUT['\0'][WAIT_FOR_OP].operation_func = Fold;
+	StateAndFuncLUT['\0'][WAIT_FOR_OP].operation_func = FoldStack;
 	StateAndFuncLUT['\0'][WAIT_FOR_OP].next_state = END;
 	
-	StateAndFuncLUT[')'][WAIT_FOR_OP].operation_func = ClosedParenFold;
+	StateAndFuncLUT[')'][WAIT_FOR_OP].operation_func = FoldParenthesis;
 	StateAndFuncLUT[')'][WAIT_FOR_OP].next_state = WAIT_FOR_OP;
 	
-	StateAndFuncLUT['+'][WAIT_FOR_OP].operation_func = PushOperatorAndFold;
+	StateAndFuncLUT['+'][WAIT_FOR_OP].operation_func = PushOperator;
 	StateAndFuncLUT['+'][WAIT_FOR_OP].next_state = WAIT_FOR_NUM;
 	
-	StateAndFuncLUT['-'][WAIT_FOR_OP].operation_func = PushOperatorAndFold;
+	StateAndFuncLUT['-'][WAIT_FOR_OP].operation_func = PushOperator;
 	StateAndFuncLUT['-'][WAIT_FOR_OP].next_state = WAIT_FOR_NUM;
 	
-	StateAndFuncLUT['*'][WAIT_FOR_OP].operation_func = PushOperatorAndFold;
+	StateAndFuncLUT['*'][WAIT_FOR_OP].operation_func = PushOperator;
 	StateAndFuncLUT['*'][WAIT_FOR_OP].next_state = WAIT_FOR_NUM;
 	
-	StateAndFuncLUT['/'][WAIT_FOR_OP].operation_func = PushOperatorAndFold;
+	StateAndFuncLUT['/'][WAIT_FOR_OP].operation_func = PushOperator;
 	StateAndFuncLUT['/'][WAIT_FOR_OP].next_state = WAIT_FOR_NUM;
 	
 	StateAndFuncLUT['^'][WAIT_FOR_OP].operation_func = PushOperator;
@@ -145,7 +150,9 @@ typedef enum precedence
 	HIGHEST
 } precedence_t;
 
-typedef calculation_status_t (*arithmetic_function)(double **left_operand, double right_num);
+typedef calc_errno_t (*arithmetic_function)(double left_operand,
+											double right_num,
+											stack_t *stack[]);
 
 typedef struct arithmetic_func_and_precedence
 {
@@ -178,10 +185,8 @@ void InitArithmeticFuncLUT()
 	ArithmeticLUT['/'].arith_fun = ArithmeticFunctionsDivide;
 	
 	ArithmeticLUT['('].precedence = LOWEST;
-/*	ArithmeticLUT['('].arith_fun = ArithmeticFunctionsDefault;*/
 
 	ArithmeticLUT[')'].precedence = LOWEST;
-/*	ArithmeticLUT[')'].arith_fun = ArithmeticFunctionsDefault;*/
 	
 	ArithmeticLUT['^'].precedence = HIGHEST;
 	ArithmeticLUT['^'].arith_fun = ArithmeticFunctionsDefault;	
@@ -195,31 +200,39 @@ void InitArithmeticFuncLUT()
 
 enum stack_designation {NUMBERS, OPERATORS};
 
-static calc_errno_t InitStacks(calc_stack_t *stacks, size_t max_num_of_elements)
+stack_t *STACKS_LUT[2] = {NULL};
+
+static calc_errno_t InitStacks(size_t max_num_of_elements)
 {
+	stack_t *num_stack = NULL;
+	stack_t *op_stack = NULL;	
+	
 	/* create numbers stack */	
-	stacks[NUMBERS] = (calc_stack_t) StackCreate(max_num_of_elements, sizeof(double));
-	if (NULL == stacks)
+	num_stack = StackCreate(max_num_of_elements, sizeof(double));
+	if (NULL == num_stack)
 	{
 		return CALC_FAILED_ALOC;
 	}
 
 	/* create operators stack */
-	stacks[OPERATORS] = (calc_stack_t) StackCreate(max_num_of_elements, sizeof(char));
-	if (NULL == stacks)
+	op_stack = StackCreate(max_num_of_elements, sizeof(char));
+	if (NULL == op_stack)
 	{
-		StackDestroy((stack_t *)stacks[NUMBERS]); stacks[NUMBERS] = NULL;
+		StackDestroy(num_stack); num_stack = NULL;
 		return CALC_FAILED_ALOC;
 	}
+	
+	STACKS_LUT[NUMBERS] = num_stack;
+	STACKS_LUT[OPERATORS] = op_stack;
 	
 	return CALC_SUCCESS;
 }
 
 /* destroy the numbers and operators stacks */
-static void DestroyStacks(calc_stack_t *stacks)
+static void DestroyStacks(stack_t *stacks[])
 {
-	StackDestroy((stack_t *)stacks[OPERATORS]);
-	StackDestroy((stack_t *)stacks[NUMBERS]);
+	StackDestroy(stacks[OPERATORS]);
+	StackDestroy(stacks[NUMBERS]);
 	stacks = NULL;
 }
 
@@ -228,87 +241,181 @@ static void DestroyStacks(calc_stack_t *stacks)
 				      SHUNTING YARD										 *
 																		 *
 *************************************************************************/
+/* LUT to check if unary expression */
+static calc_errno_t (*UNARY_LUT[2])() = {InvalidExpressionError, PushNumber};
 
-static void AdvanceExpression(char **expression)
+/* function checks if expression is unary */
+static calc_errno_t CheckIfUnary(char **input, stack_t *stacks[])
 {
-	++(*expression);
+	calc_errno_t status = CALC_SUCCESS;
+	
+	assert(NULL != stacks);
+	assert(NULL != input);
+	
+	status = UNARY_LUT[0 != isdigit(*(*input + 1))](input, stacks);
+	
+	return status;
+	
 }
 
-calc_errno_t Fold(char **input, calc_stack_t calc_stack)
+/* pushes the number into the stack */
+static calc_errno_t PushNumber(char **input, stack_t *stacks[])
 {
-	double right_operand = *(double *)StackPeek(calc_stack[NUMBERS]);
-	double *left_operand = NULL;
-	char operator = *(char *)StackPeek(calc_stack[OPERATORS]);
-	calculation_status_t calc_result = CALCULATION_SUCCESS;
-	
-	assert(NULL != calc_stack);
-	
-	StackPop(calc_stack[OPERATORS]);
-	StackPop(calc_stack[NUMBERS]);
-	
-	/* left operand remains on the stack since we insert new value in its place */
-	left_operand = StackPeek(calc_stack[NUMBERS]);
-	
-	calc_result = ArithmeticLUT[operator].arith_fun(&left_operand, right_operand);
-	
-	return calc_result;
-}
-
-calc_errno_t PushNumber(char **input, calc_stack_t calc_stack)
-{
-	double number = 0;
+	double number = 0.0f;
 	
 	assert(NULL != input);
-	assert(NULL != calc_stack);
+	assert(NULL != stacks);
 	
 	number = strtod(*input, input);
 	
-	StackPush(calc_stack[NUMBERS], &number);
+	StackPush(stacks[NUMBERS], &number);
 	
 	return CALC_SUCCESS;
 }
 
-calc_errno_t PushOperator(char **input, calc_stack_t calc_stack)
+/* pushes the operator into the stack */
+static calc_errno_t PushOperator(char **input, stack_t *stacks[])
 {
+	calc_errno_t return_status = CALC_SUCCESS;
 	char operator = '0';
 	
 	assert(NULL != input);
-	assert(NULL != calc_stack);
+	assert(NULL != stacks);
 	
 	operator = **input;
-	StackPush(calc_stack[OPERATORS], &operator); 
+	while ((!StackIsEmpty(stacks[OPERATORS])) && (CALC_SUCCESS == return_status)
+					&& IsLowerPrecedence(input, stacks))
+	{
+		return_status = Fold(stacks);
+	}
+	
+	StackPush(stacks[OPERATORS], &operator);
 	
 	AdvanceExpression(input);
 	
 	return CALC_SUCCESS;	
 }
 
-calc_errno_t PushUnary(char **input, calc_stack_t calc_stack)
+/* folds two operands and an operator in the stacks */
+static calc_errno_t Fold(stack_t *stacks[])
 {
-	char **endptr = NULL;
-	double number = 0;
+	char operator = '0';
+	double right_operand = 0.0f;
+	double left_operand = 0.0f;
+	calc_errno_t return_status = CALC_SUCCESS;
+	
+	assert(NULL != stacks);
+	
+	right_operand = *(double *)StackPeek(stacks[NUMBERS]);
+	StackPop(stacks[NUMBERS]);
+	
+	left_operand = *(double *)StackPeek(stacks[NUMBERS]);
+	StackPop(stacks[NUMBERS]);
+	
+	operator = *(char *)StackPeek(stacks[OPERATORS]);
+	/* if operator is parenthesis */
+	if (LOWEST == ArithmeticLUT[(int)operator].precedence)
+	{
+		StackPop(stacks[OPERATORS]);
+		return CALC_ERR_INVALID_EXPRESSION;
+	}
+	
+	return_status = ArithmeticLUT[(int)operator].arith_fun(left_operand,
+														 right_operand, stacks);
+	StackPop(stacks[OPERATORS]);
+	
+	return return_status;
+}
+
+/* checks if the operator in expression has lower/equal precedence to
+*  the operator in the stack 												*/
+static int IsLowerPrecedence(char **input, stack_t *stacks[])
+{
+	char operator = '0';
+	int expression_prec = 0;
+	int stack_prec = 0;
+	
+	assert(NULL != stacks);
+	assert(NULL != input);
+	
+	operator = **input;
+	
+	expression_prec = ArithmeticLUT[(int)operator].precedence;
+	if (HIGHEST == expression_prec)
+	{
+		return 0;
+	}
+	
+	operator = *(char *)StackPeek(stacks[OPERATORS]);
+	stack_prec = ArithmeticLUT[(int)operator].precedence;
+	
+	return expression_prec <= stack_prec;
+	
+}
+/* Fold the stack */
+static calc_errno_t FoldStack(char **input, stack_t *stacks[])
+{
+	calc_errno_t status = CALC_SUCCESS;
 	
 	assert(NULL != input);
-	assert(NULL != calc_stack);
+	assert(NULL != stacks);
 	
-	number = strtod(*input, endptr);/* if +/- without number after it */
-	if (input == endptr)
+	while ((!StackIsEmpty(stacks[OPERATORS])) && (CALC_SUCCESS == status))
+	{
+		status = Fold(stacks);
+	}
+	
+	return status;
+}
+
+/* pushes parenthesis into stack */
+static calc_errno_t PushParenthesis(char **input, stack_t *stacks[])
+{
+	assert(NULL != input);
+	assert(NULL != stacks);
+	
+	StackPush(stacks[OPERATORS], *input);
+	
+	AdvanceExpression(input);
+	
+	return CALC_SUCCESS;
+}
+
+/* folds the expression in parenthesis in the stack */
+static calc_errno_t FoldParenthesis(char **input, stack_t *stacks[])
+{
+	calc_errno_t status = CALC_SUCCESS;
+	
+	assert(NULL != input);
+	assert(NULL != stacks);
+	
+	while ((!StackIsEmpty(stacks[OPERATORS]) && (CALC_SUCCESS == status) &&
+							   	('(' != *(char *)StackPeek(stacks[OPERATORS]))))
+	{
+		status = Fold(stacks);
+	}
+	
+	if (StackIsEmpty(stacks[OPERATORS]))
 	{
 		return CALC_ERR_INVALID_EXPRESSION;
 	}
 	
-	input = endptr;
-	StackPush(calc_stack[NUMBERS], &number);
+	StackPop(stacks[OPERATORS]);
+	AdvanceExpression(input);
 	
-	return CALC_SUCCESS;
+	return status;
 }
 
-calc_errno_t DefaultAction(char **input, calc_stack_t calc_stack)
+/* expression for any invalid expression input */
+calc_errno_t InvalidExpressionError(char **input, stack_t *stacks[])
 {
-	return CALC_SUCCESS;
+	UNUSED(stacks);
+	UNUSED(input);	
+	
+	return CALC_ERR_INVALID_EXPRESSION;
 }
 
-/*  PARSER */
+/*  Parsing Functions */
 static char *ParseSpaces(char *input)
 {
 	assert(NULL != input);
@@ -321,6 +428,11 @@ static char *ParseSpaces(char *input)
 	return input;
 }
 
+static void AdvanceExpression(char **expression)
+{
+	++(*expression);
+}
+
 /*************************************************************************
 								 										 *
 				      CALCULATOR FUNCTION								 *
@@ -328,30 +440,47 @@ static char *ParseSpaces(char *input)
 *************************************************************************/
 calc_errno_t Calculator(const char *expression, double *result)
 {
-	char *input = (char *)expression;
+	char *input = NULL;
 	enum state current_state = WAIT_FOR_NUM;
+	enum state next_state = WAIT_FOR_NUM;
 	calc_errno_t cur_calc_errno = CALC_SUCCESS;
-	size_t stack_size = strlen(expression);
-
-	calc_stack_t stacks[2] = {NULL};
+	size_t stack_size = 0;
 	
 	assert(NULL != expression);
 	assert(NULL != result);	
 	
-	if (CALC_FAILED_ALOC == InitStacks(stacks, stack_size))
+	input = (char *)expression;
+	stack_size = strlen(expression) + 1;
+	
+	if (CALC_FAILED_ALOC == InitStacks(stack_size))
 	{
 		cur_calc_errno = CALC_FAILED_ALOC;
 	}
 	
-	while ((CALC_SUCCESS == cur_calc_errno) && (END != current_state) && (ERROR != current_state))
+	InitStateAndFuncLUT();
+	
+	InitArithmeticFuncLUT();
+	
+	while ((CALC_SUCCESS == cur_calc_errno) && (END != current_state) &&
+													   (ERROR != current_state))
 	{
-		char cur_char = '0'; 
-		input = ParseSpaces(input);
-		cur_char = *input;
-		cur_calc_errno = StateAndFuncLUT[cur_char][current_state].operation_func(&input, stacks);
-
-		current_state = StateAndFuncLUT[cur_char][current_state].next_state;
+		input = ParseSpaces(input);	
+		
+		next_state = StateAndFuncLUT[(int)*input][current_state].next_state;
+		
+		cur_calc_errno = StateAndFuncLUT[(int)*input][current_state].
+									operation_func((char **)&input, STACKS_LUT);
+		
+		current_state = next_state;
+		
 	}
+	
+	if (!StackIsEmpty(STACKS_LUT[NUMBERS]))
+	{
+		*result = *(double *)StackPeek(STACKS_LUT[NUMBERS]);
+	}
+	
+	DestroyStacks(STACKS_LUT);
 	
 	return cur_calc_errno;
 }
