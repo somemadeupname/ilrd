@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <assert.h>
+#include <stdlib.h> /* TODO:remove free */
 
 #include "avl.h"
 
@@ -18,6 +19,8 @@
 	expect_NULL(NULL,"hi");\
 	expect_Not_NULL(&a, "hi");\
 }
+
+#define UNUSED(x) (void)(x)
 
 /*************************************************************************
 								 										 *
@@ -65,10 +68,44 @@ void expect_Not_NULL(void *pointer, char *func_name)
 				      FORWARD DECLARATIONS								 *
 																		 *
 *************************************************************************/
+static int IntCompare(const void *tree_data, const void *new_data, void *param);
+
+void AVLCreateAndDestroy_test();
+
 
 int main()
 {
 	PREVENT_WARNINGS_FROM_UNUSED_FUNCS_FROM_TESTS_TEMPLATE
 	
+	AVLCreateAndDestroy_test();
+	
 	return 0;
+}
+
+/*************************************************************************
+								 										 *
+				      HELPER FUNCTIONS									 *
+																		 *
+*************************************************************************/
+
+static int IntCompare(const void *tree_data, const void *new_data, void *param)
+{
+	assert(NULL != tree_data);
+	assert(NULL != new_data);	
+	
+	UNUSED(param);
+	
+	return *(int *)tree_data < *(int *)new_data;
+}
+
+/*************************************************************************
+								 										 *
+				      TEST FUNCTIONS									 *
+																		 *
+*************************************************************************/
+
+void AVLCreateAndDestroy_test()
+{
+	avl_t *tree = AVLCreate(NULL, IntCompare);
+	AVLDestroy(tree);
 }

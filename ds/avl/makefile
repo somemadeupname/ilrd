@@ -5,7 +5,7 @@ DEBUG_FLAGS=-ansi -pedantic-errors -Wall -Wextra -g
 
 DEPS= avl_test.c avl.c
 
-all: avl_release avl_debug
+all: avl_debug
 
 avl_release: avl.c avl_test.c
 	$(CC) $(RELEASE_FLAGS) $(DEPS) -o avl_release.out

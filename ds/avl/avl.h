@@ -5,20 +5,6 @@
 
 typedef struct avl avl_t;
 
-struct avl_node
-{
-	void *data;
-	size_t height;
-	avl_node_t *child[MAX_CHILDREN];
-};
-
-struct avl
-{
-	void *param;
-	int (*cmp_func)(const void *tree_data, const void *new_data, void *param);
-	avl_node_t *dummy_node;
-};
-
 /*
  * Create new AVL tree.
  * Param: @cmp_func - user comparison function. Returns 0 if <tree_data> and 
