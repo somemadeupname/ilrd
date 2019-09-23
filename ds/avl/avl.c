@@ -51,6 +51,8 @@ static void RecursiveInsert(avl_node_t *tree_node,
 							void *param,
 							avl_node_t *node_to_insert);
 static void RecursiveDestroy(avl_node_t *node_to_destroy);
+
+static void *FreeAndNullify(void *pointer_to_free);
 /******************************************************************************
 *								     										  *
 *				      	AVL NODE FUNCTIONS	       						  	  *
@@ -112,29 +114,20 @@ static void *GetData(const avl_node_t *node)
 *				      		AVL FUNCTIONS	       							  *
 *								      										  *
 ******************************************************************************/
-
+/* get root node of avl */
 static avl_node_t *AVLGetRoot(const avl_t *avl)
 {
 	assert(NULL != avl);
-	assert(!AVLIsEmpty(avl));
 	
 	return avl->dummy_node->child[LEFT];
 }
 
-/*
- * Create new AVL tree.
- * Param: @cmp_func - user comparison function. Returns 0 if <tree_data> and 
- *					  <new_data> are equal, positive if <tree_data> is after 
- *					  or negative if it's before.
- * Param: @param - user Param: for <cmp_func> function.
- * Return: pointer to new AVL tree.
- * Errors: if memory allocation failed, return NULL.
- */
+/* Create new AVL tree */
 avl_t *AVLCreate(void *param, int (*cmp_func)(const void *tree_data,
 								 			  const void *new_data,
 								 			  void *param))
 {
-	avl_node_t dummy_node = {NULL, 0, NULL};
+	avl_node_t *dummy_node = NULL;
 	avl_t *new_avl = NULL;
 	
 	assert(cmp_func != NULL);
@@ -145,14 +138,22 @@ avl_t *AVLCreate(void *param, int (*cmp_func)(const void *tree_data,
 		return NULL;
 	}
 	
+	dummy_node = CreateAVLNode(NULL);
+	if (NULL == dummy_node)
+	{
+		new_avl = FreeAndNullify(new_avl);
+		return NULL;
+	}
+	
 	/* init avl */
 	new_avl->cmp_func = cmp_func;
 	new_avl->param = param;
-	new_avl->dummy_node = &dummy_node;
+	new_avl->dummy_node = dummy_node;
 	
 	return new_avl;	
 }
 
+/* helper for AVLDestroy */
 static void RecursiveDestroy(avl_node_t *node_to_destroy)
 {
 	if (NULL == node_to_destroy)
@@ -164,20 +165,24 @@ static void RecursiveDestroy(avl_node_t *node_to_destroy)
 	RecursiveDestroy(node_to_destroy->child[RIGHT]);
 	node_to_destroy = DestroyAVLNode(node_to_destroy);
 }
-/* 
- * POST-ORDER.
- * Destroy AVL tree.
- * Param: @avl - pointer to AVL tree.
- */
+/* Destroy AVL tree */
 void AVLDestroy(avl_t *avl)
 {
 	assert(NULL != avl);
 	
 	RecursiveDestroy(AVLGetRoot(avl));
-	
-	free(avl); avl = NULL;
+
+	avl->dummy_node = FreeAndNullify(avl->dummy_node);
+	avl = FreeAndNullify(avl);
 }
 
+static void *FreeAndNullify(void *pointer_to_free)
+{
+	free(pointer_to_free);
+	return NULL;
+}
+
+/* helper for AVLInsert */
 static void RecursiveInsert(avl_node_t *tree_node,
 							cmp_func_t cmp,
 							void *param,
@@ -212,6 +217,13 @@ int AVLInsert(avl_t *avl, const void *data_to_insert)
 	if (NULL == node_to_insert)
 	{
 		return AVL_FAIL;
+	}
+	
+	/* adding the first node */
+	if (AVLIsEmpty(avl))
+	{
+		avl->dummy_node->child[LEFT] = node_to_insert;
+		return AVL_SUCCESS;			
 	}
 	
 	RecursiveInsert(AVLGetRoot(avl), avl->cmp_func, avl->param, node_to_insert);

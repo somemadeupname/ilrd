@@ -13,5 +13,7 @@ avl_release: avl.c avl_test.c
 avl_debug: avl.c avl_test.c
 	$(CC) $(DEBUG_FLAGS) $(DEPS) -o avl_debug.out
 
+val: avl.c avl_test.c
+	$(CC) $(DEBUG_FLAGS) $(DEPS) -o avl_debug.out && valgrind --leak-check=yes --track-origins=yes ./avl_debug.out 
 clean:
 	rm -f *.out

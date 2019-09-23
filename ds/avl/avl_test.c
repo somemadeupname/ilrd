@@ -70,14 +70,19 @@ void expect_Not_NULL(void *pointer, char *func_name)
 *************************************************************************/
 static int IntCompare(const void *tree_data, const void *new_data, void *param);
 
-void AVLCreateAndDestroy_test();
-
+void AVLCreateAndDestroyEmptyAVL_test();
+void AVLInsert_test();
+void AVLRemoveNaive_test();
 
 int main()
 {
 	PREVENT_WARNINGS_FROM_UNUSED_FUNCS_FROM_TESTS_TEMPLATE
 	
-	AVLCreateAndDestroy_test();
+	AVLCreateAndDestroyEmptyAVL_test();
+	
+	AVLInsert_test();
+	
+	AVLRemoveNaive_test();
 	
 	return 0;
 }
@@ -104,7 +109,33 @@ static int IntCompare(const void *tree_data, const void *new_data, void *param)
 																		 *
 *************************************************************************/
 
-void AVLCreateAndDestroy_test()
+void AVLRemoveNaive_test()
+{
+/*	avl_t *tree = AVLCreate(NULL, IntCompare);*/
+/*	*/
+/*	int int_data1 = 5, int_data2 = 6;*/
+/*	AVLInsert(tree, &int_data1]);*/
+/*	AVLInsert(tree, &int_data2]);*/
+/*	AVLRemove(tree, &int_data2);*/
+}
+
+void AVLInsert_test()
+{
+	avl_t *tree = AVLCreate(NULL, IntCompare);
+	#define DATA_SIZE 10
+	int data[DATA_SIZE] = {1,14,32,54,11,12,78,87,90,200};
+	size_t i = 0;
+	
+	for (i = 0; i < DATA_SIZE; ++i)
+	{
+		AVLInsert(tree, &data[i]);
+	}
+	
+	AVLDestroy(tree);
+	#undef DATA_SIZE
+}
+
+void AVLCreateAndDestroyEmptyAVL_test()
 {
 	avl_t *tree = AVLCreate(NULL, IntCompare);
 	AVLDestroy(tree);
