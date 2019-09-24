@@ -15,6 +15,8 @@ typedef struct avl_node avl_node_t;
 
 typedef int (*cmp_func_t)(const void *iter_data, const void *new_data, void *param);
 
+typedef int (*action_func_t)(void *tree_data, void *param);
+
 struct avl_node
 {
 	void *data;
@@ -45,7 +47,7 @@ static void *GetData(const avl_node_t *node);
 static direction GetDirection(avl_node_t *tree_node, cmp_func_t cmp, void *param,
 																	 const void *data);
 
-static avl_node_t *AVLGetRoot(const avl_t *avl);
+avl_node_t *AVLGetRoot(const avl_t *avl); /*CHANGE TO STATIC TODO*/
 static void RecursiveInsert(avl_node_t *tree_node,
 							cmp_func_t cmp,
 							void *param,
@@ -129,7 +131,7 @@ static void *GetData(const avl_node_t *node)
 *								      										  *
 ******************************************************************************/
 /* get root node of avl */
-static avl_node_t *AVLGetRoot(const avl_t *avl)
+avl_node_t *AVLGetRoot(const avl_t *avl)
 {
 	assert(NULL != avl);
 	
@@ -394,3 +396,50 @@ void *AVLFind(const avl_t *avl, const void *data_to_find)
 	return RecursiveFind(AVLGetRoot(avl), data_to_find, avl);
 }
 
+/*
+ * IN-ORDER.
+ * Perform <action_func> for each element in <avl>,
+ * stops if action returns non-zero. */
+int AVLForEach(void *param, avl_t *avl, int (*action_func)(void *tree_data,
+														   void *param))
+{
+	
+	int status = 0;	
+		
+	assert(NULL != avl);
+	assert(NULL != action_func);
+	
+	return RecursiveForEach(AVLGetRoot(avl), action_func, param, &status);
+}
+
+int RecursiveForEach(avl_node_t *node, action_func_t func, void *param, int *status)
+{	
+	if (0 != *status)
+	{
+		return *status;
+	}
+	
+	if (NULL == node)
+	{
+		return 0;
+	}
+	
+	RecursiveForEach(node->child[LEFT], func, param, status);
+	
+	*status = func(node->data, param);
+	
+	RecursiveForEach(node->child[RIGHT], func, param, status);
+}
+
+/* TODO remove this - for testing purposes only */
+void InOrderPrintNodes(avl_node_t *node)
+{
+	if (NULL == node)
+	{
+      return;
+    }
+
+    InOrderPrintNodes(node->child[LEFT]);
+    printf("%d ", *(int*)node->data);
+    InOrderPrintNodes(node->child[RIGHT]);
+}

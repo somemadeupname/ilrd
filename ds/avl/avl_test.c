@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <assert.h>
-#include <stdlib.h> /* TODO:remove free */
 
 #include "avl.h"
 
@@ -74,6 +73,8 @@ void AVLCreateAndDestroyEmptyAVL_test();
 void AVLInsert_test();
 void AVLRemoveNaive_test();
 void AVLFind_test();
+void AVLForEachSuccess_test();
+void AVLForEachFail_test();
 
 int main()
 {
@@ -86,6 +87,10 @@ int main()
 	AVLRemoveNaive_test();
 	
 	AVLFind_test();
+	
+	AVLForEachSuccess_test();
+	
+	AVLForEachFail_test();
 	
 	return 0;
 }
@@ -106,11 +111,86 @@ static int IntCompare(const void *tree_data, const void *new_data, void *param)
 	return *(int *)tree_data - *(int *)new_data;
 }
 
+static int IncreaseIntDataBy(void *node_data, void *param)
+{
+	
+	assert(NULL != node_data);
+	
+	++*(int*)node_data;
+
+	return 0;
+}
+
+static int FailOnOddData(void *node_data, void *param)
+{
+	int int_data = 0;
+	
+	assert(NULL != node_data);
+	
+	int_data = *(int *)node_data;
+	
+	++*(int*)node_data;	
+	
+	if (int_data % 2 == 0)
+	{
+		printf("failed at node data %d.\n", int_data);
+		return 1;
+	}
+	
+	return 0;
+}
+
 /*************************************************************************
 								 										 *
 				      TEST FUNCTIONS									 *
 																		 *
 *************************************************************************/
+void AVLForEachFail_test()
+{
+	avl_t *tree = AVLCreate(NULL, IntCompare);
+	#define DATA_SIZE 6
+	int data[DATA_SIZE] = {30,50,20,10,25,70};
+	size_t i = 0;
+	
+	for (i = 0; i < DATA_SIZE; ++i)
+	{
+		AVLInsert(tree, &data[i]);
+	}
+	
+	InOrderPrintNodes(AVLGetRoot(tree));	
+	
+	printf("\n");
+		
+	AVLForEach(NULL, tree, FailOnOddData);
+	
+	InOrderPrintNodes(AVLGetRoot(tree));		
+	
+	AVLDestroy(tree);
+	#undef DATA_SIZE
+}
+void AVLForEachSuccess_test()
+{
+	avl_t *tree = AVLCreate(NULL, IntCompare);
+	#define DATA_SIZE 6
+	int data[DATA_SIZE] = {30,50,20,10,25,70};
+	size_t i = 0;
+	
+	for (i = 0; i < DATA_SIZE; ++i)
+	{
+		AVLInsert(tree, &data[i]);
+	}
+	
+/*	InOrderPrintNodes(AVLGetRoot(tree));	*/
+/*	*/
+/*	printf("\n");*/
+	
+	AVLForEach(NULL, tree, IncreaseIntDataBy);
+	
+/*	InOrderPrintNodes(AVLGetRoot(tree));*/
+	
+	AVLDestroy(tree);
+	#undef DATA_SIZE
+}
 
 void AVLFind_test()
 {
