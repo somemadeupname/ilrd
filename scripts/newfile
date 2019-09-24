@@ -38,5 +38,8 @@ $1_release: $1.c $1_test.c
 $1_debug: $1.c $1_test.c
 	\$(CC) \$(DEBUG_FLAGS) \$(DEPS) -o $1_debug.out
 
+val: $1.c $1_test.c
+	\$(CC) \$(DEBUG_FLAGS) \$(DEPS) -o $1_debug.out && valgrind --leak-check=yes --track-origins=yes ./$1_debug.out
+
 clean:
 	rm -f *.out" > $1/makefile

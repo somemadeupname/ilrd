@@ -35,11 +35,11 @@ void AVLDestroy(avl_t *avl);
 int AVLInsert(avl_t *avl, const void *data_to_insert); 
 
 /*
- * Removes iter from tree.
+ * Removes node who's data matches @data_to_remove from tree.
  * Param: @data_to_remove: data to remove.
  * Errors: if data not found, do nothing.
  */
-void AVLRemove(const void *data_to_remove);
+void AVLRemove(avl_t * avl, const void *data_to_remove);
 
 /* 
  * PRE-ORDER.

@@ -73,6 +73,7 @@ static int IntCompare(const void *tree_data, const void *new_data, void *param);
 void AVLCreateAndDestroyEmptyAVL_test();
 void AVLInsert_test();
 void AVLRemoveNaive_test();
+void AVLFind_test();
 
 int main()
 {
@@ -83,6 +84,8 @@ int main()
 	AVLInsert_test();
 	
 	AVLRemoveNaive_test();
+	
+	AVLFind_test();
 	
 	return 0;
 }
@@ -100,7 +103,7 @@ static int IntCompare(const void *tree_data, const void *new_data, void *param)
 	
 	UNUSED(param);
 	
-	return *(int *)tree_data < *(int *)new_data;
+	return *(int *)tree_data - *(int *)new_data;
 }
 
 /*************************************************************************
@@ -108,6 +111,37 @@ static int IntCompare(const void *tree_data, const void *new_data, void *param)
 				      TEST FUNCTIONS									 *
 																		 *
 *************************************************************************/
+
+void AVLFind_test()
+{
+	avl_t *tree = AVLCreate(NULL, IntCompare);
+	#define DATA_SIZE 10
+	int data[DATA_SIZE] = {1,14,32,54,11,12,78,87,90,200};
+	int data_not_in_tree = 77;
+	size_t i = 0;
+	int *found_data = NULL;
+	int *data_to_find = &data[8];
+	
+	found_data = (int *)AVLFind(tree, &data_not_in_tree);	
+	
+	expect_NULL(found_data, "AVLFind_test_empty_tree");
+	
+	for (i = 0; i < DATA_SIZE; ++i)
+	{
+		AVLInsert(tree, &data[i]);
+	}
+	
+	found_data = (int *)AVLFind(tree, data_to_find);
+	
+	expect_int(*found_data, 90, "AVLFind_test");
+	
+	found_data = (int *)AVLFind(tree, &data_not_in_tree);	
+	
+	expect_NULL(found_data, "AVLFind_test2");
+	
+	AVLDestroy(tree);
+	#undef DATA_SIZE
+}
 
 void AVLRemoveNaive_test()
 {
