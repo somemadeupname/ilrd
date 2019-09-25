@@ -75,6 +75,7 @@ void AVLRemoveNaive_test();
 void AVLFind_test();
 void AVLForEachSuccess_test();
 void AVLForEachFail_test();
+void AVLCount_test();
 
 int main()
 {
@@ -91,6 +92,8 @@ int main()
 	AVLForEachSuccess_test();
 	
 	AVLForEachFail_test();
+	
+	AVLCount_test();	
 	
 	return 0;
 }
@@ -115,13 +118,14 @@ static int IncreaseIntDataBy(void *node_data, void *param)
 {
 	
 	assert(NULL != node_data);
+	UNUSED(param);	
 	
 	++*(int*)node_data;
 
 	return 0;
 }
 
-static int FailOnOddData(void *node_data, void *param)
+static int FailOnEvenData(void *node_data, void *param)
 {
 	int int_data = 0;
 	
@@ -133,7 +137,6 @@ static int FailOnOddData(void *node_data, void *param)
 	
 	if (int_data % 2 == 0)
 	{
-		printf("failed at node data %d.\n", int_data);
 		return 1;
 	}
 	
@@ -145,6 +148,25 @@ static int FailOnOddData(void *node_data, void *param)
 				      TEST FUNCTIONS									 *
 																		 *
 *************************************************************************/
+
+void AVLCount_test()
+{
+	avl_t *tree = AVLCreate(NULL, IntCompare);
+	#define DATA_SIZE 6
+	int data[DATA_SIZE] = {30,50,20,10,25,70};
+	size_t i = 0;
+	
+	for (i = 0; i < DATA_SIZE; ++i)
+	{
+		AVLInsert(tree, &data[i]);
+		expect_size_t(AVLCount(tree), (int)(i+1), "AVLCount_test");
+	}
+	
+	AVLDestroy(tree);
+	#undef DATA_SIZE
+	
+}
+
 void AVLForEachFail_test()
 {
 	avl_t *tree = AVLCreate(NULL, IntCompare);
@@ -157,13 +179,13 @@ void AVLForEachFail_test()
 		AVLInsert(tree, &data[i]);
 	}
 	
-	InOrderPrintNodes(AVLGetRoot(tree));	
+/*	InOrderPrintNodes(AVLGetRoot(tree));	*/
 	
-	printf("\n");
+/*	printf("\n");*/
 		
-	AVLForEach(NULL, tree, FailOnOddData);
+	expect_int(AVLForEach(NULL, tree, FailOnEvenData), 1, "AVLForEachFail_test");
 	
-	InOrderPrintNodes(AVLGetRoot(tree));		
+/*	InOrderPrintNodes(AVLGetRoot(tree));		*/
 	
 	AVLDestroy(tree);
 	#undef DATA_SIZE
@@ -184,7 +206,7 @@ void AVLForEachSuccess_test()
 /*	*/
 /*	printf("\n");*/
 	
-	AVLForEach(NULL, tree, IncreaseIntDataBy);
+	expect_int(AVLForEach(NULL, tree, IncreaseIntDataBy), 0, "AVLForEachSuccess_test");
 	
 /*	InOrderPrintNodes(AVLGetRoot(tree));*/
 	

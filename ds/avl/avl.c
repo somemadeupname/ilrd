@@ -54,7 +54,7 @@ static void RecursiveInsert(avl_node_t *tree_node,
 							avl_node_t *node_to_insert);
 static void RecursiveDestroy(avl_node_t *node_to_destroy);
 static avl_node_t *RemoveNode(avl_node_t *node_to_remove);
-/*static void RecursiveCount(avl_node_t *node, size_t *counter);*/
+static void RecursiveCount(avl_node_t *node, size_t *counter);
 static avl_node_t *Balance(avl_node_t *node);
 static avl_node_t *UpdateHeight(avl_node_t *node);
 static avl_node_t *FindAndRemoveSuccessor(avl_node_t *node_to_remove, avl_node_t *branch, direction dir);
@@ -340,31 +340,31 @@ int AVLIsEmpty(const avl_t *avl)
 	return (NULL == avl->dummy_node->child[LEFT]);
 }
 
-/*static void RecursiveCount(avl_node_t *node, size_t *counter)*/
-/*{*/
-/*	if (NULL == node)*/
-/*	{*/
-/*		return;*/
-/*	}*/
+static void RecursiveCount(avl_node_t *node, size_t *counter)
+{
+	if (NULL == node)
+	{
+		return;
+	}
 
-/*	RecursiveCount(node->child[LEFT], counter);*/
-/*	RecursiveCount(node->child[RIGHT], counter);*/
-/*	*/
-/*	++counter;*/
-/*}*/
+	RecursiveCount(node->child[LEFT], counter);
+	RecursiveCount(node->child[RIGHT], counter);
+	
+	++(*counter);
+}
 
 
 /* PRE-ORDER Count how many nodes in given AVL tree */
-/*size_t AVLCount(const avl_t *avl)*/
-/*{*/
-/*	size_t node_counter = 0;*/
+size_t AVLCount(const avl_t *avl)
+{
+	size_t node_counter = 0;
 
-/*	assert(NULL != avl);*/
-/*	*/
-/*	RecursiveCount(AVLGetRoot(avl), &node_counter);*/
-/*	*/
-/*	return node_counter;	*/
-/*}*/
+	assert(NULL != avl);
+	
+	RecursiveCount(AVLGetRoot(avl), &node_counter);
+	
+	return node_counter;	
+}
 
 static void *RecursiveFind(const avl_node_t *tree_node, const void *data_to_find, const avl_t *avl)
 {
