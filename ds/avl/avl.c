@@ -7,6 +7,10 @@
 #include <assert.h> /* assert */
 #include <stdlib.h> /* malloc free */
 
+/* TODO REMOVE THIS TODO*/
+#include <stdio.h>
+/* TODO REMOVE THIS TODO*/
+
 #include "avl.h"
 
 #define NUM_CHILDREN 2
@@ -43,11 +47,12 @@ enum {AVL_SUCCESS, AVL_FAIL};
 static avl_node_t *CreateAVLNode(const void *data);
 static avl_node_t *DestroyAVLNode(avl_node_t *node_to_destroy);
 static int HasRightChild(const avl_node_t *node);
-static void *GetData(const avl_node_t *node);
+void *GetData(const avl_node_t *node); /*CHANGE TO STATIC TODO*/
 static direction GetDirection(avl_node_t *tree_node, cmp_func_t cmp, void *param,
 																	 const void *data);
 
 avl_node_t *AVLGetRoot(const avl_t *avl); /*CHANGE TO STATIC TODO*/
+static int Int(avl_node_t *node); /* TODO remove this - for testing purposes only */
 static void RecursiveInsert(avl_node_t *tree_node,
 							cmp_func_t cmp,
 							void *param,
@@ -58,6 +63,8 @@ static void RecursiveCount(avl_node_t *node, size_t *counter);
 static avl_node_t *Balance(avl_node_t *node);
 static avl_node_t *UpdateHeight(avl_node_t *node);
 static avl_node_t *FindAndRemoveSuccessor(avl_node_t *node_to_remove, avl_node_t *branch, direction dir);
+static size_t GetNodeHeight(avl_node_t *node);
+int RecursiveForEach(avl_node_t *node, action_func_t func, void *param, int *status);
 
 static void *FreeAndNullify(void *pointer_to_free);
 /******************************************************************************
@@ -84,7 +91,7 @@ static avl_node_t *CreateAVLNode(const void *data)
 
 static avl_node_t *DestroyAVLNode(avl_node_t *node_to_destroy)
 {
-	free(node_to_destroy);	
+	free(node_to_destroy);
 	return NULL;
 }
 
@@ -118,7 +125,7 @@ static int IsLeaf(const avl_node_t *node)
 }
 
 /* get node data */
-static void *GetData(const avl_node_t *node)
+void *GetData(const avl_node_t *node)
 {
 	assert(NULL != node);
 	
@@ -258,7 +265,8 @@ static avl_node_t *RecursiveRemove(avl_node_t *node_to_check,
 	
 	if (cmp(node_to_check->data, data_to_remove, param) == 0)
 	{
-		return RemoveNode(node_to_check);
+		node_to_check = RemoveNode(node_to_check);
+		return node_to_check;
 	}
 	
 	dir = GetDirection(node_to_check, cmp, param, data_to_remove);
@@ -268,7 +276,8 @@ static avl_node_t *RecursiveRemove(avl_node_t *node_to_check,
 		return node_to_check;
 	}
 	
-	/*TODO children*/
+	node_to_check->child[dir] =  RecursiveRemove(node_to_check->child[dir], cmp, data_to_remove, param);
+		
 	node_to_check = Balance(node_to_check);
 	
 	return UpdateHeight(node_to_check);
@@ -315,6 +324,8 @@ static avl_node_t *FindAndRemoveSuccessor(avl_node_t *node_to_remove, avl_node_t
  */
 void AVLRemove(avl_t *avl, const void *data_to_remove)
 {
+	assert(NULL != avl);
+	
 	RecursiveRemove(AVLGetRoot(avl), avl->cmp_func, data_to_remove, avl->param);
 }
 
@@ -346,11 +357,11 @@ static void RecursiveCount(avl_node_t *node, size_t *counter)
 	{
 		return;
 	}
+	
+	++(*counter);
 
 	RecursiveCount(node->child[LEFT], counter);
 	RecursiveCount(node->child[RIGHT], counter);
-	
-	++(*counter);
 }
 
 
@@ -388,7 +399,7 @@ static void *RecursiveFind(const avl_node_t *tree_node, const void *data_to_find
 	return RecursiveFind(tree_node->child[dir], data_to_find, avl);
 }
 
-/* Find <data> in binary tree <avl> */
+/* Find data in binary tree <avl> */
 void *AVLFind(const avl_t *avl, const void *data_to_find)
 {
 	assert(NULL != avl);
@@ -396,10 +407,7 @@ void *AVLFind(const avl_t *avl, const void *data_to_find)
 	return RecursiveFind(AVLGetRoot(avl), data_to_find, avl);
 }
 
-/*
- * IN-ORDER.
- * Perform <action_func> for each element in <avl>,
- * stops if action returns non-zero. */
+/* Perform action_func for each element in avl */
 int AVLForEach(void *param, avl_t *avl, int (*action_func)(void *tree_data,
 														   void *param))
 {
@@ -428,7 +436,22 @@ int RecursiveForEach(avl_node_t *node, action_func_t func, void *param, int *sta
 	
 	*status = func(node->data, param);
 	
-	RecursiveForEach(node->child[RIGHT], func, param, status);
+	return RecursiveForEach(node->child[RIGHT], func, param, status);
+}
+
+/* Check height of AVL tree. */
+size_t AVLHeight(const avl_t *avl)
+{
+	assert(NULL != avl);
+	
+	return GetNodeHeight(AVLGetRoot(avl));
+}
+
+static size_t GetNodeHeight(avl_node_t *node)
+{
+	assert (NULL != node);
+	
+	return node->height;
 }
 
 /* TODO remove this - for testing purposes only */
@@ -442,4 +465,11 @@ void InOrderPrintNodes(avl_node_t *node)
     InOrderPrintNodes(node->child[LEFT]);
     printf("%d ", *(int*)node->data);
     InOrderPrintNodes(node->child[RIGHT]);
+}
+/* TODO remove this - for testing purposes only */
+static int Int(avl_node_t *node)
+{
+	assert (NULL != node);
+	
+	return *(int *)node->data;
 }

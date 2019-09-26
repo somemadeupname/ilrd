@@ -71,11 +71,15 @@ static int IntCompare(const void *tree_data, const void *new_data, void *param);
 
 void AVLCreateAndDestroyEmptyAVL_test();
 void AVLInsert_test();
-void AVLRemoveNaive_test();
 void AVLFind_test();
 void AVLForEachSuccess_test();
 void AVLForEachFail_test();
 void AVLCount_test();
+void AVLRemoveRightLeaf_test();
+void AVLRemoveLeftLeaf_test();
+void AVLRemoveParentOneChild_test();
+void AVLRemoveParentTwoChild_test();
+void AVLRemoveRootBigTree_test();
 
 int main()
 {
@@ -83,9 +87,7 @@ int main()
 	
 	AVLCreateAndDestroyEmptyAVL_test();
 	
-	AVLInsert_test();
-	
-	AVLRemoveNaive_test();
+	AVLInsert_test();	
 	
 	AVLFind_test();
 	
@@ -95,6 +97,16 @@ int main()
 	
 	AVLCount_test();	
 	
+	AVLRemoveRightLeaf_test();
+	
+	AVLRemoveLeftLeaf_test();
+	
+	AVLRemoveParentOneChild_test();
+	
+	AVLRemoveParentTwoChild_test();	
+	
+	AVLRemoveRootBigTree_test();
+
 	return 0;
 }
 
@@ -130,6 +142,7 @@ static int FailOnEvenData(void *node_data, void *param)
 	int int_data = 0;
 	
 	assert(NULL != node_data);
+	UNUSED(param);
 	
 	int_data = *(int *)node_data;
 	
@@ -144,12 +157,11 @@ static int FailOnEvenData(void *node_data, void *param)
 }
 
 /*************************************************************************
-								 										 *
-				      TEST FUNCTIONS									 *
-																		 *
-*************************************************************************/
-
-void AVLCount_test()
+ *								 										 *
+ *					      TEST FUNCTIONS								 *
+ *																		 *
+ *************************************************************************/
+void AVLRemoveRootBigTree_test()
 {
 	avl_t *tree = AVLCreate(NULL, IntCompare);
 	#define DATA_SIZE 6
@@ -162,9 +174,126 @@ void AVLCount_test()
 		expect_size_t(AVLCount(tree), (int)(i+1), "AVLCount_test");
 	}
 	
-	AVLDestroy(tree);
-	#undef DATA_SIZE
+	AVLRemove(tree, &data[0]); /*[0] = 30 */
+	expect_size_t(AVLCount(tree), 5, "AVLCount_test2");	
 	
+	printf("new root data: %d\n", *(int *)(GetData(AVLGetRoot(tree))));
+	
+	AVLRemove(tree, &data[1]); 
+	expect_size_t(AVLCount(tree), 4, "AVLCount_test3");		
+	
+	AVLRemove(tree, &data[2]); 
+	expect_size_t(AVLCount(tree), 3, "AVLCount_test4");	
+	
+	
+	AVLDestroy(tree);
+
+	#undef DATA_SIZE	
+}
+void AVLRemoveParentTwoChild_test()
+{
+	avl_t *tree = AVLCreate(NULL, IntCompare);
+	#define DATA_SIZE 6
+	int data[DATA_SIZE] = {30,50,20,10,25,70};
+	size_t i = 0;
+	
+	for (i = 0; i < DATA_SIZE; ++i)
+	{
+		AVLInsert(tree, &data[i]);
+		expect_size_t(AVLCount(tree), (int)(i+1), "AVLCount_test");
+	}
+	
+	AVLRemove(tree, &data[2]); /*[2] = 20 */
+	
+	AVLDestroy(tree);
+
+	#undef DATA_SIZE
+}
+
+void AVLRemoveParentOneChild_test()
+{
+	avl_t *tree = AVLCreate(NULL, IntCompare);
+	#define DATA_SIZE 6
+	int data[DATA_SIZE] = {30,50,20,10,25,70};
+	size_t i = 0;
+	
+	for (i = 0; i < DATA_SIZE; ++i)
+	{
+		AVLInsert(tree, &data[i]);
+		expect_size_t(AVLCount(tree), (int)(i+1), "AVLCount_test");
+	}
+	
+	AVLRemove(tree, &data[1]); /*[1] = 50 */
+	
+	AVLDestroy(tree);
+
+	#undef DATA_SIZE
+}
+
+void AVLRemoveLeftLeaf_test()
+{
+	avl_t *tree = AVLCreate(NULL, IntCompare);
+	
+	int int_data1 = 6, int_data2 = 5;
+	
+	expect_size_t(AVLCount(tree), 0, "AVLRemoveRightLeaf_test1");	
+	
+	AVLInsert(tree, &int_data1);
+	
+	expect_size_t(AVLCount(tree), 1, "AVLRemoveRightLeaf_test2");		
+	AVLInsert(tree, &int_data2);
+	
+	expect_size_t(AVLCount(tree), 2, "AVLRemoveRightLeaf_test3");			
+
+	AVLRemove(tree, &int_data2);
+	
+	expect_size_t(AVLCount(tree), 1, "AVLRemoveRightLeaf_test4");	
+	
+	AVLDestroy(tree);	
+
+}
+
+void AVLRemoveRightLeaf_test()
+{
+	avl_t *tree = AVLCreate(NULL, IntCompare);
+	
+	int int_data1 = 5, int_data2 = 6;
+	
+	expect_size_t(AVLCount(tree), 0, "AVLRemoveRightLeaf_test1");	
+	
+	AVLInsert(tree, &int_data1);
+	
+	expect_size_t(AVLCount(tree), 1, "AVLRemoveRightLeaf_test2");		
+	AVLInsert(tree, &int_data2);
+	
+	expect_size_t(AVLCount(tree), 2, "AVLRemoveRightLeaf_test3");			
+
+	AVLRemove(tree, &int_data2);
+	
+	expect_size_t(AVLCount(tree), 1, "AVLRemoveRightLeaf_test4");	
+	
+	AVLDestroy(tree);	
+}
+
+void AVLCount_test()
+{
+	avl_t *tree = AVLCreate(NULL, IntCompare);
+	#define DATA_SIZE 6
+	int data[DATA_SIZE] = {30,50,20,10,25,70};
+	size_t i = 0;
+	
+	for (i = 0; i < DATA_SIZE; ++i)
+	{
+		AVLInsert(tree, &data[i]);
+		expect_size_t(AVLCount(tree), (int)(i+1), "AVLCount_test");
+		/* TODO for testing purposes */
+/*		printf("\n");*/
+		/* TODO for testing purposes */			
+	}
+	
+	AVLDestroy(tree);
+
+	#undef DATA_SIZE
 }
 
 void AVLForEachFail_test()
@@ -243,16 +372,6 @@ void AVLFind_test()
 	
 	AVLDestroy(tree);
 	#undef DATA_SIZE
-}
-
-void AVLRemoveNaive_test()
-{
-/*	avl_t *tree = AVLCreate(NULL, IntCompare);*/
-/*	*/
-/*	int int_data1 = 5, int_data2 = 6;*/
-/*	AVLInsert(tree, &int_data1]);*/
-/*	AVLInsert(tree, &int_data2]);*/
-/*	AVLRemove(tree, &int_data2);*/
 }
 
 void AVLInsert_test()
