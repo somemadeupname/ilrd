@@ -174,16 +174,18 @@ void AVLRemoveRootBigTree_test()
 		expect_size_t(AVLCount(tree), (int)(i+1), "AVLCount_test");
 	}
 	
+	expect_size_t(AVLCount(tree), 6, "AVLCount_test2");	
+
 	AVLRemove(tree, &data[0]); /*[0] = 30 */
-	expect_size_t(AVLCount(tree), 5, "AVLCount_test2");	
+	expect_size_t(AVLCount(tree), 5, "AVLCount_test3");	
 	
-	printf("new root data: %d\n", *(int *)(GetData(AVLGetRoot(tree))));
+	printf("new root data: %d\n", Int(AVLGetRoot(tree)));
 	
 	AVLRemove(tree, &data[1]); 
-	expect_size_t(AVLCount(tree), 4, "AVLCount_test3");		
+	expect_size_t(AVLCount(tree), 4, "AVLCount_test4");		
 	
 	AVLRemove(tree, &data[2]); 
-	expect_size_t(AVLCount(tree), 3, "AVLCount_test4");	
+	expect_size_t(AVLCount(tree), 3, "AVLCount_test5");	
 	
 	
 	AVLDestroy(tree);
@@ -203,7 +205,11 @@ void AVLRemoveParentTwoChild_test()
 		expect_size_t(AVLCount(tree), (int)(i+1), "AVLCount_test");
 	}
 	
+	expect_size_t(AVLCount(tree), 6, "AVLCount_test1");	
+	
 	AVLRemove(tree, &data[2]); /*[2] = 20 */
+	
+	expect_size_t(AVLCount(tree), 5, "AVLCount_test2");	
 	
 	AVLDestroy(tree);
 
@@ -223,7 +229,11 @@ void AVLRemoveParentOneChild_test()
 		expect_size_t(AVLCount(tree), (int)(i+1), "AVLCount_test");
 	}
 	
+	expect_size_t(AVLCount(tree), 6, "AVLRemoveParentOneChild_test1");		
+	
 	AVLRemove(tree, &data[1]); /*[1] = 50 */
+	
+	expect_size_t(AVLCount(tree), 5, "AVLRemoveParentOneChild_test2");		
 	
 	AVLDestroy(tree);
 
@@ -286,9 +296,6 @@ void AVLCount_test()
 	{
 		AVLInsert(tree, &data[i]);
 		expect_size_t(AVLCount(tree), (int)(i+1), "AVLCount_test");
-		/* TODO for testing purposes */
-/*		printf("\n");*/
-		/* TODO for testing purposes */			
 	}
 	
 	AVLDestroy(tree);
