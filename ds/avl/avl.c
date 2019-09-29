@@ -76,6 +76,7 @@ int RecursiveForEach(avl_node_t *node, action_func_t func, void *param, int *sta
 static direction GetChildDirection(const avl_node_t *node); 
 static size_t MaxHeight(avl_node_t *left_child, avl_node_t *right_child);
 static avl_node_t *GetPrev(avl_node_t *node);
+static avl_node_t *GetChild(avl_node_t *parent_node);
 
 static void *FreeAndNullify(void *pointer_to_free);
 /******************************************************************************
@@ -93,7 +94,7 @@ static avl_node_t *CreateAVLNode(const void *data)
 	}
 	
 	new_node->data = (void *)data;
-	new_node->height = 1;/*TODO add height in signature? */
+	new_node->height = 1;
 	new_node->child[RIGHT] = NULL;
 	new_node->child[LEFT] = NULL;
 	
@@ -327,58 +328,37 @@ static avl_node_t *RemoveNode(avl_node_t *node_to_remove,
 
 	if (HasTwoChildren(node_to_remove))
 	{
-		avl_node_t *next_node_parent = GetPrev(node_to_remove->child[RIGHT]);
-		avl_node_t *next_node = (NULL == next_node_parent->child[LEFT]) ? node_to_remove->child[RIGHT] : next_node_parent->child[LEFT];
-		SwapDataAndRemove(node_to_remove, next_node);
-		next_node_parent->child[LEFT] = NULL;
-/*		next_node = RemoveNode(next_node, cmp, data_to_remove, param);*/
+		avl_node_t *next_node = GetPrev(node_to_remove->child[RIGHT]);
+		SwapData(node_to_remove, next_node);
+		node_to_remove->child[RIGHT] = RecursiveRemove(node_to_remove->child[RIGHT], cmp, data_to_remove, param);
 	}
-	else if (HasOneChild(node_to_remove))
+	else
 	{
-		direction dir = GetChildDirection(node_to_remove);
-		SwapData(node_to_remove->child[dir], node_to_remove);
-		node_to_remove->child[dir] = RecursiveRemove(node_to_remove->child[dir], cmp, data_to_remove, param);
-	}
-	
-	else if (IsLeaf(node_to_remove))
-	{
+/*		direction dir = GetDirection(node_to_remove, cmp, param, data_to_remove);*/
+/*		avl_node_t *child = node_to_remove->child[dir];*/
+		avl_node_t *child = GetChild(node_to_remove);
 		node_to_remove = DestroyAVLNode(node_to_remove);
-		return NULL;
+		return child;
 	}
 	
 	return node_to_remove;
 }
 
-static void SwapDataAndRemove(avl_node_t *node_to_remove, avl_node_t *next)
+static avl_node_t *GetChild(avl_node_t *parent_node)
 {
-/*	void *temp_data = NULL;	*/
-	
-	assert(NULL != node_to_remove);
-	
-	if (NULL == next)
+	if (NULL != parent_node->child[LEFT])
 	{
-		return;
+		return parent_node->child[LEFT];
 	}
 	
-/*	temp_data = node_to_remove->data;*/
-	node_to_remove->data = next->data;
-/*	next->data = temp_data;*/
-	
-	next = DestroyAVLNode(next);
+	return parent_node->child[RIGHT];
 }
 
 static avl_node_t *GetPrev(avl_node_t *node)
-{	
-/*	assert(NULL != node->child[LEFT]);*/
-
+{
 	if (NULL == node->child[LEFT])
 	{
 		return node;
-	}
-	
-	if (NULL == node->child[LEFT]->child[LEFT])
-	{
-		return node->child[LEFT];
 	}
 	
 	return GetPrev(node->child[LEFT]);
