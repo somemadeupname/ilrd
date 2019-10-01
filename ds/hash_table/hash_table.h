@@ -2,8 +2,8 @@
  * Title       : Hash Table             *
  * Author      : Vladimir               *
  * Group       : OL712                  *
- * Version     : 1.0                    *
- * Last update : 26.09.2019 11:11       *
+ * Version     : 1.2                    *
+ * Last update : 29.09.2019 09:29       *
  ****************************************/
 #ifndef __ILRD_HASH_TABLE_H
 #define __ILRD_HASH_TABLE_H
@@ -12,27 +12,18 @@
 
 typedef struct hash_table hash_table_t;
 
-/* TODO move structs to the .c file */
-struct hash_table
-{
-	size_t (*hash_func)(const void *key);
-	int (*cmp_func)(const void *key1, const void *key2);
-	size_t num_buckets;
-	void **buckets; /* TODO DS to use - SList */
-};
-
 /*
  * Create hash table.
  * Param @hash_func: function for hashing data. Gets data, returns hash code.
- * Param @cmp_func: function to compare data.
+ * Param @hash_cmp: function to compare data.
  * Param @num_buckets: number of buckets determined by hash function range.
  * Return: pointer to the created hash table.
  * Errors: if allocation is failed, returns NULL.
  */
-hash_table_t *HashTableCreate(size_t num_buckets,
-							  size_t (*hash_func)(void *key),
-							  int (*cmp_func)(const void *key1,
-							  				  const void *key2));
+hash_table_t *HashTableCreate(size_t num_of_buckets,
+							  size_t (*hash_func)(void *data),
+							  int (*hash_cmp_func)(const void *key1,
+							  				  	   const void *key2));
 /* 
  * Destroy the hash table.
  * Param @hash_table: pointer to the hash table.
@@ -59,6 +50,7 @@ void HashTableRemove(hash_table_t *hash_table, void *data);
  * Find data in the hash table.
  * Param @hash_table: pointer to the hash table.
  * Param @key: key of data to find.
+ * Return: if data not found, NULL is returned, else poiter to the found data.
  */
 void *HashTableFind(const hash_table_t *hash_table, void *data);
 
@@ -70,9 +62,10 @@ void *HashTableFind(const hash_table_t *hash_table, void *data);
  * Return: on success, 0 is returned.
  * Errors: on fail, non-zero is returned.
  */
-int *HashTableForEach(const hash_table_t *hash_table,
-					  int (*act_func)(void *table_data, void *param),
-					  void *param);
+int HashTableForEach(const hash_table_t *hash_table,
+					 int (*act_func)(void *table_data,
+					 				 void *param),
+					 				 void *param);
 
 /*
  * Get size of the hash table.
