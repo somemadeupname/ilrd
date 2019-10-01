@@ -7,7 +7,7 @@ typedef struct dlist dlist_t;
 
 typedef struct dlist_node *dlist_iter_t;
 
-typedef int (*cmp_func)(void *data, const void *param);
+typedef int (*cmp_func)(const void *data, const void *param);
 typedef int (*action_func)(void *data, void *param);
 
 /****************

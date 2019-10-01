@@ -8,6 +8,7 @@
 #define END_RED printf("\033[0m");
 #define TRUE 1
 #define FALSE 0
+#define UNUSED(x) (void)(x)
 
 #define PRINT_ERROR START_RED printf("ERROR in %s.\n", func_name); END_RED
 
@@ -95,6 +96,28 @@ void FuncsTest()
 	printf("%ld\n", FirstLetterHashFunc(str2));
 	printf("%d\n", StrCmpFunc(str1, str2));		
 }
+/* action func */
+int PrintString(void *table_data, void *param)
+{
+	UNUSED(param);
+	printf("%s\n", (char *) table_data);
+	
+	return 0;
+}
+
+/* action func */
+int FailPrintString(void *table_data, void *param)
+{
+	UNUSED(param);
+	
+	if (0 == strcmp((char *)table_data, "hello"))
+	{
+		return 1;
+	}
+	printf("%s\n", (char *)table_data);
+	
+	return 0;
+}
 
 /*************************************************************************
 								 										 *
@@ -104,10 +127,11 @@ void FuncsTest()
 
 void HashTableCreate_test();
 void HashTableInsert_test();
-/*void HashTableRemove_test();*/
+void HashTableRemove_test();
 void HashTableSize_test();
-
-
+void HasTableFind_test();
+void HasTableForEach_test();	
+void HasTableForEachFail_test();
 
 int main()
 {
@@ -120,8 +144,111 @@ int main()
 	HashTableInsert_test();	
 	
 	HashTableSize_test();
+	
+	HashTableRemove_test();
+	
+	HasTableFind_test();
+	
+/*	HasTableForEach_test();*/
+
+	HasTableForEachFail_test();			
 
 	return 0;
+}
+
+void HasTableForEachFail_test()
+{
+	hash_table_t *ht = HashTableCreate (LEGAL_ALPHA_BUCKETS, FirstLetterHashFunc, StrCmpFunc);
+
+	HashTableInsert(ht, "aello");
+	HashTableInsert(ht, "bello");
+	HashTableInsert(ht, "cello");
+	HashTableInsert(ht, "dello");		
+	HashTableInsert(ht, "hello");
+	HashTableInsert(ht, "xello");
+	HashTableInsert(ht, "zdllo");
+	
+	expect_int(HashTableForEach(ht, FailPrintString, NULL),1,"HasTableForEachFail_test1");
+	
+	HashTableDestroy(ht);	
+}
+
+void HasTableForEach_test()
+{
+	hash_table_t *ht = HashTableCreate (LEGAL_ALPHA_BUCKETS, FirstLetterHashFunc, StrCmpFunc);
+
+	HashTableInsert(ht, "hello");
+	HashTableInsert(ht, "lello");
+	HashTableInsert(ht, "gello");
+	HashTableInsert(ht, "aello");
+	HashTableInsert(ht, "bello");		
+	HashTableInsert(ht, "dello");
+	HashTableInsert(ht, "ddllo");
+	
+	HashTableForEach(ht, PrintString, NULL);
+	
+	HashTableDestroy(ht);		
+}
+
+void HasTableFind_test()
+{
+	hash_table_t *ht = HashTableCreate (LEGAL_ALPHA_BUCKETS, FirstLetterHashFunc, StrCmpFunc);
+
+	HashTableInsert(ht, "hello");
+	HashTableInsert(ht, "lello");
+	HashTableInsert(ht, "gello");
+	HashTableInsert(ht, "aello");
+	HashTableInsert(ht, "bello");		
+	HashTableInsert(ht, "dello");
+	HashTableInsert(ht, "ddllo");
+	
+	expect_Not_NULL(HashTableFind(ht, "dello"), "HasTableFind_test1");
+	
+/*	expect_NULL(HashTableFind(ht, ""), "HasTableFind_test2");*/	/*empty string kills it FIXME */
+
+	expect_NULL(HashTableFind(ht, "d"), "HasTableFind_test2");
+	
+	HashTableDestroy(ht);	
+}
+
+void HashTableRemove_test()
+{
+	hash_table_t *ht = HashTableCreate (LEGAL_ALPHA_BUCKETS, FirstLetterHashFunc, StrCmpFunc);
+
+	expect_int(HashTableIsEmpty(ht), 1, "HashTableRemove_test1");	
+
+	HashTableInsert(ht, "hello");
+	expect_size_t(HashTableSize(ht), 1, "HashTableRemove_test2");
+
+	HashTableInsert(ht, "lello");
+	HashTableInsert(ht, "gello");
+	HashTableInsert(ht, "aello");
+	HashTableInsert(ht, "bello");		
+	HashTableInsert(ht, "dello");
+	HashTableInsert(ht, "ddllo");			
+	
+	expect_size_t(HashTableSize(ht), 7, "HashTableRemove_test3");	
+	
+	expect_int(HashTableIsEmpty(ht), 0, "HashTableRemove_test4");		
+	
+	HashTableRemove(ht, "lello");
+	
+	expect_size_t(HashTableSize(ht), 6, "HashTableRemove_test5");		
+	
+	HashTableRemove(ht, "lello");
+	expect_size_t(HashTableSize(ht), 6, "HashTableRemove_test5");			
+	HashTableRemove(ht, "gello");
+	expect_size_t(HashTableSize(ht), 5, "HashTableRemove_test5");			
+	HashTableRemove(ht, "aello");
+	expect_size_t(HashTableSize(ht), 4, "HashTableRemove_test5");			
+	HashTableRemove(ht, "bello");		
+	expect_size_t(HashTableSize(ht), 3, "HashTableRemove_test5");			
+	HashTableRemove(ht, "dello");
+	expect_size_t(HashTableSize(ht), 2, "HashTableRemove_test5");			
+	HashTableRemove(ht, "ddllo");
+	expect_size_t(HashTableSize(ht), 1, "HashTableRemove_test5");			
+	
+	HashTableDestroy(ht);	
 }
 
 void HashTableSize_test()
@@ -143,7 +270,6 @@ void HashTableSize_test()
 	expect_size_t(HashTableSize(ht), 7, "HashTableSize_test3");	
 	
 	expect_int(HashTableIsEmpty(ht), 0, "HashTableSize_test2");		
-	
 	
 	HashTableDestroy(ht);	
 }

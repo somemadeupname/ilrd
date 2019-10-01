@@ -115,19 +115,22 @@ int HashTableInsert(hash_table_t *hash_table, void *data)
 /* Remove data from the hash table */
 void HashTableRemove(hash_table_t *hash_table, void *data)
 {
-/*	size_t bucket_idx = 0;*/
-/*	dlist_iter_t found_data = NULL;*/
-/*	dlist_iter_t begin = NULL;*/
-/*	dlist_iter_t end = NULL;	*/
-/*	*/
-/*	assert(NULL != hash_table);*/
-/*	*/
-/*	bucket_idx = hash_table->hash_func(data);*/
-/*	begin = DListBegin((hash_table->buckets[bucket_idx]));*/
-/*	end = DListEnd((hash_table->buckets[bucket_idx]));*/
-/*	*/
-/*	found_data = DListFind(begin, end, hash_table->cmp_func, data);*/
-/*	DListRemove(found_data);*/
+	size_t bucket_idx = 0;
+	dlist_iter_t found_data = NULL;
+	dlist_iter_t begin = NULL;
+	dlist_iter_t end = NULL;	
+	
+	assert(NULL != hash_table);
+	
+	bucket_idx = hash_table->hash_func(data);
+	begin = DListBegin((hash_table->buckets[bucket_idx]));
+	end = DListEnd((hash_table->buckets[bucket_idx]));
+	
+	found_data = DListFind(begin, end, hash_table->cmp_func, data);
+	if (!DListIsSameIter(found_data, end))
+	{
+		DListRemove(found_data);
+	}
 }
 
 /* Get size of the hash table */
@@ -160,4 +163,54 @@ int HashTableIsEmpty(const hash_table_t *hash_table)
 	}
 	
 	return 1;
+}
+
+/* Find data in the hash table */ /*TODO export to static func and code reuse remove*/
+void *HashTableFind(const hash_table_t *hash_table, void *data)
+{
+	size_t bucket_idx = 0;
+	dlist_iter_t found_data = NULL;
+	dlist_iter_t begin = NULL;
+	dlist_iter_t end = NULL;	
+	
+	assert(NULL != hash_table);
+	
+	bucket_idx = hash_table->hash_func(data);
+	begin = DListBegin((hash_table->buckets[bucket_idx]));
+	end = DListEnd((hash_table->buckets[bucket_idx]));
+	
+	found_data = DListFind(begin, end, hash_table->cmp_func, data);
+	
+	return (NULL == found_data) ? NULL : DListIterGetData(found_data);
+}
+
+/*
+ * Perform @act_func for each element in the hash table,
+ * stops if action returns non-zero.
+ * Param @hash_table: pointer to the hash table.
+ * Param @act_func: function to perfom.
+ * Return: on success, 0 is returned.
+ * Errors: on fail, non-zero is returned.
+ */
+int HashTableForEach(const hash_table_t *hash_table,
+					 int (*act_func)(void *table_data,
+					 				 void *param),
+					 				 void *param)
+{
+	size_t bucket_idx = 0;
+	int return_status = 0;
+	dlist_iter_t begin = NULL;
+	dlist_iter_t end = NULL;
+	
+	for (bucket_idx = 0;
+		(bucket_idx < hash_table->num_buckets) && (0 == return_status);
+		++bucket_idx)
+	{
+		begin = DListBegin((hash_table->buckets[bucket_idx]));;
+		end = DListEnd((hash_table->buckets[bucket_idx]));	
+		return_status =
+		DListForEach(begin, end, act_func, param);
+	}
+
+	return return_status;	
 }
