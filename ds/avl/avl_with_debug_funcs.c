@@ -7,6 +7,10 @@
 #include <assert.h> /* assert */
 #include <stdlib.h> /* malloc free */
 
+/* TODO REMOVE THIS TODO*/
+#include <stdio.h>
+/* TODO REMOVE THIS TODO*/
+
 #include "avl.h"
 
 #define NUM_CHILDREN 2
@@ -52,14 +56,14 @@ static void *GetData(const avl_node_t *node);
 static size_t GetNodeHeight(avl_node_t *node);
 static avl_node_t *GetPrev(avl_node_t *node);
 static avl_node_t *GetChild(avl_node_t *parent_node);
+
+/* AVL HELPERS */
 static direction GetDirection(avl_node_t *tree_node,
 							  cmp_func_t cmp,
  							  void *param,
  							  const void *data);
 
-/* AVL HELPERS */
-
-static avl_node_t *AVLGetRoot(const avl_t *avl);
+/*static */ avl_node_t *AVLGetRoot(const avl_t *avl); /*CHANGE BACK TO STATIC TODO*/
 static avl_node_t *RecursiveInsert(avl_node_t *tree_node,
 							cmp_func_t cmp,
 							void *param,
@@ -86,6 +90,10 @@ static avl_node_t *RotateLeft(avl_node_t *node);
 
 /* generic free and null function */
 static void *FreeAndNullify(void *pointer_to_free);
+
+/* TODO remove this - for testing purposes only */
+int Int(avl_node_t *node);
+/* TODO remove this - for testing purposes only */
 
 /******************************************************************************
 *								     										  *
@@ -233,7 +241,7 @@ static void SwapData(avl_node_t *node1, avl_node_t *node2)
 *								      										  *
 ******************************************************************************/
 /* get root node of avl */
-static avl_node_t *AVLGetRoot(const avl_t *avl)
+/*static */avl_node_t *AVLGetRoot(const avl_t *avl)
 {
 	assert(NULL != avl);
 	
@@ -419,7 +427,7 @@ static avl_node_t *RemoveNode(avl_node_t *node_to_remove,
 	
 	return node_to_remove;
 }
-/* balances the avl from given node @node */
+/* balances the avl from given node @node*/
 static avl_node_t *Balance(avl_node_t *node)
 {
 	#define MAX_BALANCE_FACTOR 1
@@ -618,4 +626,39 @@ size_t AVLHeight(const avl_t *avl)
 	assert(NULL != avl);
 	
 	return GetNodeHeight(AVLGetRoot(avl));
+}
+
+/* TODO remove this - for testing purposes only */
+void InOrderPrintNodes(avl_node_t *node)
+{
+	if (NULL == node)
+	{
+      return;
+    }
+
+    InOrderPrintNodes(node->child[LEFT]);
+    printf("%d (%ld)\n", *(int*)node->data, GetNodeHeight(node));
+    InOrderPrintNodes(node->child[RIGHT]);
+}
+/* TODO remove this - for testing purposes only */
+int Int(avl_node_t *node)
+{
+/*	assert (NULL != node);*/
+
+	if (node == NULL)
+	{
+		return 0;
+	}
+	
+	return *(int *)node->data;
+}
+/* TODO remove this - for testing purposes only */
+size_t Height(avl_node_t *node)
+{
+	if (node == NULL)
+	{
+		return 0;
+	}
+
+	return node->height;
 }
