@@ -82,6 +82,8 @@ void AVLRemoveParentOneChild_test();
 void AVLRemoveParentTwoChild_test();
 void AVLRemoveRootBigTree_test();
 void AVLHeightSanity_test();
+void AVLHeightRemove_test();
+void AVLHeightRightLeft_test();
 
 int main()
 {
@@ -93,11 +95,11 @@ int main()
 	
 	AVLInsert2_test();
 	
-/*	AVLFind_test();*/
+	AVLFind_test();
 	
-/*	AVLForEachSuccess_test();*/
+	AVLForEachSuccess_test();
 	
-/*	AVLForEachFail_test();*/
+	AVLForEachFail_test();
 	
 	AVLCount_test();	
 	
@@ -111,7 +113,11 @@ int main()
 	
 	AVLRemoveRootBigTree_test();
 	
-/*	AVLHeightSanity_test();*/
+	AVLHeightSanity_test();
+	
+	AVLHeightRemove_test();
+	
+	AVLHeightRightLeft_test();
 
 	return 0;
 }
@@ -167,18 +173,69 @@ static int FailOnEvenData(void *node_data, void *param)
  *					      TEST FUNCTIONS								 *
  *																		 *
  *************************************************************************/
+void AVLHeightRightLeft_test()
+{
+	avl_t *tree = AVLCreate(NULL, IntCompare);
+	#define DATA_SIZE 6
+	int data[DATA_SIZE] = {30,50,20,10,25,70};
+	int to_insert1 = 28;
+	int to_insert2 = 29;	
+	size_t i = 0;
+	
+	for (i = 0; i < DATA_SIZE; ++i)
+	{
+		AVLInsert(tree, &data[i]);
+	}
+	
+	AVLInsert(tree, &to_insert1);
+	AVLInsert(tree, &to_insert2);			
+	
+/*	AVLRemove(tree, &data[5]);*/
+	
+	InOrderPrintNodes(AVLGetRoot(tree));
+	printf("\n");
+/*	printf("%d\n",Int(AVLGetRoot(tree)));*/
+	
+/*	AVLRemove(tree, &data[0]); 		 	*/
+	
+/*	InOrderPrintNodes(AVLGetRoot(tree));*/
+	
+/*	AVLRemove(tree, &data[1]); 		 	*/
+	
+/*	InOrderPrintNodes(AVLGetRoot(tree));		*/
+		
+	AVLDestroy(tree);
+}
+
+void AVLHeightRemove_test()
+{
+	avl_t *tree = AVLCreate(NULL, IntCompare);
+	#define DATA_SIZE 6
+	int data[DATA_SIZE] = {30,50,20,10,25,70};
+	size_t i = 0;
+	
+	for (i = 0; i < DATA_SIZE; ++i)
+	{
+		AVLInsert(tree, &data[i]);
+	}
+	
+	expect_size_t(AVLHeight(tree), 3 ,"AVLHeight_test3");
+	
+	AVLDestroy(tree);
+}
+
 void AVLHeightSanity_test()
 {
-/*	avl_t *tree = AVLCreate(NULL, IntCompare);*/
-/*	int int_data = 5;*/
-/*	*/
-/*	expect_size_t(AVLHeight(tree), 0 ,"AVLHeight_test1");*/
-/*		*/
-/*	AVLInsert(tree, &int_data);*/
-/*	*/
-/*	expect_size_t(AVLHeight(tree), 1 ,"AVLHeight_test2");*/
-/*	*/
-/*	AVLDestroy(tree);*/
+	avl_t *tree = AVLCreate(NULL, IntCompare);
+	int int_data = 5;
+	
+	expect_size_t(AVLHeight(tree), 0 ,"AVLHeight_test1");
+		
+	AVLInsert(tree, &int_data);
+	
+	expect_size_t(AVLHeight(tree), 1 ,"AVLHeight_test2");
+	
+	AVLDestroy(tree);
 }
 
 void AVLRemoveRootBigTree_test()
@@ -199,6 +256,7 @@ void AVLRemoveRootBigTree_test()
 	AVLRemove(tree, &data[0]); /*[0] = 30 */
 	expect_size_t(AVLCount(tree), 5, "AVLRemoveRootBigTree_test3");	
 		
+/*	InOrderPrintNodes(AVLGetRoot(tree));	*/
 	AVLRemove(tree, &data[1]); 
 	
 	expect_size_t(AVLCount(tree), 4, "AVLRemoveRootBigTree_test4");		
@@ -208,7 +266,6 @@ void AVLRemoveRootBigTree_test()
 	
 	AVLRemove(tree, &data[4]);
 	
-	InOrderPrintNodes(AVLGetRoot(tree));	
 	expect_size_t(AVLCount(tree), 2, "AVLRemoveRootBigTree_test6");		
 	
 	AVLDestroy(tree);
@@ -232,7 +289,7 @@ void AVLRemoveParentTwoChild_test()
 	
 /*	InOrderPrintNodes(AVLGetRoot(tree));*/
 	
-	printf("\n");
+/*	printf("\n");*/
 	
 	AVLRemove(tree, &data[2]); /*[2] = 20 */
 	
@@ -345,7 +402,7 @@ void AVLForEachFail_test()
 	{
 		AVLInsert(tree, &data[i]);
 /*		InOrderPrintNodes(AVLGetRoot(tree));			*/
-		printf("\n");
+/*		printf("\n");*/
 	}
 	
 /*	InOrderPrintNodes(AVLGetRoot(tree));	*/

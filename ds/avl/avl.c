@@ -17,7 +17,8 @@
 
 typedef struct avl_node avl_node_t;
 
-typedef int (*cmp_func_t)(const void *iter_data, const void *new_data, void *param);
+typedef int (*cmp_func_t)(const void *iter_data, const void *new_data,
+																   void *param);
 
 typedef int (*action_func_t)(void *tree_data, void *param);
 
@@ -50,16 +51,17 @@ static int HasRightChild(const avl_node_t *node);
 static int HasLeftChild(const avl_node_t *node);
 static int HasTwoChildren(const avl_node_t *node);
 static void SwapData(avl_node_t *node1, avl_node_t *node2);
-static void SwapDataAndRemove(avl_node_t *node_to_remove, avl_node_t *next);
 static void *GetData(const avl_node_t *node);
-static direction GetDirection(avl_node_t *tree_node, cmp_func_t cmp, void *param,
-																	 const void *data);
+static direction GetDirection(avl_node_t *tree_node,
+							  cmp_func_t cmp,
+ 							  void *param,
+ 							  const void *data);
 
-/*static */ avl_node_t *AVLGetRoot(const avl_t *avl); /*CHANGE TO STATIC TODO*/
+/*static */ avl_node_t *AVLGetRoot(const avl_t *avl); /*CHANGE BACK TO STATIC TODO*/
 /* TODO remove this - for testing purposes only */
 int Int(avl_node_t *node);
 /* TODO remove this - for testing purposes only */
-static void RecursiveInsert(avl_node_t *tree_node,
+static avl_node_t *RecursiveInsert(avl_node_t *tree_node,
 							cmp_func_t cmp,
 							void *param,
 							avl_node_t *node_to_insert);
@@ -70,13 +72,18 @@ static avl_node_t *RemoveNode(avl_node_t *node_to_remove,
 								   void *param);
 static void RecursiveCount(avl_node_t *node, size_t *counter);
 static avl_node_t *Balance(avl_node_t *node);
-static avl_node_t *UpdateHeight(avl_node_t *node);
+static void UpdateHeight(avl_node_t *node);
 static size_t GetNodeHeight(avl_node_t *node);
-int RecursiveForEach(avl_node_t *node, action_func_t func, void *param, int *status);
-static direction GetChildDirection(const avl_node_t *node); 
+int RecursiveForEach(avl_node_t *node, action_func_t func, void *param,
+																   int *status);
 static size_t MaxHeight(avl_node_t *left_child, avl_node_t *right_child);
 static avl_node_t *GetPrev(avl_node_t *node);
 static avl_node_t *GetChild(avl_node_t *parent_node);
+
+static avl_node_t *Balance(avl_node_t *node);
+static int GetBalance(avl_node_t *node);
+static avl_node_t *RotateRight(avl_node_t *node);
+static avl_node_t *RotateLeft(avl_node_t *node);
 
 static void *FreeAndNullify(void *pointer_to_free);
 /******************************************************************************
@@ -108,8 +115,10 @@ static avl_node_t *DestroyAVLNode(avl_node_t *node_to_destroy)
 }
 
 /* check if needs to look in LEFT or RIGHT direction */
-static direction GetDirection(avl_node_t *tree_node, cmp_func_t cmp, void *param,
-																	 const void *data)
+static direction GetDirection(avl_node_t *tree_node,
+							  cmp_func_t cmp,
+							  void *param,
+	   						  const void *data)
 {
 	assert(NULL != tree_node);
 	assert(NULL != cmp);
@@ -141,22 +150,6 @@ static int HasTwoChildren(const avl_node_t *node)
 	
 	return (HasLeftChild(node) && HasRightChild(node));
 		
-}
-
-static int HasOneChild(const avl_node_t *node)
-{
-	assert(NULL != node);
-	
-	return (HasLeftChild(node) || HasRightChild(node));
-		
-}
-
-/* check if node is childless */
-static int IsLeaf(const avl_node_t *node)
-{
-	assert(NULL != node);
-	
-	return ((NULL == node->child[RIGHT]) && (NULL == node->child[LEFT]));
 }
 
 /* get node data */
@@ -229,8 +222,10 @@ void AVLDestroy(avl_t *avl)
 	assert(NULL != avl);
 	
 	RecursiveDestroy(AVLGetRoot(avl));
+	
+	avl->dummy_node = DestroyAVLNode(avl->dummy_node);
 
-	avl->dummy_node = FreeAndNullify(avl->dummy_node);
+/*	avl->dummy_node = FreeAndNullify(avl->dummy_node);*/
 	avl = FreeAndNullify(avl);
 }
 
@@ -241,7 +236,7 @@ static void *FreeAndNullify(void *pointer_to_free)
 }
 
 /* helper for AVLInsert */
-static void RecursiveInsert(avl_node_t *tree_node,
+static avl_node_t *RecursiveInsert(avl_node_t *tree_node,
 							cmp_func_t cmp,
 							void *param,
 							avl_node_t *node_to_insert)
@@ -257,14 +252,20 @@ static void RecursiveInsert(avl_node_t *tree_node,
 	if (NULL == tree_node->child[dir])
 	{
 		tree_node->child[dir] = node_to_insert;
+		UpdateHeight(tree_node);
+		
+		return tree_node;
 	}
 	else
 	{
-		RecursiveInsert(tree_node->child[dir], cmp, param, node_to_insert);
+		tree_node->child[dir] = RecursiveInsert(tree_node->child[dir], cmp, param, node_to_insert);
 	}
 	
-	UpdateHeight(tree_node);	
+	UpdateHeight(tree_node);
 	
+	tree_node = Balance(tree_node);
+	
+	return tree_node;
 }
 
 /* Insert new element to tree */
@@ -287,7 +288,7 @@ int AVLInsert(avl_t *avl, const void *data_to_insert)
 		return AVL_SUCCESS;
 	}
 	
-	RecursiveInsert(AVLGetRoot(avl), avl->cmp_func, avl->param, node_to_insert);
+	avl->dummy_node->child[LEFT] = RecursiveInsert(AVLGetRoot(avl), avl->cmp_func, avl->param, node_to_insert);
 	
 	return AVL_SUCCESS;	
 }
@@ -311,11 +312,14 @@ static avl_node_t *RecursiveRemove(avl_node_t *node_to_check,
 	
 	dir = GetDirection(node_to_check, cmp, param, data_to_remove);
 	
-	node_to_check->child[dir] = RecursiveRemove(node_to_check->child[dir], cmp, data_to_remove, param);
+	node_to_check->child[dir] = RecursiveRemove(node_to_check->child[dir],
+													cmp, data_to_remove, param);
 		
+	UpdateHeight(node_to_check);
+	
 	node_to_check = Balance(node_to_check);
 	
-	return UpdateHeight(node_to_check);
+	return node_to_check;
 }
 
 static avl_node_t *RemoveNode(avl_node_t *node_to_remove,
@@ -330,18 +334,94 @@ static avl_node_t *RemoveNode(avl_node_t *node_to_remove,
 	{
 		avl_node_t *next_node = GetPrev(node_to_remove->child[RIGHT]);
 		SwapData(node_to_remove, next_node);
-		node_to_remove->child[RIGHT] = RecursiveRemove(node_to_remove->child[RIGHT], cmp, data_to_remove, param);
+		node_to_remove->child[RIGHT] =
+		RecursiveRemove(node_to_remove->child[RIGHT], cmp, data_to_remove,
+																		 param);
 	}
 	else
 	{
-/*		direction dir = GetDirection(node_to_remove, cmp, param, data_to_remove);*/
-/*		avl_node_t *child = node_to_remove->child[dir];*/
 		avl_node_t *child = GetChild(node_to_remove);
 		node_to_remove = DestroyAVLNode(node_to_remove);
 		return child;
 	}
 	
 	return node_to_remove;
+}
+
+static avl_node_t *Balance(avl_node_t *node)
+{
+	int balance_factor = 0;
+	
+	assert(NULL != node);
+	
+	balance_factor = GetBalance(node);
+	
+	if (balance_factor > 1)
+	{
+		if (HasLeftChild(node->child[LEFT]))
+		{
+			node = RotateRight(node);
+		}
+		else if (HasRightChild(node->child[LEFT]))
+		{
+			node->child[LEFT] = RotateLeft(node->child[LEFT]);
+			UpdateHeight(node->child[LEFT]);
+		}
+		
+		return node;
+	}
+	else if (balance_factor < -1)
+	{
+		if (HasRightChild(node->child[RIGHT]))
+		{
+			node = RotateLeft(node);
+			UpdateHeight(node);
+		}
+		else if (HasLeftChild(node->child[RIGHT]))
+		{
+			node->child[RIGHT] = RotateRight(node->child[RIGHT]);
+			UpdateHeight(node->child[RIGHT]);
+			node = RotateLeft(node);
+		}
+		
+		return node;
+	}
+	
+	return node;
+}
+
+static avl_node_t *RotateRight(avl_node_t *node)
+{
+	avl_node_t *left = NULL;
+	avl_node_t *left_right = NULL;
+	
+	assert(NULL != node);
+	
+	left = node->child[LEFT];
+	left_right = left->child[RIGHT];
+	left->child[RIGHT] = node;
+	node->child[LEFT] = left_right;
+	
+	UpdateHeight(node);	
+	
+	return left;
+}
+
+static avl_node_t *RotateLeft(avl_node_t *node)
+{
+	avl_node_t *right = NULL;
+	avl_node_t *right_left = NULL;
+	
+	assert(NULL != node);
+	
+	right = node->child[RIGHT];
+	right_left = right->child[LEFT];
+	right->child[LEFT] = node;
+	node->child[RIGHT] = right_left;
+	
+	UpdateHeight(node);
+	
+	return right;
 }
 
 static avl_node_t *GetChild(avl_node_t *parent_node)
@@ -369,31 +449,30 @@ void AVLRemove(avl_t *avl, const void *data_to_remove)
 {
 	assert(NULL != avl);
 	
-	RecursiveRemove(AVLGetRoot(avl), avl->cmp_func, data_to_remove, avl->param);
+	avl->dummy_node->child[LEFT] = RecursiveRemove(AVLGetRoot(avl), avl->cmp_func, data_to_remove, avl->param);
 }
 
 /* */
-static avl_node_t *Balance(avl_node_t *node)
-{
-/*	TODO*/
-	return node;
-}
-
-/* */
-static avl_node_t *UpdateHeight(avl_node_t *node)
+static void UpdateHeight(avl_node_t *node)
 {
 	assert(NULL != node);
 	
-	node->height = MaxHeight(node->child[LEFT], node->child[RIGHT]);
-	
-	return node;
+	node->height = 1 + MaxHeight(node->child[LEFT], node->child[RIGHT]);
 }
 
 static size_t MaxHeight(avl_node_t *left_child, avl_node_t *right_child)
 {
 	size_t max_height = GetNodeHeight(left_child) > GetNodeHeight(right_child) ?
 						GetNodeHeight(left_child) : GetNodeHeight(right_child);
-	return 1 + max_height;
+	return max_height;
+}
+
+static int GetBalance(avl_node_t *node)
+{
+	assert(NULL != node);
+	
+	return (int)((int)GetNodeHeight(node->child[LEFT])-
+									    (int)GetNodeHeight(node->child[RIGHT]));
 }
 
 /* Check if tree is empty */
@@ -463,8 +542,7 @@ void *AVLFind(const avl_t *avl, const void *data_to_find)
 /* Perform action_func for each element in @avl */
 int AVLForEach(void *param, avl_t *avl, int (*action_func)(void *tree_data,
 														   void *param))
-{
-	
+{	
 	int status = 0;	
 		
 	assert(NULL != avl);
@@ -519,19 +597,6 @@ static void SwapData(avl_node_t *node1, avl_node_t *node2)
 	node2->data = temp_data;
 }
 
-/* */
-static direction GetChildDirection(const avl_node_t *node)
-{
-	assert(NULL != node);
-	
-	if (HasLeftChild(node))
-	{
-		return LEFT;
-	}
-
-	return RIGHT;
-}
-
 /* TODO remove this - for testing purposes only */
 void InOrderPrintNodes(avl_node_t *node)
 {
@@ -547,7 +612,22 @@ void InOrderPrintNodes(avl_node_t *node)
 /* TODO remove this - for testing purposes only */
 int Int(avl_node_t *node)
 {
-	assert (NULL != node);
+/*	assert (NULL != node);*/
+
+	if (node == NULL)
+	{
+		return 0;
+	}
 	
 	return *(int *)node->data;
+}
+
+size_t Height(avl_node_t *node)
+{
+	if (node == NULL)
+	{
+		return 0;
+	}
+
+	return node->height;
 }
