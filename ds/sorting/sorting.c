@@ -365,3 +365,99 @@ int Radix(int *arr, size_t size, unsigned int num_of_bits)
 	
 	return SUCCESS;
 }
+
+int MergeHelper(int *arr, size_t l_idx, size_t r_idx, size_t m_idx, int (*is_before)(int a, int b))
+{
+	size_t i = 0;
+	size_t j = 0;
+	size_t k = 0;
+	size_t temp_arr_1_size = 0;
+	size_t temp_arr_2_size = 0;	
+	static int *temp_arr_1 = NULL;
+	static int *temp_arr_2 = NULL;	
+	
+	assert(NULL != arr);
+	assert(NULL != is_before);		
+	
+	temp_arr_1_size = m_idx - l_idx + 1;
+	temp_arr_2_size = r_idx - m_idx;	
+	
+	temp_arr_1 = (int *)malloc(sizeof(int)*temp_arr_1_size);
+	if (NULL == temp_arr_1)
+	{
+		return 1;
+	}
+	
+	temp_arr_2 = (int *)malloc(sizeof(int)*temp_arr_2_size);
+	if (NULL == temp_arr_1)
+	{
+		free(temp_arr_1); temp_arr_1 = NULL;
+		return 1;
+	}
+	
+	for (i = 0; i < temp_arr_1_size; ++i)
+	{
+		temp_arr_1[i] = arr[l_idx + i];
+	}
+	
+	for (j = 0; j < temp_arr_2_size; ++j)
+	{
+		temp_arr_2[j] = arr[m_idx + j + 1];
+	}
+	
+	i = 0; j = 0; k = l_idx;
+	
+	while ((i < temp_arr_1_size) && (j < temp_arr_2_size))
+	{
+		if (is_before(temp_arr_1[i], temp_arr_2[j]))
+		{
+			arr[k] = temp_arr_1[i];
+			++i;
+		} 
+		else /* temp_arr_1[i] is not before temp_arr_2[j] */
+		{
+			arr[k] = temp_arr_2[j];
+			++j;
+		}
+		++k;
+	}
+	
+	while (i < temp_arr_1_size)
+	{
+		arr[k] = temp_arr_1[i];
+		++i;
+		++k;
+	}
+	
+	while (j < temp_arr_2_size)
+	{
+		arr[k] = temp_arr_2[j];
+		++j;
+		++k;
+	}
+	
+	free(temp_arr_1); temp_arr_1 = NULL;
+	free(temp_arr_2); temp_arr_2 = NULL;
+	
+	return 0;
+}
+
+/* Sorts @arr using merge sort */
+int Merge(int *arr, size_t size, int (*is_before)(int a, int b))
+{
+	assert(NULL != arr);
+	assert(NULL != is_before);	
+	
+	if (size > 0)
+	{
+		Merge(arr, size/2, is_before);
+		Merge(&arr[size/2], size/2, is_before);
+
+		if (1 == MergeHelper(arr, 0, size, size/2, is_before))
+		{
+			return 1;
+		}
+	}
+	
+	return 0;
+}

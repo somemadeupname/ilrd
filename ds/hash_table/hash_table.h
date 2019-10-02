@@ -81,5 +81,7 @@ size_t HashTableSize(const hash_table_t *hash_table);
  */
 int HashTableIsEmpty(const hash_table_t *hash_table);
 
+void PrintBucketSizes(hash_table_t *ht);
+
 #endif /* __ILRD_HASH_TABLE_H */
 

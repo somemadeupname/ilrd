@@ -10,6 +10,8 @@
 #include "hash_table.h"
 #include "dlist.h"
 
+enum {HASH_TABLE_SUCCESS, HASH_TABLE_FAIL};
+
 struct hash_table
 {
 	size_t (*hash_func)(void *key);
@@ -18,6 +20,7 @@ struct hash_table
 	dlist_t **buckets;
 };
 
+/* forward declaration */
 static void InitDlists(dlist_t **buckets, int num_of_buckets);
 
 /* Create hash table */
@@ -51,12 +54,13 @@ hash_table_t *HashTableCreate(size_t num_of_buckets,
 	return ht;
 }
 
+/* initialize buckets */
 static void InitDlists(dlist_t **buckets, int num_of_buckets)
 {
 	int alloc_success = 1;
 	int bucket = 0;
 	
-	for (bucket = 0; alloc_success && bucket < num_of_buckets; ++bucket)
+	for (bucket = 0; alloc_success && (bucket < num_of_buckets); ++bucket)
 	{
 		buckets[bucket] = DListCreate();
 		if (NULL == buckets[bucket])
@@ -82,6 +86,7 @@ void HashTableDestroy(hash_table_t *hash_table)
 		if (NULL != hash_table->buckets[bucket])
 		{
 			DListDestroy(hash_table->buckets[bucket]);
+			hash_table->buckets[bucket] = NULL;
 		}
 	}
 	
@@ -105,10 +110,10 @@ int HashTableInsert(hash_table_t *hash_table, void *data)
 	
 	if (DListIsSameIter(insert_result, end))
 	{
-		return 1;
+		return HASH_TABLE_FAIL;
 	}
 	
-	return 0;	
+	return HASH_TABLE_SUCCESS;	
 }
 
 /* Remove data from the hash table */
@@ -164,7 +169,7 @@ int HashTableIsEmpty(const hash_table_t *hash_table)
 	return 1;
 }
 
-/* Find data in the hash table */ /*TODO export to static func and code reuse remove*/
+/* Find data in the hash table */
 void *HashTableFind(const hash_table_t *hash_table, void *data)
 {
 	size_t bucket_idx = 0;
@@ -183,14 +188,7 @@ void *HashTableFind(const hash_table_t *hash_table, void *data)
 	return (NULL == found_data) ? NULL : DListIterGetData(found_data);
 }
 
-/*
- * Perform @act_func for each element in the hash table,
- * stops if action returns non-zero.
- * Param @hash_table: pointer to the hash table.
- * Param @act_func: function to perfom.
- * Return: on success, 0 is returned.
- * Errors: on fail, non-zero is returned.
- */
+/* Perform @act_func for each element in the hash table */
 int HashTableForEach(const hash_table_t *hash_table,
 					 int (*act_func)(void *table_data,
 					 				 void *param),

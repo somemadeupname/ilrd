@@ -1,6 +1,9 @@
-#include <stdio.h>
+#include <stdio.h> /* printf fopen fclose perror*/
 #include <assert.h>
-#include <string.h> /* strcmp */
+#include <string.h> /* strcmp 	strncpy */
+#include <sys/stat.h> /* stat */
+#include <stdlib.h> /* malloc free */
+
 
 #include "hash_table.h"
 
@@ -21,7 +24,10 @@
 	expect_Not_NULL(&a, "hi");\
 }
 
-#define LEGAL_ALPHA_BUCKETS 172
+#define VALID_ALPHA_CHARS_NUM 173
+
+/*const char *DICT_PATH = "/usr/share/dict/american-english";*/
+const char *DICT_PATH = "/home/student0/ran-shieber/ds/hash_table/adictionary";
 
 /*************************************************************************
 								 										 *
@@ -69,6 +75,7 @@ void expect_Not_NULL(void *pointer, char *func_name)
 				      TEST HELPER FUNCTIONS								 *
 																		 *
 *************************************************************************/
+/* hash func */
 size_t FirstLetterHashFunc(void *key)
 {
 	char *str_key = NULL;
@@ -77,8 +84,29 @@ size_t FirstLetterHashFunc(void *key)
 	
 	str_key = (char *)key;
 	
-	return (str_key[0] - 65) % LEGAL_ALPHA_BUCKETS;
+	return (str_key[0]-65) % VALID_ALPHA_CHARS_NUM;
 }
+/* 2nd hash func */
+size_t SumOfAsciiHash(void *key)
+{
+	char *str_key = NULL;
+	int sum = 0;
+	
+	assert(NULL != key);
+	
+	str_key = (char *)key;
+	
+	
+	while (NULL != str_key)
+	{
+		sum += *str_key;
+		++str_key;
+	}
+	
+	return sum;
+}
+
+/* cmp func */
 int StrCmpFunc(const void *key1, const void *key2)
 {	
 	assert(NULL != key1);
@@ -86,7 +114,7 @@ int StrCmpFunc(const void *key1, const void *key2)
 	
 	return strcmp((char *)key1, (char *)key2);
 }
-
+/* hash and cmp funcs test */
 void FuncsTest()
 {
 	char *str1 = "A";
@@ -133,6 +161,8 @@ void HasTableFind_test();
 void HasTableForEach_test();	
 void HasTableForEachFail_test();
 
+void Dictionary_test();
+
 int main()
 {
 	PREVENT_WARNINGS_FROM_UNUSED_FUNCS_FROM_TESTS_TEMPLATE	  	   	
@@ -151,14 +181,111 @@ int main()
 	
 /*	HasTableForEach_test();*/
 
-	HasTableForEachFail_test();			
+/*	HasTableForEachFail_test();*/
+
+	Dictionary_test();
 
 	return 0;
 }
 
+/*function to get size of the file.*/
+/*long int FindSize(const char *file_name)*/
+/*{*/
+/*    struct stat st;*/
+/*     */
+    /* get the size using stat() */
+/*     */
+/*    if (0  == stat(file_name, &st))*/
+/*    {*/
+/*        return (st.st_size);*/
+/*    }*/
+/*    return -1;*/
+/*}*/
+
+static void GetWord(char **words, size_t word_idx ,char *src)
+{
+	size_t size = 1;
+	size_t char_idx = 0;
+	while (src[char_idx] != '\n' && src[char_idx] != '\0')
+	{
+		++size;
+		++char_idx;
+	}
+	
+	words[word_idx] = (char *)malloc(sizeof(char) * size);/* TODO check if fails */
+	strncpy(words[word_idx], src, size);
+	*(words[word_idx] + size - 1) = '\0';
+/*	printf("key: %ld\n", SumOfAsciiHash(words[word_idx]));*/
+}
+
+static void FreeWords(char **words, size_t num_words)
+{
+	size_t word_idx = 0;
+	for (word_idx = 0; word_idx < num_words; ++word_idx)
+	{
+/*		printf("%ld: %s\n", word_idx, words[word_idx]);		*/
+		free(words[word_idx]); /*words[word_idx] = NULL;*/
+	}
+	free(words); words = NULL;
+}
+#define BUFFER_SIZE 40
+static void ClearBuffer(char *buffer)
+{
+	size_t c = 0;
+	for (c = 0; c < BUFFER_SIZE; ++c)
+	{
+		buffer[c] = '\0';
+	}
+}
+
+void Dictionary_test()
+{
+/*	long int buffer_size = FindSize(DICT_PATH);*/
+	static char temp_buffer[BUFFER_SIZE] = {'\0'};
+		
+	FILE *dict = fopen(DICT_PATH, "r");
+	hash_table_t *ht = HashTableCreate (VALID_ALPHA_CHARS_NUM, FirstLetterHashFunc, StrCmpFunc);
+	char c = '0';
+	size_t char_index = 0;
+	char **words = (char **)malloc(sizeof(char**));
+	size_t word_idx = 0;
+	
+	if (NULL == dict)
+	{
+		perror("Failure opening file.\n");
+	}
+	
+	c = fgetc(dict);
+	while (EOF != c)
+	{
+		while ('\n' != c)
+		{
+			temp_buffer[char_index] = c;
+			c = fgetc(dict);
+			++char_index;
+		}
+		
+		GetWord(words, word_idx, temp_buffer);
+		
+		HashTableInsert(ht, words[word_idx]);
+		printf("i:%ld ,word: %s\n", word_idx, words[word_idx]);
+		++word_idx;
+		ClearBuffer(temp_buffer);
+		char_index = 0;
+		c = fgetc(dict);
+	}
+	
+/*	HashTableForEach(ht, PrintString, NULL);*/
+/*	PrintBucketSizes(ht);*/
+	
+	HashTableDestroy(ht);		
+	FreeWords(words, word_idx);
+	fclose(dict);
+}
+
 void HasTableForEachFail_test()
 {
-	hash_table_t *ht = HashTableCreate (LEGAL_ALPHA_BUCKETS, FirstLetterHashFunc, StrCmpFunc);
+	hash_table_t *ht = HashTableCreate (VALID_ALPHA_CHARS_NUM, FirstLetterHashFunc, StrCmpFunc);
 
 	HashTableInsert(ht, "aello");
 	HashTableInsert(ht, "bello");
@@ -175,7 +302,7 @@ void HasTableForEachFail_test()
 
 void HasTableForEach_test()
 {
-	hash_table_t *ht = HashTableCreate (LEGAL_ALPHA_BUCKETS, FirstLetterHashFunc, StrCmpFunc);
+	hash_table_t *ht = HashTableCreate (VALID_ALPHA_CHARS_NUM, FirstLetterHashFunc, StrCmpFunc);
 
 	HashTableInsert(ht, "hello");
 	HashTableInsert(ht, "lello");
@@ -192,7 +319,7 @@ void HasTableForEach_test()
 
 void HasTableFind_test()
 {
-	hash_table_t *ht = HashTableCreate (LEGAL_ALPHA_BUCKETS, FirstLetterHashFunc, StrCmpFunc);
+	hash_table_t *ht = HashTableCreate (VALID_ALPHA_CHARS_NUM, FirstLetterHashFunc, StrCmpFunc);
 
 	HashTableInsert(ht, "hello");
 	HashTableInsert(ht, "lello");
@@ -213,7 +340,7 @@ void HasTableFind_test()
 
 void HashTableRemove_test()
 {
-	hash_table_t *ht = HashTableCreate (LEGAL_ALPHA_BUCKETS, FirstLetterHashFunc, StrCmpFunc);
+	hash_table_t *ht = HashTableCreate (VALID_ALPHA_CHARS_NUM, FirstLetterHashFunc, StrCmpFunc);
 
 	expect_int(HashTableIsEmpty(ht), 1, "HashTableRemove_test1");	
 
@@ -253,7 +380,7 @@ void HashTableRemove_test()
 
 void HashTableSize_test()
 {
-	hash_table_t *ht = HashTableCreate (LEGAL_ALPHA_BUCKETS, FirstLetterHashFunc, StrCmpFunc);
+	hash_table_t *ht = HashTableCreate (VALID_ALPHA_CHARS_NUM, FirstLetterHashFunc, StrCmpFunc);
 
 	expect_int(HashTableIsEmpty(ht), 1, "HashTableSize_test1");	
 
@@ -276,7 +403,7 @@ void HashTableSize_test()
 
 void HashTableInsert_test()
 {
-	hash_table_t *ht = HashTableCreate (LEGAL_ALPHA_BUCKETS, FirstLetterHashFunc, StrCmpFunc);
+	hash_table_t *ht = HashTableCreate (VALID_ALPHA_CHARS_NUM, FirstLetterHashFunc, StrCmpFunc);
 	
 	HashTableInsert(ht, "hello");
 	
@@ -285,6 +412,6 @@ void HashTableInsert_test()
 
 void HashTableCreate_test()
 {
-	hash_table_t *ht = HashTableCreate (LEGAL_ALPHA_BUCKETS, FirstLetterHashFunc, StrCmpFunc);
+	hash_table_t *ht = HashTableCreate (VALID_ALPHA_CHARS_NUM, FirstLetterHashFunc, StrCmpFunc);
 	HashTableDestroy(ht);
 }

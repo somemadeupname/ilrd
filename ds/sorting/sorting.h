@@ -47,4 +47,13 @@ int Counting(int *arr, size_t size, int min, int max);
  */
 int Radix(int *arr, size_t size, unsigned int num_of_bits);
 
+/*
+ * Sorts @arr using merge sort
+ * @arr: array to sort.
+ * @size: number of elements in arr (must be at least 1).
+ * @is_before: function to compare elements
+ * return: 0 if success, non-zero otherwise
+ */
+int Merge(int *arr, size_t size, int (*is_before)(int a, int b));
+
 #endif /* __ILRD_OL712_SORTING_H */

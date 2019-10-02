@@ -95,32 +95,88 @@ void PrintArr(int arr[], size_t arr_size)
 	printf("}\n");	
 }*/
 
+static int MergeIsBefore(int a, int b)
+{
+	return a - b;
+}
+
 /* Forward Declarations */
 static int AreArraysEqual(const int arr1[], const int arr2[], size_t size);
 void CompareTwoArrays(const int arr1[], const int arr2[], size_t size, const char *func_name);
 static int Qsort_Cmp_Wrapper(const void *i1,const void *i2);
+
 
 void Insertion_test();
 void Selection_test();
 void Bubble_test();
 void Counting_test();
 void Radix_test();
+void Merge_test();
 
 int main()
 {
 	PREVENT_WARNINGS_FROM_UNUSED_FUNCS_FROM_TESTS_TEMPLATE
-	/*
-	Insertion_test();
+	
+/*	Insertion_test();*/
 
-	Selection_test();
+/*	Selection_test();*/
+/*	*/
+/*	Bubble_test();*/
+/*	*/
+/*	Counting_test();*/
 	
-	Bubble_test();
-	
-	Counting_test();
-	*/
 	Radix_test();
 	
+	Merge_test();
+	
 	return 0;
+}
+
+void Merge_test()
+{
+	int my_array_big_unsorted[] = {1,4,3,4,5,6,7,867,567,456,345,245,35,65,67,5678,56789,456,7345};
+	int qsort_big_unsorted[] =	  {1,4,3,4,5,6,7,867,567,456,345,245,35,65,67,5678,56789,456,7345};	
+	size_t my_array_big_unsorted_size = 19;
+	
+	int my_array_small_unsorted[] = {5,4,7,1};
+	int qsort_small_unsorted[] = 	{5,4,7,1};
+	size_t my_array_small_unsorted_size = 4;
+	
+	
+	int my_array_sorted[] =    {1,5,8,10,13,98,1001,202020202};
+	int qsort_array_sorted[] = {1,5,8,10,13,98,1001,202020202};	
+	size_t my_array_sorted_size = 8;
+	
+	int my_array_with_negatives[] = {3,1,7,9,3,2,0};
+	int qsort_array_with_negatives[] = {3,1,7,9,3,2,0};	
+	size_t my_array_with_negatives_size = 7;
+	
+	/*TODO Remove*/
+/*	PrintArr(my_array_big_unsorted, my_array_big_unsorted_size);*/
+	/*TODO Remove*/	
+
+	Merge(my_array_big_unsorted, my_array_big_unsorted_size, MergeIsBefore);
+	qsort(qsort_big_unsorted, my_array_big_unsorted_size, sizeof(int), Qsort_Cmp_Wrapper);
+	
+	/*TODO Remove*/
+/*	PrintArr(my_array_big_unsorted, my_array_big_unsorted_size);*/
+	/*TODO Remove*/	
+	
+	Merge(my_array_with_negatives,my_array_with_negatives_size,MergeIsBefore);
+	qsort(qsort_array_with_negatives, my_array_with_negatives_size, sizeof(int), Qsort_Cmp_Wrapper);
+	
+	Merge(my_array_small_unsorted,my_array_small_unsorted_size,MergeIsBefore);
+	qsort(qsort_small_unsorted, my_array_small_unsorted_size, sizeof(int), Qsort_Cmp_Wrapper);
+	
+	Merge(my_array_sorted,my_array_sorted_size,MergeIsBefore);
+	qsort(qsort_array_sorted, my_array_sorted_size, sizeof(int), Qsort_Cmp_Wrapper);
+	
+	CompareTwoArrays(my_array_with_negatives, qsort_array_with_negatives, my_array_with_negatives_size, "Merge with negatives");
+	CompareTwoArrays(my_array_small_unsorted, qsort_small_unsorted, my_array_small_unsorted_size, "Merge small unsorted");
+		
+	CompareTwoArrays(my_array_sorted, qsort_array_sorted, my_array_sorted_size, "Merge sorted");
+	
+	CompareTwoArrays(my_array_big_unsorted, qsort_big_unsorted, my_array_big_unsorted_size, "Merge big unsorted");	
 }
 
 void Radix_test()
