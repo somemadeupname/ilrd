@@ -18,7 +18,7 @@ struct hash_table
 	dlist_t **buckets;
 };
 
-static void InitDlists(dlist_t **buckets, size_t num_of_buckets);
+static void InitDlists(dlist_t **buckets, int num_of_buckets);
 
 /* Create hash table */
 hash_table_t *HashTableCreate(size_t num_of_buckets,
@@ -51,16 +51,20 @@ hash_table_t *HashTableCreate(size_t num_of_buckets,
 	return ht;
 }
 
-static void InitDlists(dlist_t **buckets, size_t num_of_buckets)
+static void InitDlists(dlist_t **buckets, int num_of_buckets)
 {
 	int alloc_success = 1;
-	size_t bucket = 0;
+	int bucket = 0;
 	
 	for (bucket = 0; alloc_success && bucket < num_of_buckets; ++bucket)
 	{
 		buckets[bucket] = DListCreate();
 		if (NULL == buckets[bucket])
 		{
+			for (; 0 <= bucket ; --bucket)
+			{
+				DListDestroy(buckets[bucket]);
+			}
 			alloc_success = 0;
 		}
 	}
@@ -74,18 +78,13 @@ void HashTableDestroy(hash_table_t *hash_table)
 	assert(NULL != hash_table);
 	
 	for (bucket = 0; bucket < hash_table->num_buckets; ++bucket)
-	{
-		if (NULL == hash_table->buckets)
-		{
-			/* TODO free previously alloced dlists */
-			break;
-		}
-		
+	{	
 		if (NULL != hash_table->buckets[bucket])
 		{
 			DListDestroy(hash_table->buckets[bucket]);
 		}
 	}
+	
 	free(hash_table->buckets); hash_table->buckets = NULL;
 	free(hash_table); hash_table = NULL;
 }

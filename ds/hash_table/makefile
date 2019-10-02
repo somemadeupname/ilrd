@@ -11,10 +11,10 @@ hash_table_release: hash_table.c hash_table_test.c
 	$(CC) $(RELEASE_FLAGS) $(DEPS) -o hash_table_release.out
 
 hash_table_debug: hash_table.c hash_table_test.c
-	$(CC) $(DEBUG_FLAGS) $(DEPS) -L/home/shieber/git/ran-shieber/ds/hash_table -o hash_table_debug.out -ldlist
+	$(CC) $(DEBUG_FLAGS) $(DEPS) -L/home/student0/ran-shieber/ds/hash_table -o hash_table_debug.out -ldlist
 
 val: hash_table.c hash_table_test.c
-	$(CC) $(DEBUG_FLAGS) $(DEPS) -L/home/shieber/git/ran-shieber/ds/hash_table -o hash_table_debug.out -ldlist && valgrind --leak-check=yes --track-origins=yes ./hash_table_debug.out
+	$(CC) $(DEBUG_FLAGS) $(DEPS) -L/home/student0/ran-shieber/ds/hash_table -o hash_table_debug.out -ldlist && valgrind --leak-check=yes --track-origins=yes ./hash_table_debug.out
 
 clean:
 	rm -f *.out
