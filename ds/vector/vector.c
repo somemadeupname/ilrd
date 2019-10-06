@@ -26,14 +26,14 @@ struct vector
 
 vector_t *VectorCreate(size_t init_capacity, size_t size_of_element)
 {
-	vector_t * vector = (vector_t *) malloc (sizeof(vector_t));
+	vector_t *vector = (vector_t *)malloc(sizeof(vector_t));
 	void* base = NULL;
 	
 		if (NULL == vector)
 	{
 		return NULL;
 	}
-	base = (void *) malloc (size_of_element * init_capacity);
+	base = (void *)malloc(size_of_element * init_capacity);
 	
 	if (NULL == base)
 	{

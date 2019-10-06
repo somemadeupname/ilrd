@@ -98,7 +98,7 @@ static avl_node_t *CreateAVLNode(const void *data)
 	avl_node_t *new_node = (avl_node_t *)malloc(sizeof(avl_node_t));
 	if (NULL == new_node)
 	{
-		return NULL;
+		return (NULL);
 	}
 	
 	new_node->data = (void *)data;
@@ -106,13 +106,13 @@ static avl_node_t *CreateAVLNode(const void *data)
 	new_node->child[RIGHT] = NULL;
 	new_node->child[LEFT] = NULL;
 	
-	return new_node;
+	return (new_node);
 }
 
 static avl_node_t *DestroyAVLNode(avl_node_t *node_to_destroy)
 {
 	free(node_to_destroy);
-	return NULL;
+	return (NULL);
 }
 
 /* check if needs to look in LEFT or RIGHT direction */
@@ -126,9 +126,9 @@ static direction GetDirection(avl_node_t *tree_node,
 	
 	if (cmp(tree_node->data, data, param) > 0)
 	{
-		return LEFT;
+		return (LEFT);
 	}
-	return RIGHT;
+	return (RIGHT);
 }
 /* check if node has a right child */
 static int HasRightChild(const avl_node_t *node)
@@ -158,7 +158,7 @@ static void *GetData(const avl_node_t *node)
 {
 	assert(NULL != node);
 	
-	return node->data;
+	return (node->data);
 }
 
 /* get node child. should only be called if node only has one child */
@@ -166,20 +166,20 @@ static avl_node_t *GetChild(avl_node_t *parent_node)
 {
 	if (NULL != parent_node->child[LEFT])
 	{
-		return parent_node->child[LEFT];
+		return (parent_node->child[LEFT]);
 	}
 	
-	return parent_node->child[RIGHT];
+	return (parent_node->child[RIGHT]);
 }
 /* get the prev node in the avl */
 static avl_node_t *GetPrev(avl_node_t *node)
 {
 	if (NULL == node->child[LEFT])
 	{
-		return node;
+		return (node);
 	}
 	
-	return GetPrev(node->child[LEFT]);
+	return (GetPrev(node->child[LEFT]));
 }
 
 /* update the height of givee @node */
@@ -195,7 +195,7 @@ static size_t MaxHeight(avl_node_t *left_child, avl_node_t *right_child)
 {
 	size_t max_height = GetNodeHeight(left_child) > GetNodeHeight(right_child) ?
 						GetNodeHeight(left_child) : GetNodeHeight(right_child);
-	return max_height;
+	return (max_height);
 }
 
 /* get current balance of @node */
@@ -237,7 +237,7 @@ static avl_node_t *AVLGetRoot(const avl_t *avl)
 {
 	assert(NULL != avl);
 	
-	return avl->dummy_node->child[LEFT];
+	return (avl->dummy_node->child[LEFT]);
 }
 
 /* Create new AVL tree */
@@ -253,14 +253,14 @@ avl_t *AVLCreate(void *param, int (*cmp_func)(const void *tree_data,
 	new_avl = (avl_t *)malloc(sizeof(avl_t));
 	if (NULL == new_avl)
 	{
-		return NULL;
+		return (NULL);
 	}
 	
 	dummy_node = CreateAVLNode(NULL);
 	if (NULL == dummy_node)
 	{
 		new_avl = FreeAndNullify(new_avl);
-		return NULL;
+		return (NULL);
 	}
 	
 	/* init avl */
@@ -268,7 +268,7 @@ avl_t *AVLCreate(void *param, int (*cmp_func)(const void *tree_data,
 	new_avl->param = param;
 	new_avl->dummy_node = dummy_node;
 	
-	return new_avl;	
+	return (new_avl);	
 }
 
 /* helper for AVLDestroy */
@@ -300,7 +300,7 @@ void AVLDestroy(avl_t *avl)
 static void *FreeAndNullify(void *pointer_to_free)
 {
 	free(pointer_to_free);
-	return NULL;
+	return (NULL);
 }
 
 /* helper for AVLInsert */
@@ -322,7 +322,7 @@ static avl_node_t *RecursiveInsert(avl_node_t *tree_node,
 		tree_node->child[dir] = node_to_insert;
 		UpdateHeight(tree_node);
 		
-		return tree_node;
+		return (tree_node);
 	}
 	else
 	{
@@ -334,7 +334,7 @@ static avl_node_t *RecursiveInsert(avl_node_t *tree_node,
 	
 	tree_node = Balance(tree_node);
 	
-	return tree_node;
+	return (tree_node);
 }
 
 /* Insert new element to tree */
@@ -347,20 +347,20 @@ int AVLInsert(avl_t *avl, const void *data_to_insert)
 	node_to_insert = CreateAVLNode(data_to_insert);
 	if (NULL == node_to_insert)
 	{
-		return AVL_FAIL;
+		return (AVL_FAIL);
 	}
 	
 	/* adding the first node */
 	if (AVLIsEmpty(avl))
 	{
 		avl->dummy_node->child[LEFT] = node_to_insert;
-		return AVL_SUCCESS;
+		return (AVL_SUCCESS);
 	}
 	
 	avl->dummy_node->child[LEFT] = RecursiveInsert(AVLGetRoot(avl),
 									 avl->cmp_func, avl->param, node_to_insert);
 	
-	return AVL_SUCCESS;	
+	return (AVL_SUCCESS);	
 }
 
 /* recursive implementation for AVLRemove */
@@ -373,12 +373,12 @@ static avl_node_t *RecursiveRemove(avl_node_t *node_to_check,
 	
 	if (NULL == node_to_check)
 	{
-		return NULL;
+		return (NULL);
 	}
 	
 	if (cmp(node_to_check->data, data_to_remove, param) == 0)
 	{
-		return RemoveNode(node_to_check, cmp, data_to_remove, param);
+		return (RemoveNode(node_to_check, cmp, data_to_remove, param));
 	}
 	
 	dir = GetDirection(node_to_check, cmp, param, data_to_remove);
@@ -390,7 +390,7 @@ static avl_node_t *RecursiveRemove(avl_node_t *node_to_check,
 	
 	node_to_check = Balance(node_to_check);
 	
-	return node_to_check;
+	return (node_to_check);
 }
 
 /* helper for RecursiveRemove */
@@ -414,10 +414,10 @@ static avl_node_t *RemoveNode(avl_node_t *node_to_remove,
 	{
 		avl_node_t *child = GetChild(node_to_remove);
 		node_to_remove = DestroyAVLNode(node_to_remove);
-		return child;
+		return (child);
 	}
 	
-	return node_to_remove;
+	return (node_to_remove);
 }
 /* balances the avl from given node @node */
 static avl_node_t *Balance(avl_node_t *node)
@@ -442,7 +442,7 @@ static avl_node_t *Balance(avl_node_t *node)
 			UpdateHeight(node->child[LEFT]);
 		}
 		
-		return node;
+		return (node);
 	}
 	else if (balance_factor < MIN_BALANCE_FACTOR)
 	{
@@ -458,10 +458,10 @@ static avl_node_t *Balance(avl_node_t *node)
 			node = RotateLeft(node);
 		}
 		
-		return node;
+		return (node);
 	}
 	
-	return node;
+	return (node);
 	
 	#undef MAX_BALANCE_FACTOR
 	#undef MIN_BALANCE_FACTOR
@@ -482,7 +482,7 @@ static avl_node_t *RotateRight(avl_node_t *node)
 	
 	UpdateHeight(node);	
 	
-	return left;
+	return (left);
 }
 
 /* performs left rotation */
@@ -500,7 +500,7 @@ static avl_node_t *RotateLeft(avl_node_t *node)
 	
 	UpdateHeight(node);
 	
-	return right;
+	return (right);
 }
 
 /* Removes node from tree */
@@ -543,7 +543,7 @@ size_t AVLCount(const avl_t *avl)
 	
 	RecursiveCount(AVLGetRoot(avl), &node_counter);
 	
-	return node_counter;	
+	return (node_counter);	
 }
 /* helper for AVLFind */
 static void *RecursiveFind(const avl_node_t *tree_node,
@@ -557,18 +557,18 @@ static void *RecursiveFind(const avl_node_t *tree_node,
 	/* data not found */
 	if (NULL == tree_node)
 	{
-		return NULL;
+		return (NULL);
 	}
 	
 	if (avl->cmp_func(tree_node->data, data_to_find, avl->param) == 0)
 	{
-		return GetData(tree_node);
+		return (GetData(tree_node));
 	}
 	
 	dir = GetDirection((avl_node_t *)tree_node, avl->cmp_func, avl->param,
 																  data_to_find);
 	
-	return RecursiveFind(tree_node->child[dir], data_to_find, avl);
+	return (RecursiveFind(tree_node->child[dir], data_to_find, avl));
 }
 
 /* Find data in @avl */
@@ -576,7 +576,7 @@ void *AVLFind(const avl_t *avl, const void *data_to_find)
 {
 	assert(NULL != avl);
 	
-	return RecursiveFind(AVLGetRoot(avl), data_to_find, avl);
+	return (RecursiveFind(AVLGetRoot(avl), data_to_find, avl));
 }
 
 /* Perform action_func for each element in @avl */
@@ -588,7 +588,7 @@ int AVLForEach(void *param, avl_t *avl, int (*action_func)(void *tree_data,
 	assert(NULL != avl);
 	assert(NULL != action_func);
 	
-	return RecursiveForEach(AVLGetRoot(avl), action_func, param, &status);
+	return (RecursiveForEach(AVLGetRoot(avl), action_func, param, &status));
 }
 /* helper for AVLForEach */
 int RecursiveForEach(avl_node_t *node, action_func_t func, void *param,
@@ -597,19 +597,19 @@ int RecursiveForEach(avl_node_t *node, action_func_t func, void *param,
 	/* exit as soon as status isn't 0*/
 	if (0 != *status)
 	{
-		return *status;
+		return (*status);
 	}
 	
 	if (NULL == node)
 	{
-		return 0;
+		return (0);
 	}
 	
 	RecursiveForEach(node->child[LEFT], func, param, status);
 	
 	*status = func(node->data, param);
 	
-	return RecursiveForEach(node->child[RIGHT], func, param, status);
+	return (RecursiveForEach(node->child[RIGHT], func, param, status));
 }
 
 /* Check height of @avl */
@@ -617,5 +617,5 @@ size_t AVLHeight(const avl_t *avl)
 {
 	assert(NULL != avl);
 	
-	return GetNodeHeight(AVLGetRoot(avl));
+	return (GetNodeHeight(AVLGetRoot(avl)));
 }
