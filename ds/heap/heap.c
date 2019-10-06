@@ -105,10 +105,10 @@ static size_t GetParentIdx(size_t idx)
 
 static size_t GetLeft(size_t idx)
 {
-	return 2*idx + 1;
+	return (2*idx + 1);
 }
 
 static size_t GetRight(size_t idx)
 {
-	return 2*idx + 2;
+	return (2*idx + 2);
 }
