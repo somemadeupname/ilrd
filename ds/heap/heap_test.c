@@ -1,107 +1,141 @@
-#include <stdio.h>
-#include <assert.h>
+#include <assert.h> /*assert*/
+#include <stdio.h>  /*printf*/
 
 #include "heap.h"
 
-#define START_RED printf("\033[1;31m");
-#define END_RED printf("\033[0m");
-#define TRUE 1
-#define FALSE 0
+#define UNUSED(x) ((void)x)
 
-#define PRINT_ERROR START_RED printf("ERROR in %s.\n", func_name); END_RED
+/******************************************************************************/
+/**************************** forward declaration *****************************/
+/******************************************************************************/
+static void CreateDestroy_test();
+static void PushPop_test();
+static void Remove_test();
+static heap_t *CreateFullHeap();
 
-#define PREVENT_WARNINGS_FROM_UNUSED_FUNCS_FROM_TESTS_TEMPLATE \
-{\
-	int a = 1;\
-	expect_int(1,1,"hi");\
-	expect_size_t(1lu,1lu,"hi");\
-	expect_NULL(NULL,"hi");\
-	expect_Not_NULL(&a, "hi");\
-}
+static int CmpPriority(const void *data1, const void *data2, void *param);
+int IsMatch(const void *heap_data, const void *user_data);
 
-#define UNUSED(x) (void)(x)
-
-/*************************************************************************
-								 										 *
-				      GENERAL TEST FUNCTIONS							 *
-																		 *
-*************************************************************************/
-void expect_int(int result, int expected_result, char *func_name)
-{
-	if (result != expected_result)
-	{
-		PRINT_ERROR
-		printf("Expected: \t%d\nActual: \t%d\n", expected_result, result);
-	}	
-}
-
-void expect_size_t(size_t result, size_t expected_result, char *func_name)
-{
-	if (result != expected_result)
-	{
-		PRINT_ERROR
-		printf("Expected: \t%lu\nActual: \t%lu\n", expected_result, result);
-	}	
-}
-
-void expect_NULL(void *pointer, char *func_name)
-{
-	if (pointer != NULL)
-	{
-		PRINT_ERROR
-		printf("pointer isn't NULL.\n");
-	}	
-}
-
-void expect_Not_NULL(void *pointer, char *func_name)
-{
-	if (pointer == NULL)
-	{
-		PRINT_ERROR
-		printf("pointer isn't NULL.\n");
-	}	
-}
-
-/*************************************************************************
-								 										 *
-				      HELPER FUNCTIONS									 *
-																		 *
-*************************************************************************/
-
-int IntSizePriority(const void *data1, const void *data2, void *param)
-{
-	assert(NULL != data1);
-	assert(NULL != data2);	
-	
-	UNUSED(param);
-	
-	return *(int *)data1 - *(int *)data2;
-}
-
-/*************************************************************************
-								 										 *
-				      FORWARD DECLARATIONS								 *
-																		 *
-*************************************************************************/
-
-void CreateAndDestroy_test();
-
+/******************************************************************************/
+/*********************************** main *************************************/
+/******************************************************************************/
 int main()
-{
-	PREVENT_WARNINGS_FROM_UNUSED_FUNCS_FROM_TESTS_TEMPLATE
-	
-	CreateAndDestroy_test();	
+{	
+	CreateDestroy_test();
+	PushPop_test();
+	Remove_test();
 	
 	return 0;
 }
 
-void CreateAndDestroy_test()
+/******************************************************************************/
+/**************************** test functions **********************************/
+/******************************************************************************/
+static void Remove_test()
 {
-	heap_t *heap = HeapCreate(IntSizePriority, NULL);
+	heap_t *heap = CreateFullHeap();
+	int arr[14] = {20, 80, 90, 70, 75, 60, 50, 10, 5, 72, 74, 40, 30, 100};
+	size_t i = 0;
+	int data_not_found = -1;
+
+	assert(0 == HeapIsEmpty(heap));
+	assert(14 == HeapSize(heap));
 	
-	expect_size_t(HeapSize(heap), 0, "CreateAndDestroy_test1");
+	assert(NULL == HeapRemove(heap, IsMatch, &data_not_found));
 	
-	expect_int(HeapIsEmpty(heap), 1, "CreateAndDestroy_test2");	
+	while (i < 14)
+	{
+		assert(arr[i] == *(int *)HeapRemove(heap, IsMatch, &arr[i]));
+		++i;
+	}
+	
+	assert(1 == HeapIsEmpty(heap));
+	assert(0 == HeapSize(heap));
+
+	HeapDestroy(heap);
+}
+
+static void PushPop_test()
+{
+	int data1 = 5, data2 = 10, data3 = 3;
+	
+	heap_t *heap = HeapCreate(CmpPriority, NULL);
+	assert(NULL != heap);
+	
+	assert(1 == HeapIsEmpty(heap));
+	assert(0 == HeapSize(heap));
+	
+	assert(0 == HeapPush(heap, &data1));
+	assert(data1 ==  *(int *)HeapPeek(heap));
+	assert(0 == HeapPush(heap, &data2));
+	assert(data2 ==  *(int *)HeapPeek(heap));
+	assert(0 == HeapPush(heap, &data3));
+	assert(data2 ==  *(int *)HeapPeek(heap));
+
+	assert(0 == HeapIsEmpty(heap));
+	assert(3 == HeapSize(heap));
+
+	HeapPop(heap);
+	assert(data1 == *(int *)HeapPeek(heap));
+	assert(2 == HeapSize(heap));
+
+	HeapPop(heap);
+	assert(data3 == *(int *)HeapPeek(heap));
+	assert(1 == HeapSize(heap));
+
+	HeapPop(heap);
+
+	assert(1 == HeapIsEmpty(heap));
+	assert(0 == HeapSize(heap));
+
+	HeapDestroy(heap);
+}
+
+static void CreateDestroy_test()
+{
+	heap_t *heap = HeapCreate(CmpPriority, NULL);
+	assert(NULL != heap);
+	
+	assert(1 == HeapIsEmpty(heap));
+	assert(0 == HeapSize(heap));
 	
 	HeapDestroy(heap);
+}
+
+static heap_t *CreateFullHeap()
+{
+	static int arr[14] = {100, 80, 90, 70, 75, 60, 50, 10, 5, 72, 74, 40, 30, 20};
+	size_t i = 0;
+	heap_t *heap = HeapCreate(CmpPriority, NULL);
+	assert(NULL != heap);
+	
+	assert(1 == HeapIsEmpty(heap));
+	assert(0 == HeapSize(heap));
+	
+	while (i < 14)
+	{
+		assert(0 == HeapPush(heap, &arr[i]));		
+		++i;
+		assert(0 == HeapIsEmpty(heap));
+		assert(i == HeapSize(heap));
+	}
+	
+	assert(i == HeapSize(heap));
+	
+	return heap;
+}
+
+/******************************************************************************/
+/**************************** service functions *******************************/
+/******************************************************************************/
+static int CmpPriority(const void *data1, const void *data2, void *param)
+{
+	UNUSED(param);
+	
+	return (*( int*)data2 - *(int *)data1);	
+}
+
+int IsMatch(const void *heap_data, const void *user_data)
+{
+	return (*(int *)heap_data == *(int *)user_data);
 }
