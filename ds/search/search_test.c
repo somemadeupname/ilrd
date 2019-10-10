@@ -86,6 +86,9 @@ void JumpSearch_test_simple_even();
 void JumpSearch_test_simple_odd();
 void JumpSearch_test_simple_odd_not_found();
 
+void SingleElement_test();
+
+void SingleValue_test();
 
 int main()
 {
@@ -109,7 +112,115 @@ int main()
 
 	JumpSearch_test_simple_odd_not_found();
 	
+	SingleElement_test();
+	
+	SingleValue_test();
+	
 	return 0;
+}
+
+void SingleValue_test()
+{
+	int arr[] = {7,7,7,7,7,7,7,7,7,7,7,7,7,7};
+	
+	int key1 = 5;
+	int key2 = 7;
+	int key3 = 678;
+	
+	size_t elm_size = sizeof(arr[0]);	
+	size_t nitems = sizeof(arr)/sizeof(arr[0]);
+	
+	int *jump_result = NULL;
+	int *recursive_result = NULL;
+	int *iterative_result = NULL;
+	
+	jump_result = JSearch(&key1, arr, nitems, elm_size, IntCmp);
+	
+	expect_NULL(jump_result, "SingleValue_test_jump_1");
+	
+	jump_result = JSearch(&key2, arr, nitems, elm_size, IntCmp);
+	
+	expect_int(*jump_result, key2, "SingleValue_test_jump_2");
+	
+	jump_result = JSearch(&key3, arr, nitems, elm_size, IntCmp);
+	
+	expect_NULL(jump_result, "SingleValue_test_jump_3");
+	
+	recursive_result = BSearchRecursive(&key1, arr, nitems, elm_size, IntCmp);
+	
+	expect_NULL(recursive_result, "SingleValue_test_BSearchRecursive_1");
+	
+	recursive_result = BSearchRecursive(&key2, arr, nitems, elm_size, IntCmp);
+	
+	expect_int(*recursive_result, key2, "SingleValue_test_BSearchRecursive_2");
+	
+	recursive_result = BSearchRecursive(&key3, arr, nitems, elm_size, IntCmp);
+	
+	expect_NULL(recursive_result, "SingleValue_BSearchRecursive_jump_3");
+	
+	iterative_result = BSearchIterative(&key1, arr, nitems, elm_size, IntCmp);
+	
+	expect_NULL(iterative_result, "SingleValue_test_BSearchIterative_1");
+	
+	iterative_result = BSearchIterative(&key2, arr, nitems, elm_size, IntCmp);
+	
+	expect_int(*iterative_result, key2, "SingleValue_test_BSearchIterative_2");
+	
+	iterative_result = BSearchIterative(&key3, arr, nitems, elm_size, IntCmp);
+	
+	expect_NULL(iterative_result, "SingleValue_test_BSearchIterative_3");		
+}
+
+void SingleElement_test()
+{
+	int arr[] = {7};
+	
+	int key1 = 5;
+	int key2 = 7;
+	int key3 = 678;
+	
+	size_t elm_size = sizeof(arr[0]);	
+	size_t nitems = sizeof(arr)/sizeof(arr[0]);
+	
+	int *jump_result = NULL;
+	int *recursive_result = NULL;
+	int *iterative_result = NULL;
+	
+	jump_result = JSearch(&key1, arr, nitems, elm_size, IntCmp);
+	
+	expect_NULL(jump_result, "SingleElement_test_jump_1");
+	
+	jump_result = JSearch(&key2, arr, nitems, elm_size, IntCmp);
+	
+	expect_int(*jump_result, key2, "SingleElement_test_jump_2");
+	
+	jump_result = JSearch(&key3, arr, nitems, elm_size, IntCmp);
+	
+	expect_NULL(jump_result, "SingleElement_test_jump_3");
+	
+	recursive_result = BSearchRecursive(&key1, arr, nitems, elm_size, IntCmp);
+	
+	expect_NULL(recursive_result, "SingleElement_test_BSearchRecursive_1");
+	
+	recursive_result = BSearchRecursive(&key2, arr, nitems, elm_size, IntCmp);
+	
+	expect_int(*recursive_result, key2, "SingleElement_test_BSearchRecursive_2");
+	
+	recursive_result = BSearchRecursive(&key3, arr, nitems, elm_size, IntCmp);
+	
+	expect_NULL(recursive_result, "SingleElement_BSearchRecursive_jump_3");
+	
+	iterative_result = BSearchIterative(&key1, arr, nitems, elm_size, IntCmp);
+	
+	expect_NULL(iterative_result, "SingleElement_test_BSearchIterative_1");
+	
+	iterative_result = BSearchIterative(&key2, arr, nitems, elm_size, IntCmp);
+	
+	expect_int(*iterative_result, key2, "SingleElement_test_BSearchIterative_2");
+	
+	iterative_result = BSearchIterative(&key3, arr, nitems, elm_size, IntCmp);
+	
+	expect_NULL(iterative_result, "SingleElement_test_BSearchIterative_3");		
 }
 
 void JumpSearch_test_simple_odd()
@@ -133,10 +244,15 @@ void JumpSearch_test_simple_odd()
 		expect_int(*result, key, "JumpSearch_test_simple_odd");
 	}
 	
+	key = 0;
+	
+	result = JSearch(&key, arr, nitems, elm_size, IntCmp);
+	expect_NULL(result, "JumpSearch_test_simple_odd0");	
+	
 	key = 99;
 	
 	result = JSearch(&key, arr, nitems, elm_size, IntCmp);
-	expect_int(*result, key, "JumpSearch_test_simple_odd");	
+	expect_NULL(result,"JumpSearch_test_simple_odd99");	
 }
 void JumpSearch_test_simple_odd_not_found()
 {
