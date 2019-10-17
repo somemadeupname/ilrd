@@ -148,10 +148,10 @@ int FailPrintString(void *table_data, void *param)
 }
 
 /*************************************************************************
-								 										 *
-				      FORWARD DECLARATIONS								 *
-																		 *
-*************************************************************************/
+ *								 										 *
+ *				      FORWARD DECLARATIONS								 *
+ *																		 *
+ *************************************************************************/
 
 void HashTableCreate_test();
 void HashTableInsert_test();

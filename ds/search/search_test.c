@@ -252,7 +252,11 @@ void JumpSearch_test_simple_odd()
 	key = 99;
 	
 	result = JSearch(&key, arr, nitems, elm_size, IntCmp);
+<<<<<<< HEAD
 	expect_NULL(result,"JumpSearch_test_simple_odd99");	
+=======
+	expect_NULL(result, "JumpSearch_test_simple_odd");	
+>>>>>>> 5ce9ddc2b87c854a3ae8ae08c4a9c115314f2e2c
 }
 void JumpSearch_test_simple_odd_not_found()
 {

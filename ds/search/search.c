@@ -49,6 +49,9 @@ void *BSearchIterative(const void *key, const void *base, size_t nitems,
 	void *left = (void *)base;
 	void *right = (char *)base + ((nitems-1) * elm_size);
 	
+	assert(NULL != base);
+	assert(NULL != cmp);	
+	
 	while (left <= right)
 	{
 		void *mid = (char *)left + ((nitems-1)/2) * elm_size;
@@ -79,6 +82,9 @@ static void *LinearSearch(const void *key, void *from, void *to,
 {
 	void *runner = from;
 	
+	assert(NULL != from);
+	assert(NULL != cmp);
+	
 	for (runner = from;
 		 runner < to;
 		 runner = (char *)runner + elm_size
@@ -105,6 +111,9 @@ void *JSearch(const void *key, const void *base, size_t nitems,
 	void *follower = jumper;
 	void *end = (char *)base + (nitems * elm_size);
 	size_t jump = sqrt(nitems);
+	
+	assert(NULL != base);
+	assert(NULL != cmp);
 	
 	for (jumper = follower;
 		 jumper < end;

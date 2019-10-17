@@ -4,11 +4,14 @@
  *   Reviewer : 		    *
  *	 Status   : Sent	    *
  ****************************/
-#include <assert.h>
+
+#include <assert.h> /* assert */
 #include <stdlib.h> /* malloc free */
 
 #include "hash_table.h"
-#include "dlist.h"
+#include "dlist.h" /* dlist API */
+
+/******************************************************************************/
 
 enum {HASH_TABLE_SUCCESS, HASH_TABLE_FAIL};
 
@@ -20,8 +23,9 @@ struct hash_table
 	dlist_t **buckets;
 };
 
-/* forward declaration */
+/******************************************************************************/
 static void InitDlists(dlist_t **buckets, int num_of_buckets);
+/******************************************************************************/
 
 /* Create hash table */
 hash_table_t *HashTableCreate(size_t num_of_buckets,
@@ -39,7 +43,7 @@ hash_table_t *HashTableCreate(size_t num_of_buckets,
 	assert(NULL != hash_func);
 	assert(NULL != hash_cmp_func);
 	
-	ht->buckets = (dlist_t **)malloc(num_of_buckets * sizeof(dlist_t*));
+	ht->buckets = (dlist_t **)malloc(num_of_buckets * sizeof(dlist_t *));
 	if (NULL == ht->buckets)
 	{
 		free(ht); ht = NULL;
@@ -47,6 +51,11 @@ hash_table_t *HashTableCreate(size_t num_of_buckets,
 	}
 	
 	InitDlists(ht->buckets, num_of_buckets);
+	if (NULL == ht->buckets[0])
+	{	
+		free(ht); ht = NULL;
+		return NULL;
+	}
 	ht->hash_func = hash_func;
 	ht->cmp_func = hash_cmp_func;
 	ht->num_buckets = num_of_buckets;	
@@ -94,7 +103,7 @@ void HashTableDestroy(hash_table_t *hash_table)
 	free(hash_table); hash_table = NULL;
 }
 
-/* Insret data to the hash table  */
+/* Insert data to the hash table  */
 int HashTableInsert(hash_table_t *hash_table, void *data)
 {
 	size_t bucket_idx = 0;
@@ -173,7 +182,7 @@ int HashTableIsEmpty(const hash_table_t *hash_table)
 void *HashTableFind(const hash_table_t *hash_table, void *data)
 {
 	size_t bucket_idx = 0;
-	dlist_iter_t found_data = NULL;
+	dlist_iter_t found_iter = NULL;
 	dlist_iter_t begin = NULL;
 	dlist_iter_t end = NULL;	
 	
@@ -183,9 +192,9 @@ void *HashTableFind(const hash_table_t *hash_table, void *data)
 	begin = DListBegin((hash_table->buckets[bucket_idx]));
 	end = DListEnd((hash_table->buckets[bucket_idx]));
 	
-	found_data = DListFind(begin, end, hash_table->cmp_func, data);
+	found_iter = DListFind(begin, end, hash_table->cmp_func, data);
 	
-	return (NULL == found_data) ? NULL : DListIterGetData(found_data);
+	return ((NULL == found_iter) ? NULL : DListIterGetData(found_iter));
 }
 
 /* Perform @act_func for each element in the hash table */
@@ -196,17 +205,17 @@ int HashTableForEach(const hash_table_t *hash_table,
 {
 	size_t bucket_idx = 0;
 	int return_status = 0;
-	dlist_iter_t begin = NULL;
-	dlist_iter_t end = NULL;
+	
+	assert(NULL != hash_table);
+	assert(NULL != act_func);
 	
 	for (bucket_idx = 0;
 		(bucket_idx < hash_table->num_buckets) && (0 == return_status);
 		++bucket_idx)
 	{
-		begin = DListBegin((hash_table->buckets[bucket_idx]));;
-		end = DListEnd((hash_table->buckets[bucket_idx]));	
-		return_status =
-		DListForEach(begin, end, act_func, param);
+		dlist_iter_t begin = DListBegin((hash_table->buckets[bucket_idx]));
+		dlist_iter_t end = DListEnd((hash_table->buckets[bucket_idx]));	
+		return_status = DListForEach(begin, end, act_func, param);
 	}
 
 	return return_status;	
