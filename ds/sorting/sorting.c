@@ -461,3 +461,51 @@ int Merge(int *arr, size_t size, int (*is_before)(int a, int b))
 	
 	return 0;
 }
+
+void Qsort(void *base, size_t elem_size, size_t num_of_elem, cmp_t cmp)
+{
+	assert(NULL != base);
+	
+    RecQSort(base, (char *)base + (elem_size * (num_of_elem - 1)), 
+    		 elem_size, cmp);
+}
+
+void RecQSort(void *start, void *end, size_t elem_size, cmp_t cmp)
+{
+    if ((char *)start < (char *)end)
+    {
+        void *pivot_position = Partition(start, end, elem_size, cmp);
+        
+        /* send array from start until left side of pivot (smaller values than pivot value) */
+        RecQSort(start, (char *)pivot_position - elem_size, elem_size, cmp);
+        
+        /* send array from right side of pivot to end (larger values than pivot value) */
+        RecQSort((char *)pivot_position + elem_size, end, elem_size, cmp);
+    }
+}
+
+void *Partition(void *start, void *end, size_t elem_size, cmp_t cmp)
+{
+    void *pivot_position = NULL;
+    void *smaller = NULL;
+    void *runner = NULL;
+    
+    assert(NULL != start);
+    assert(NULL != end);
+        
+    for (runner = start, smaller = start, pivot_position = end; 
+    	(char *)runner < (char *)pivot_position; 
+    	runner = (char *)runner + elem_size)
+    {
+        /* if current element is smaller than pivot_position */
+        if (0 < cmp(runner, pivot_position))
+        {
+            SwapData(smaller, runner, elem_size);
+            smaller = (char *)smaller + elem_size;
+        }
+    }   
+    /* swap the pivot to the correct position */
+    SwapData(smaller, pivot_position, elem_size);
+        
+    return smaller;
+}
