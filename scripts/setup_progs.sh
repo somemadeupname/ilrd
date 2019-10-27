@@ -16,7 +16,7 @@ gsettings set org.gnome.desktop.interface text-scaling-factor 1.2
 sudo apt-get update
 sudo apt-get install gedit-plugins
 
-#background
+# background
 wget http://wallpapershdnow.com/images/tv-shows/animation/rick-and-morty/rick-and-morty-background-10.jpg -o ~/Pictures/rnm.jpg
 
 # Blueman if QCII doesn't work #
