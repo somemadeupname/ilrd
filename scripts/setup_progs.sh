@@ -37,3 +37,7 @@ sudo /etc/init.d/bluetooth restart
 
 
 # Frippery Move Clock - install from Ubuntu Software #
+
+#man pages aren't complete
+sudo apt-get install manpages-dev
+
