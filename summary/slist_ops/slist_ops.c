@@ -5,23 +5,43 @@
  *	 Status   : Sent	    *
  ****************************/
 
-#include "slist_ops.h"
+#include <assert.h> /* assert */
+#include <stdio.h>
 
-slist_node_t *GetNodeInLoop(slist_node_t *node)
+#include "slist_ops.h"
+#include "slist.h" /* slist API */
+
+slist_node_t *FlipListRecursive(slist_node_t *node)
 {
-	slist_node_t *slow = node;
-	slist_node_t *fast = node;
+	slist_node_t *new_head = NULL;
 	
-	assert(NULL != node);
-	
-	while (fast->next && fast->next->next)
+	if (NULL == node->next_node)
 	{
-		slow = slow->next;
-		fast = fast->next;
+		return node;
+	}
+	
+	new_head = FlipListRecursive(node->next_node);
+	node->next_node->next_node = node;
+	node->next_node = NULL;
+	
+	return new_head;
+}
+
+slist_node_t *GetNodeInLoop(slist_node_t *head)
+{
+	slist_node_t *slow = head;
+	slist_node_t *fast = head;
+	
+	assert(NULL != head);
+	
+	while ((NULL != fast->next_node) && (NULL != fast->next_node->next_node))
+	{
+		slow = slow->next_node;
+		fast = fast->next_node->next_node;
 	
 		if (slow == fast)
 		{
-			return fast;
+			return slow;
 		}
 	}
 	
@@ -42,22 +62,22 @@ void FindAndBreakLoop(slist_node_t *node)
 		return;
 	}
 	
-	anchor = node_in_loop;
+	anchor = node_in_loop;                                                                                    
 	
 	while (cur != node_in_loop)
 	{
-		for (node_in_loop = node_in_loop->next;
+		for (node_in_loop = node_in_loop->next_node;
 			 (node_in_loop != anchor);
-			 node_in_loop = node_in_loop->next)
+			 node_in_loop = node_in_loop->next_node)
 			 {
-			 	if (node_in_loop == cur->next)
+			 	if (node_in_loop->next_node == cur)
 			 	{	
 			 		/* break the loop */
-			 		cur->next = NULL;
+			 		node_in_loop->next_node = NULL;
 			 		return;
 			 	}
 			 }
-			 cur = cur->next;
+		cur = cur->next_node;
 	}
 }
 
