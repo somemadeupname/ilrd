@@ -11,13 +11,11 @@
 #include "slist_ops.h"
 #include "slist.h" /* slist API */
 
-
-
-mslist_node_t *FlipListIterative(mslist_node_t *node)
+slist_node_t *FlipListIterative(slist_node_t *node)
 {
-	mslist_node_t *prev = node;
-	mslist_node_t *cur = node->next_node;
-	mslist_node_t *next = cur->next_node;
+	slist_node_t *prev = node;
+	slist_node_t *cur = node->next;
+	slist_node_t *next = cur->next_node;
 	
 	if (NULL == node->next_node)
 	{
@@ -28,14 +26,14 @@ mslist_node_t *FlipListIterative(mslist_node_t *node)
 
 	assert(NULL != node);
 	
-	cur->next_node = NULL; /* old head point to NULL */
+	cur->next = NULL; /* old head point to NULL */
 	
-	while (NULL != cur->next_node)
+	while (NULL != cur->next)
 	{
 		cur->next_node = prev;
 		prev = cur;
 		cur = next;
-		next = cur->next_node;
+		next = cur->next;
 	}
 	
 	cur->next_node = prev;
@@ -43,9 +41,9 @@ mslist_node_t *FlipListIterative(mslist_node_t *node)
 	return cur;
 }
 
-mslist_node_t *FlipListRecursive(mslist_node_t *node)
+slist_node_t *FlipListRecursive(slist_node_t *node)
 {
-	mslist_node_t *new_head = NULL;
+	slist_node_t *new_head = NULL;
 	
 	if (NULL == node->next_node)
 	{
@@ -59,10 +57,10 @@ mslist_node_t *FlipListRecursive(mslist_node_t *node)
 	return new_head;
 }
 
-mslist_node_t *GetNodeInLoop(mslist_node_t *head)
+slist_node_t *GetNodeInLoop(slist_node_t *head)
 {
-	mslist_node_t *slow = head;
-	mslist_node_t *fast = head;
+	slist_node_t *slow = head;
+	slist_node_t *fast = head;
 	
 	assert(NULL != head);
 	
@@ -80,11 +78,11 @@ mslist_node_t *GetNodeInLoop(mslist_node_t *head)
 	return NULL;	
 }
 
-void FindAndBreakLoop(mslist_node_t *node)
+void FindAndBreakLoop(slist_node_t *node)
 {
-	mslist_node_t *node_in_loop = NULL;
-	mslist_node_t *cur = node;
-	mslist_node_t *anchor = NULL;
+	slist_node_t *node_in_loop = NULL;
+	slist_node_t *cur = node;
+	slist_node_t *anchor = NULL;
 	
 	assert(NULL != node);
 	

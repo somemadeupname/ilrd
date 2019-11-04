@@ -36,7 +36,7 @@ struct bst
 				      FORWARD DECLARATIONS								 *
 																		 *
 *************************************************************************/
-static bst_iter_t BSTGetRoot(const bst_t *bst);
+bst_iter_t BSTGetRoot(const bst_t *bst);
 static bst_node *CreateBSTNode(bst_node *left,
 						 		bst_node *right,
 						 		bst_node *parent,
@@ -45,8 +45,8 @@ static void DestroyBSTNode(bst_node *node_to_destroy);
 
 static int HasLeftChild(bst_iter_t iter);
 static int HasRightChild(bst_iter_t iter);
-static bst_iter_t GetLeftChild(bst_iter_t iter);
-static bst_iter_t GetRightChild(bst_iter_t iter);
+bst_iter_t GetLeftChild(bst_iter_t iter);
+bst_iter_t GetRightChild(bst_iter_t iter);
 static bst_iter_t GetParent(bst_iter_t iter);
 static int IsLeftChild(bst_iter_t iter);
 static int IsRightChild(bst_iter_t iter);
@@ -325,7 +325,7 @@ static int NodeCounter(void *iter_data, void *param)
 	return 0;
 }
 
-static bst_iter_t BSTGetRoot(const bst_t *bst)
+bst_iter_t BSTGetRoot(const bst_t *bst)
 {
 	bst_iter_t root = bst->dummy_head;
 	
@@ -479,7 +479,7 @@ static int HasRightChild(bst_iter_t iter)
 }
 
 /* left child getter */
-static bst_iter_t GetLeftChild(bst_iter_t iter)
+bst_iter_t GetLeftChild(bst_iter_t iter)
 {
 	assert(NULL != iter);
 	
@@ -487,7 +487,7 @@ static bst_iter_t GetLeftChild(bst_iter_t iter)
 }
 
 /* right child getter */
-static bst_iter_t GetRightChild(bst_iter_t iter)
+bst_iter_t GetRightChild(bst_iter_t iter)
 {
 	assert(NULL != iter);
 	

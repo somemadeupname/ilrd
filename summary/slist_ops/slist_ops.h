@@ -14,11 +14,11 @@ typedef struct node2 mslist_node_t;
 struct node2
 {
     int *data;
-    mslist_node_t *next_node;
+    slist_node_t *next_node;
 };
 
-void FindAndBreakLoop(mslist_node_t *node);
-mslist_node_t *GetNodeInLoop(mslist_node_t *node);
-mslist_node_t *FlipListRecursive(mslist_node_t *node);
+void FindAndBreakLoop(slist_node_t *node);
+slist_node_t *GetNodeInLoop(slist_node_t *node);
+slist_node_t *FlipListRecursive(slist_node_t *node);
 
 #endif /* __ILRD_OL712_SLIST_OPS_H */

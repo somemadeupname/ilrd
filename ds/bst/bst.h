@@ -135,5 +135,9 @@ bst_iter_t BSTBegin(const bst_t *bst);
  */
 int BSTIsSameIter(bst_iter_t iter1, bst_iter_t iter2);
 
+bst_iter_t BSTGetRoot(const bst_t *bst);
+bst_iter_t GetLeftChild(bst_iter_t iter);
+bst_iter_t GetRightChild(bst_iter_t iter);
+
 #endif /*__OL712_BST_H*/
 
