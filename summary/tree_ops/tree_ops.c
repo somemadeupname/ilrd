@@ -18,7 +18,7 @@ void PrintTreeByLevel(const bst_t *tree)
 	while (!QueueIsEmpty(queue))
 	{
 		 node = QueuePeek(queue);
-		 printf("%d\n", *(int *)BSTGetData(node));
+		 printf("%d ", *(int *)BSTGetData(node));
 
 		 if (NULL != GetLeftChild(node))
 		 {
@@ -30,6 +30,8 @@ void PrintTreeByLevel(const bst_t *tree)
 	 		QueueEnqueue(queue, GetRightChild(node));
 		 }
 		 
-		 QueueDequeue(queue);
+		QueueDequeue(queue);		 
 	}
+	
+	QueueDestroy(queue);
 }
