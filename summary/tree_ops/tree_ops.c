@@ -9,7 +9,7 @@
 
 void SwapChildren(bst_iter_t parent);
 void mirror(bst_t *tree);
-
+bst_iter_t RecMirror(bst_iter_t node);
 
 void PrintTreeByLevel(const bst_t *tree)
 {
@@ -72,7 +72,7 @@ bst_iter_t RecMirror(bst_iter_t node)
 	SwapChildren(node);
 }
 
-void SwapChildren(bst_iter_t parent)
+static void SwapChildren(bst_iter_t parent)
 {
 	bst_iter_t temp = GetLeftChild(parent);
 	SetLeftChild(parent, GetRightChild(parent));
