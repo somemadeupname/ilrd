@@ -2,10 +2,10 @@
 
 #include "stack.h"
 
-void MoveDisc(stack_t *src, stack_t *dest);
-void HanoiTower(stack_t *src, stack_t *dest, stack_t *aux, size_t size);
-void HanoiTowerTestEven();
-void HanoiTowerTestOdd();
+static void MoveDisc(stack_t *src, stack_t *dest);
+static void HanoiTower(stack_t *src, stack_t *dest, stack_t *aux, size_t size);
+static void HanoiTowerTestEven();
+static void HanoiTowerTestOdd();
 
 int main()
 {
@@ -16,7 +16,7 @@ int main()
 	return 0;
 }
 
-void HanoiTowerTestOdd()
+static void HanoiTowerTestOdd()
 {
 	stack_t *src = StackCreate(5, sizeof(int));
 	stack_t *dest = StackCreate(5, sizeof(int));
@@ -42,7 +42,7 @@ void HanoiTowerTestOdd()
 	StackDestroy(aux);
 }
 
-void HanoiTowerTestEven()
+static void HanoiTowerTestEven()
 {
 	stack_t *src = StackCreate(4, sizeof(int));
 	stack_t *dest = StackCreate(4, sizeof(int));
@@ -69,7 +69,7 @@ void HanoiTowerTestEven()
 	
 }
 
-void HanoiTower(stack_t *src, stack_t *dest, stack_t *aux, size_t size)
+static void HanoiTower(stack_t *src, stack_t *dest, stack_t *aux, size_t size)
 {
 	if (1 == size)
 	{
@@ -84,7 +84,7 @@ void HanoiTower(stack_t *src, stack_t *dest, stack_t *aux, size_t size)
 	HanoiTower(aux, dest, src, size - 1);
 }
 
-void MoveDisc(stack_t *src, stack_t *dest)
+static void MoveDisc(stack_t *src, stack_t *dest)
 {
 	StackPush(dest, StackPeek(src));
 	StackPop(src);
