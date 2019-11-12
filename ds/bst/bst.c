@@ -47,10 +47,13 @@ static int HasLeftChild(bst_iter_t iter);
 static int HasRightChild(bst_iter_t iter);
 bst_iter_t GetLeftChild(bst_iter_t iter);
 bst_iter_t GetRightChild(bst_iter_t iter);
+bst_iter_t SetRightChild(bst_iter_t iter, bst_iter_t new_child);
+bst_iter_t SetLeftChild(bst_iter_t iter, bst_iter_t new_child);
 static bst_iter_t GetParent(bst_iter_t iter);
 static int IsLeftChild(bst_iter_t iter);
 static int IsRightChild(bst_iter_t iter);
 static int IsLeaf(bst_iter_t iter);	
+
 
 static void CopyDataFromNodeToNode(bst_iter_t dest, bst_iter_t src);			 		
 
@@ -675,4 +678,13 @@ int BSTIsSameIter(bst_iter_t iter1, bst_iter_t iter2)
 	
 	return ((BSTGetData(iter1) == BSTGetData(iter2)) &&
 									    (GetParent(iter1) == GetParent(iter2)));
+}
+
+bst_iter_t SetRightChild(bst_iter_t iter, bst_iter_t new_child)
+{
+	iter->right = new_child;
+}
+bst_iter_t SetLeftChild(bst_iter_t iter, bst_iter_t new_child)
+{
+	iter->left = new_child;
 }

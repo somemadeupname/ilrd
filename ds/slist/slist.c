@@ -1,245 +1,229 @@
-/****************************
- *   Author   : Ran Shieber *
- *   Reviewer : Vova   		*
- *   Status   : 	Sent    *
- ****************************/
-
-#include <stdlib.h> /* malloc free */
-#include <assert.h> /* assert */
-
 #include "slist.h"
-
-#define TRUE 1
-#define FALSE 0
+#include <assert.h> /* assert */
+#include <stdlib.h> /* free, malloc */
 
 slist_node_t *SListCreateNode(void *data, slist_node_t *next)
-{
-	slist_node_t *head = (slist_node_t *)malloc(sizeof(slist_node_t));
+{	
+	slist_node_t *node = NULL;
 	
-	if (NULL == head)
-	{
-		return NULL;
-	}
+	/* allocating memory for new node */
+	node = (slist_node_t *)malloc(sizeof(slist_node_t));
 	
-	head->next_node = next;
-	head->data = data;
+	/* initializing node members */
+	node->data = data;
+	node->next_node = next;
 	
-	return head;
+	return node;
 }
 
 void SListFreeAll(slist_node_t *head)
 {
-	slist_node_t *cur_node = head;
+	assert(1 != SListHasLoop(head));
 	
-	while (NULL != cur_node)
+	while (NULL != head)
 	{
-		/* save the next node before freeing the current node */
-		slist_node_t *next = cur_node->next_node;
-		free(cur_node); cur_node = NULL;
-		cur_node = next;
+		slist_node_t *next = head->next_node;
+		free(head); head = NULL;
+		head = next;
 	}
 }
-/* helper function used by insert and remove */
-static void SwapNodeData(slist_node_t *node1, slist_node_t *node2)
+
+
+slist_node_t *SListInsertAfter(slist_node_t *current_node, 
+                               slist_node_t *new_node)
 {
-	void *data_temp = NULL;
+    assert(NULL != current_node);
+	assert(NULL != new_node);
 	
-	assert(NULL != node1);
-	assert(NULL != node2);
-	
-	data_temp = node1->data;
-	node1->data = node2->data;
-	node2->data = data_temp;
+	new_node->next_node =  current_node->next_node;
+	current_node->next_node = new_node;
+    
+    return current_node;
 }
 
 slist_node_t *SListInsert(slist_node_t *current_node, slist_node_t *new_node)
 {
-	
-	assert(NULL != new_node);
+    void *temp_data = NULL;
+    
 	assert(NULL != current_node);
+	assert(NULL != new_node);
 	
-	SwapNodeData(current_node, new_node);
+	temp_data = current_node->data;
 	
-	new_node->next_node = current_node->next_node;
-	current_node->next_node = new_node;
-		
-	return current_node;
-}
-
-slist_node_t *SListInsertAfter(slist_node_t *current_node,
-														slist_node_t *new_node)
-{
+	/* insert after - new node will point to current */
+	current_node = SListInsertAfter(current_node, new_node);
 	
-	if (NULL == new_node)
-	
-	{
-		return NULL;	
-	}
-	new_node->next_node = current_node->next_node;
-	current_node->next_node = new_node;
-	
-	return current_node;
+	/* swapping data */
+	current_node->data = new_node->data;
+	new_node->data = temp_data;
+    
+    return current_node;
 }
 
 slist_node_t *SListFind(slist_node_t *head, cmp_func cmp, const void *data)
 {
-	slist_node_t *cur_node = head;
-	assert(NULL != head);
-	
-	while (NULL != cur_node)
-	{
-		if (0 == cmp(cur_node->data, data))
-		{
-			return cur_node;
-		}
-		cur_node = cur_node->next_node;
-	}
-	
-	return NULL;
-}
+    assert(1 != SListHasLoop(head));
+    
+    while ((NULL != head) && (0 != cmp(head->data, data)))
+    {
+        head = head->next_node;
+    }       
+    
+    return head;
 
-/*
- * Remove links from node 
- * param head : pointer to node to remove - can't be the last node.
- * Return : pointer to the removed node
- * Errors : if head is the last node, behaviour is undifined
- */
-slist_node_t *SListRemove(slist_node_t *head)
-{
-	slist_node_t *removed_node = NULL;
-	assert (NULL != head);
-	assert (NULL != head->next_node);
-	
-	SwapNodeData(head, head->next_node);
-	removed_node = head->next_node;
-	head->next_node = head->next_node->next_node;
-	
-	removed_node->next_node = NULL;
-	
-	return removed_node;
 }
 
 slist_node_t *SListRemoveAfter(slist_node_t *head)
 {
-	if (NULL == head->next_node)
-	{
-		return NULL;
-	}
-	return SListRemove(head->next_node);
+	slist_node_t *removed = head->next_node;
+   
+    if (NULL == removed)
+    {
+        return NULL;
+    }
+    
+    head->next_node = removed->next_node;		
+    removed->next_node = NULL;
+    
+    return removed;
+}
+
+slist_node_t *SListRemove(slist_node_t *head)
+{
+    void *temp_data = head->data;
+	slist_node_t *removed = head->next_node;
+    if (NULL == removed)
+    {
+        return NULL;
+    }
+
+	head->data = removed->data;
+	head->next_node = removed->next_node;
+	
+	removed->data = temp_data;
+	removed->next_node = NULL; 
+	
+    return removed; 
 }
 
 size_t SListCount(const slist_node_t *head)
 {
-	size_t nodes_counter = 0;
-	slist_node_t *cur_node = (slist_node_t *) head;
-	while (NULL != cur_node)
-	{
-		cur_node = cur_node->next_node;
-		++nodes_counter;
-	}
-	return nodes_counter;
+    size_t counter = 0;
+    
+    assert(1 != SListHasLoop(head));
+    
+    while (NULL != head)
+    {
+        head = head->next_node;
+        ++counter;
+    }       
+    
+    return counter;
 }
+
 
 int SListForEach(slist_node_t *head, func_action func, void *param)
 {
-	int result = 0;
-	slist_node_t *cur_node = head;
-	
-	while(NULL != cur_node)
-	{
-		result = func(cur_node->data, param);
-		if (0 != result)
-		{
-			return result;
-		}
-		cur_node = cur_node->next_node;
-	}
-	return result;
+    int func_status = 0;
+    
+    assert(NULL != head);
+    assert(1 != SListHasLoop(head));
+     
+
+    while ((NULL != head)  && (0 == func_status))
+    {
+    	func_status = func(head->data, param);
+        head = head->next_node;
+    }       
+    return func_status;
 }
 
 slist_node_t *SListFlip(slist_node_t *head)
 {
-	slist_node_t *prev = NULL;
-	slist_node_t *cur = head;
-	slist_node_t *next = NULL;
+    
+    slist_node_t *temp_head = NULL;
+    slist_node_t *temp_next = NULL;
+    
+    assert(NULL != head);
+	assert(1 != SListHasLoop(head));
 	
-	while (NULL != cur)
-	{
-		next = cur->next_node;
-		cur->next_node = prev;
-		prev = cur;
-		cur = next;
-	}
-	return prev;
-}
-
-slist_node_t *SListFlipRecursive(slist_node_t *head)
-{
-	slist_node_t *new_head = NULL;
-	
-	if (NULL == head->next_node)
-	{
-		return head;	
-	}
-	
-	new_head = SListFlip(head->next_node);
-	head->next_node->next_node = head;
-	head->next_node = NULL;
-
-	return new_head;
+	temp_head = head;
+	temp_next = head->next_node;   
+    head->next_node = NULL; 
+    head = temp_next;
+    
+    while (NULL != head->next_node)
+    {
+        /* assign the next of current to temp */
+        temp_next = head->next_node;
+        head->next_node = temp_head; 
+        
+		temp_head = head;
+        head = temp_next;
+    }
+    
+    if (NULL == head->next_node)
+    {
+    	head->next_node = temp_head;
+    }
+    
+	return head;
 }
 
 int SListHasLoop(const slist_node_t *head)
 {
-	slist_node_t *jumps_one = NULL;
-	slist_node_t *jumps_two = NULL;
+	slist_node_t *slow = (slist_node_t *)head;
+	slist_node_t *fast = (slist_node_t *)head;	
 	
-	jumps_one = (slist_node_t *) head;
-	jumps_two = head->next_node;
+	int has_loop = 0;
 	
-	while ( NULL != jumps_one && NULL != jumps_two &&
-												   NULL != jumps_two->next_node)
+	while (NULL != fast && NULL != fast->next_node)
 	{
-		if (jumps_one == jumps_two)
+		slow = slow->next_node;	
+		fast = fast->next_node->next_node;
+		
+		if (slow == fast)
 		{
-			return TRUE;
+			has_loop = 1;
+			break;
 		}
-		/* advance both at difference paces so that they meet if there's a 
-																	    loop */
-		jumps_two = jumps_two->next_node->next_node;
-		jumps_one = jumps_one->next_node;
-	}
-	return FALSE;
+	} 
+	
+	return has_loop;    
 }
 
 slist_node_t *SListFindIntersection(const slist_node_t *node1,
-													  const slist_node_t *node2)
-{
-	slist_node_t *cur1 = NULL;
-	slist_node_t *cur2 = NULL;
-
-	cur1 = (slist_node_t *) node1;
-	cur2 = (slist_node_t *) node2;
-
-	while (NULL != cur1)
+									const slist_node_t *node2)
+{ 
+ 	size_t len_1 = SListCount(node1);
+	size_t len_2 = SListCount(node2);
+	
+	while (len_1 < len_2)
 	{
-		while (NULL != cur2)
-		{
-			/* confirm that they're not from the same linked list */
-			if (cur1 == cur2 &&
-				(cur1 == (slist_node_t *)node2 ||
-												 cur2 == (slist_node_t *)node1))
-			{
-				return NULL;
-			}
-			else if (cur1 == cur2)
-			{
-				return cur1;
-			}
-			cur2 = cur2->next_node;
-		}
-		cur2 = (slist_node_t *) node2;
-		cur1 = cur1->next_node;
+		node2 = (slist_node_t *)node2->next_node;
+		--len_2;
 	}
-	return NULL;
+	
+	while (len_1 > len_2)
+	{
+		node1 = (slist_node_t *)node1->next_node;
+		--len_1;
+	}
+	
+	if (node1 == node2)
+	{
+		return NULL;	
+	}
+	
+	while (NULL != node1)
+	{
+		node1 = (slist_node_t *)node1->next_node;
+		node2 = (slist_node_t *)node2->next_node;
+		if(node1 == node2)
+		{
+			break;
+		}
+	}
+
+	return (slist_node_t *)node1;
 }
