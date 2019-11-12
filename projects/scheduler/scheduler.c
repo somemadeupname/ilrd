@@ -11,7 +11,7 @@
 
 #include "scheduler.h"
 #include "task.h"
-/*#include "../../ds/pqueue/pqueue.c"*/
+#include "../../ds/pqueue/pqueue.h"
 
 #define TRUE 1
 #define FALSE 0
@@ -23,7 +23,6 @@ struct scheduler
 	pqueue_t *queue;
 	task_t *is_running;
 	int continue_running;
-	int task_kills_itself;
 };
 
 /* helper functions */
@@ -56,7 +55,7 @@ scheduler_t *SchedulerCreate(void)
 		return NULL;
 	}
 	
-	scheduler->queue = PQueueCreate(TaskCompareTime, NULL);/* TODO check if this should be NULL*/
+	scheduler->queue = PQueueCreate(TaskCompareTime, NULL);
 	if (NULL == scheduler->queue)
 	{
 		free(scheduler); scheduler = NULL;
@@ -64,7 +63,6 @@ scheduler_t *SchedulerCreate(void)
 	}
 	
 	scheduler->is_running = NULL;
-	scheduler->task_kills_itself = 0;
 	scheduler->continue_running = 0;
 	
 	return scheduler;
@@ -74,6 +72,7 @@ void SchedulerDestroy(scheduler_t *scheduler)
 {
 	assert(NULL != scheduler);
 	
+	SchedulerClear(scheduler);	
 	PQueueDestroy(scheduler->queue); scheduler->queue = NULL;
 	free(scheduler); scheduler = NULL;	
 }
@@ -90,12 +89,9 @@ task_uid_t SchedulerAddTask(scheduler_t *scheduler, void *func_param,
 	
 	task_to_add = TaskCreate(func_param, task_func,
 							 time_in_sec, interval_in_sec);
-	if (NULL == task_to_add)
-	{
-		return BAD_UID;
-	}
 	
-	if (PQUEUE_FAILED == PQueueEnqueue(scheduler->queue, task_to_add))
+	if ((NULL == task_to_add) || (PQUEUE_FAILED ==
+								 PQueueEnqueue(scheduler->queue, task_to_add) ))
 	{
 		return BAD_UID;
 	}
@@ -110,14 +106,15 @@ sched_status SchedulerRemoveTask(scheduler_t *scheduler, task_uid_t task_uid)
 	assert(NULL != scheduler);
 	
 	/* if running task asked to remove itself */
-	/*if (TaskIsMatch(scheduler->is_running, task_uid)) 
+	if (scheduler->is_running &&
+							TaskIsMatch(scheduler->is_running, &task_uid, NULL)) 
 	{
 		TaskDestroy(scheduler->is_running); scheduler->is_running = NULL;
 		return SCHED_SUCCESS;
 	}
-	*/
 	
-	task_to_remove = PQueueErase(scheduler->queue, TaskIsMatch, &task_uid, NULL);
+	task_to_remove = PQueueErase(scheduler->queue, TaskIsMatch, &task_uid,
+																		  NULL);
 	
 	if (NULL == task_to_remove)
 	{
@@ -129,19 +126,15 @@ sched_status SchedulerRemoveTask(scheduler_t *scheduler, task_uid_t task_uid)
 	return SCHED_SUCCESS;
 }
 
-/*
- * Stops executing tasks
- * Param scheduler : scheduler
- * Return: none
- * Errors: none
- */
+/*Stops executing tasks */
 void SchedulerStop(scheduler_t *scheduler)
 {
 	assert(NULL != scheduler);
 	
 	scheduler->continue_running = FALSE;
 }
-/* make sure that sleeps works for the entire duration it's set to */
+/* helper for run
+ * makes sure that sleep works for the entire duration it's set to */
 static void SleepUntilExecution(time_t secs_until_next_execution)
 {
 	unsigned int seconds_left = (unsigned int) secs_until_next_execution;
@@ -152,34 +145,43 @@ static void SleepUntilExecution(time_t secs_until_next_execution)
 	}
 }
 
-/*
- * Start executing tasks
- * Param scheduler : scheduler
- * Return: SCHED_SUCCESS for success, SCHED_FAIL otherwise
- * Errors: if rescheduling failed, stops and returns SCHED_FAIL
- */
+/* Resume\Start executing tasks */
 sched_status SchedulerRun(scheduler_t *scheduler)
 {
 	assert(NULL != scheduler);
 	
-	while(!SchedulerIsEmpty(scheduler) && TRUE == scheduler->continue_running)
+	while (!SchedulerIsEmpty(scheduler) && scheduler->continue_running)
 	{
+		task_status task_stat = SCHED_NO_REPEAT;
+		
 		scheduler->is_running = PQueuePeek(scheduler->queue);
-		SleepUntilExecution(TaskGetTime(scheduler->is_running)-time(NULL));
 		PQueueDequeue(scheduler->queue);
-		if (SCHED_REPEAT == TaskExec(scheduler->is_running))
+		
+		SleepUntilExecution(TaskGetTime(scheduler->is_running) - time(NULL));
+		
+		task_stat = TaskExec(scheduler->is_running);
+		
+		/* checking for edge case where task tries to destroy itself */
+		if (scheduler->is_running)
 		{
-			int status = RescheduleTask(scheduler, scheduler->is_running);
-			if (SCHED_FAIL == status)
+			if (SCHED_REPEAT == task_stat)
 			{
-				return SCHED_FAIL;
+			sched_status status =
+							   RescheduleTask(scheduler, scheduler->is_running);
+				if (SCHED_FAIL == status)
+				{
+					return SCHED_FAIL;
+				}
+			}
+			else /* SCHED_NO_REPEAT == task_stat */
+			{
+				TaskDestroy(scheduler->is_running); scheduler->is_running =
+																		   NULL;
 			}
 		}
-		else /* TaskExec returns SCHED_NO_REPEAT */
-		{
-			TaskDestroy(scheduler->is_running); scheduler->is_running = NULL; /* TODO is this where this should be?*/
-		}
 	}
+	
+	scheduler->continue_running = TRUE; 
 	return SCHED_SUCCESS;
 }
 
@@ -195,8 +197,10 @@ static sched_status RescheduleTask(scheduler_t *scheduler, task_t *task)
 	TaskUpdateTime(task);
 	if (PQUEUE_FAILED == PQueueEnqueue(scheduler->queue,task))
 	{
+		TaskDestroy(scheduler->is_running); scheduler->is_running = NULL;
 		return SCHED_FAIL;
 	}
+	
 	return SCHED_SUCCESS;
 }
 
@@ -205,7 +209,7 @@ int SchedulerIsEmpty(const scheduler_t *scheduler)
 {
 	assert(NULL != scheduler);
 	
-	return PQueueIsEmpty(scheduler->queue) || (scheduler->is_running ? 1 : 0);
+	return PQueueIsEmpty(scheduler->queue) && !scheduler->is_running;
 }
 
 /* return number of scheduled tasks */
@@ -222,10 +226,15 @@ void SchedulerClear(scheduler_t *scheduler)
 	void *cur_task_to_remove = NULL;
 	assert(NULL != scheduler);
 	
-	while(!SchedulerIsEmpty(scheduler)) /*TODO what about the is_running task? */
+	if (scheduler->is_running) /* if a task is currently running */
+	{
+		TaskDestroy(scheduler->is_running); scheduler->is_running = NULL;
+	}
+	
+	while(!SchedulerIsEmpty(scheduler))
 	{
 		cur_task_to_remove = PQueuePeek(scheduler->queue);
-		free(cur_task_to_remove); cur_task_to_remove = NULL;
+		TaskDestroy(cur_task_to_remove); cur_task_to_remove = NULL;
 		PQueueDequeue(scheduler->queue);
 	}
 	

@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <assert.h> /* assert */
 
 #define START_RED printf("\033[1;31m");
 #define END_RED printf("\033[0m");
@@ -13,23 +11,16 @@
 	int a = 1;\
 	expect_int(1,1,"hi");\
 	expect_size_t(1lu,1lu,"hi");\
-	expect(&a,1,"hi");\
-}
-static void expect(void *data, int expected_result, char *func_name)
-{	
-	
-	int *int_data = NULL;
-	assert(NULL != data);
-	
-	int_data = (int *) data;
-	if (*int_data != expected_result)
-	{
-		PRINT_ERROR
-		printf("Expected: \t%d\nActual: \t%d\n", expected_result, *int_data);
-	}
+	expect_NULL(NULL,"hi");\
+	expect_Not_NULL(&a, "hi");\
 }
 
-static void expect_int(int result, int expected_result, char *func_name)
+/*************************************************************************
+								 										 *
+				      GENERAL TEST FUNCTIONS							 *
+																		 *
+*************************************************************************/
+void expect_int(int result, int expected_result, char *func_name)
 {
 	if (result != expected_result)
 	{
@@ -38,7 +29,7 @@ static void expect_int(int result, int expected_result, char *func_name)
 	}	
 }
 
-static void expect_size_t(size_t result, size_t expected_result, char *func_name)
+void expect_size_t(size_t result, size_t expected_result, char *func_name)
 {
 	if (result != expected_result)
 	{
@@ -46,31 +37,34 @@ static void expect_size_t(size_t result, size_t expected_result, char *func_name
 		printf("Expected: \t%lu\nActual: \t%lu\n", expected_result, result);
 	}	
 }
-/*
-static void PrintList(const dlist_t *dlist)
+
+void expect_NULL(void *pointer, char *func_name)
 {
-	size_t iter_index = 0;
-	dlist_iter_t cur_iter = DListBegin(dlist);
-	while (DListEnd(dlist) != cur_iter)
+	if (pointer != NULL)
 	{
-		printf("[n%lu. data: %d]--", iter_index, *(int *)cur_iter->data);
-		cur_iter = cur_iter->next;
-		++iter_index;
-	}
-	printf("\n");
+		PRINT_ERROR
+		printf("pointer isn't NULL.\n");
+	}	
 }
 
-int *GenerateIntLinkedList(dlist_t *list, dlist_iter_t *iter, int size,
-																int *data_array)
+void expect_Not_NULL(void *pointer, char *func_name)
 {
-	int index = size - 1;
-	data_array = (int *)malloc(sizeof(int)*size);
-	while (index >= 0)
+	if (pointer == NULL)
 	{
-		data_array[index] = index;
-		DListInsert(list, DListBegin(list),&data_array[index]);
-		--index;
-	}
-	return data_array;
+		PRINT_ERROR
+		printf("pointer isn't NULL.\n");
+	}	
 }
-*/
+
+/*************************************************************************
+								 										 *
+				      FORWARD DECLARATIONS								 *
+																		 *
+*************************************************************************/
+
+int main()
+{
+	PREVENT_WARNINGS_FROM_UNUSED_FUNCS_FROM_TESTS_TEMPLATE
+	
+	return 0;
+}

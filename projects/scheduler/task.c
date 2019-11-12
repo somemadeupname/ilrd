@@ -1,14 +1,13 @@
 
 /****************************
  *   Author   : Ran Shieber *
- *   Reviewer : 		    *
+ *   Reviewer : Shaddad	    *
  *	 Status   : Sent	    *
  ****************************/
 #include <stdlib.h> /* malloc free */
 #include <assert.h> /* assert */
 
 #include "task.h"
-/*#include "../../ds/uid/uid.c"*/
 
 #define UNUSED(x) (void)(x)
 

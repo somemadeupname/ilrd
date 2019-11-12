@@ -109,10 +109,14 @@ static void PrintList(const slist_node_t *head)
 	slist_node_t *cur_node = (slist_node_t *) head;
 	while (NULL != cur_node)
 	{
-		printf("[n%lu. data: %d]--", node_index, *(int *)cur_node->data);
+		printf("[n%lu. data: %d]-->", node_index, *(int *)cur_node->data);
 		cur_node = cur_node->next_node;
 		++node_index;
 	}
+	printf("\b \b");
+	printf("\b \b");
+	printf("\b \b");		
+	
 	printf("\n");
 }
 
@@ -335,14 +339,14 @@ void TestSListFlip()
 	slist_node_t *head = SListCreateNode(&a, NULL);
 	slist_node_t *new_head = NULL;
 	
-	data_array = GenerateIntLinkedList(head, 3, data_array);
-	/*
+	data_array = GenerateIntLinkedList(head, 7, data_array);
+	
 	PrintList(head);
-	*/
-	new_head = SListFlip(head);
-	/*
+	
+	new_head = SListFlipRecursive(head);
+	
 	PrintList(new_head);
-	*/
+	
 	SListFreeAll(new_head);
 	free(data_array);
 }

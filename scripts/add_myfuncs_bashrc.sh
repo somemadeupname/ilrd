@@ -1,1 +1,1 @@
-echo "source ~/ran-shieber/scripts/.myfuncs" >> ~/.bashrc
+echo -e "\nsource ~/ran-shieber/scripts/.myfuncs" >> ~/.bashrc

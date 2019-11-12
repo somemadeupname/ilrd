@@ -4,8 +4,7 @@
 #include <stddef.h> /* size_t */
 #include <time.h> /* time_t */
 
-#include "../../ds/uid/uid.h" /* uid */
-#include "../../ds/pqueue/pqueue.h"
+#include "uid.h"
 
 typedef uid_t task_uid_t;
 typedef struct scheduler scheduler_t;

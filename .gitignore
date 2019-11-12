@@ -4,4 +4,4 @@
 !*.c
 !*.h
 !.gitignore
-![Mm]akfile
+!makefile

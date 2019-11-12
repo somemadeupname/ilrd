@@ -23,7 +23,7 @@ struct stack
  ****************************/
 stack_t *StackCreate(size_t max_num_of_elements, size_t size_of_element)
 {
-	stack_t *stack = (stack_t *)malloc(sizeof(stack_t);
+	stack_t *stack = (stack_t *)malloc(sizeof(stack_t));
 	void* base = NULL;
 	
 	if (NULL == stack) /* if malloc failed */

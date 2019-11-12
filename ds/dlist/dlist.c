@@ -58,14 +58,14 @@ dlist_t *DListCreate(void)
 	if (NULL == dlist->dummy_begin)
 	{
 		free(dlist->dummy_begin); dlist->dummy_begin = NULL;
-		
+		return NULL;
 	}
 	
 	dlist->dummy_end = DListCreateNode(NULL, dlist->dummy_begin, NULL);
 	if (NULL == dlist->dummy_end)
 	{
 		free(dlist->dummy_begin); dlist->dummy_begin = NULL;
-		
+		return NULL;		
 		
 	}
 	dlist->dummy_begin->next = dlist->dummy_end;
