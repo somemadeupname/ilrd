@@ -1,3 +1,7 @@
+/*
+ * Author: Shieber
+ * Reviewer: Grisha
+ */
 package il.co.ilrd.string;
 
 public class Main {

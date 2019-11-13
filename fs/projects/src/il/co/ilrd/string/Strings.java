@@ -1,3 +1,8 @@
+/*
+ * Author: Shieber
+ * Reviewer: Grisha
+ */
+
 package il.co.ilrd.string;
 
 public class Strings {
@@ -21,8 +26,8 @@ public class Strings {
 		{
 			System.out.print(str.charAt(i));
 		}
+		
 		System.out.println(""); // add newline
-
 	}
 	
 	public static void printAllPermutations(String str)
