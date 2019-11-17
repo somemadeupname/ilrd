@@ -7,10 +7,10 @@ public interface Iterator {
      *
      * @return true if next element is valid, otherwise false.
      */
-    boolean hasNext();
+    public boolean hasNext();
 
     /**
      * @return Data of current element.
      */
-    Object next();
+    public Object next();
 }

@@ -9,7 +9,7 @@ public class LinkedList {
     private Node head;
     
     public LinkedList() {
-		this.head = new Node(null, null);
+		head = new Node(null, null);
 	}
 
     /**
@@ -19,8 +19,8 @@ public class LinkedList {
      */
     public void pushFront(Object data) {
     	
-    	Node oldHead = this.head;
-    	this.head = new Node(oldHead, data);
+    	Node oldHead = head;
+    	head = new Node(oldHead, data);
     }
 
     /**
@@ -30,10 +30,10 @@ public class LinkedList {
      */
     public Object popFront() {
         
-    	if (!this.isEmpty())
+    	if (!isEmpty())
     	{
-    		Object dataToRemove = this.head.data;
-    		this.head = this.head.next;
+    		Object dataToRemove = head.data;
+    		head = head.next;
     		return dataToRemove;
     	}
     	
@@ -46,7 +46,7 @@ public class LinkedList {
      * @return true if empty, otherwise false.
      */
     public boolean isEmpty() {
-        return (null == this.head.next);
+        return (null == head.next);
     }
 
     /**
@@ -57,7 +57,7 @@ public class LinkedList {
     public int size() {
     	
     	int numOfNodes = 0;
-    	Iterator iter = this.begin();
+    	Iterator iter = begin();
         
         while (iter.hasNext())
         {
@@ -76,8 +76,8 @@ public class LinkedList {
      */
     public Iterator find(Object data) {
         Object curData = null;
-        Iterator iter = this.begin();
-        Iterator prevIter = this.begin();
+        Iterator iter = begin();
+        Iterator prevIter = begin();
 
         
         while (iter.hasNext())
@@ -98,25 +98,25 @@ public class LinkedList {
      * @return Iterator to the first element
      */
     public Iterator begin() {
-        return (new ListIterator(this.head));
+        return (new ListIterator(head));
     }
 
     private class ListIterator implements Iterator {
-        private Node curr;
+        private Node currentNode;
         
-        public ListIterator(Node node) {
-			this.curr = node;
+        public ListIterator(Node currentNode) {
+			this.currentNode = currentNode;
 		}
 
         @Override
         public boolean hasNext() {
-            return (null != this.curr.next);
+            return (null != currentNode.next);
         }
 
         @Override
         public Object next() {
-            Object data = this.curr.data;
-            this.curr = this.curr.next;
+            Object data = currentNode.data;
+            currentNode = currentNode.next;
         	return data;
         }
     }
