@@ -46,7 +46,7 @@ public class LinkedList {
      * @return true if empty, otherwise false.
      */
     public boolean isEmpty() {
-        return (null == this.head);
+        return (null == this.head.next);
     }
 
     /**
@@ -88,9 +88,7 @@ public class LinkedList {
         	}
         	else
         	{
-        		if (prevIter.hasNext()) {
-        			prevIter.next();        			
-        		}
+        		prevIter.next();
         	}
         }
     	return null;
