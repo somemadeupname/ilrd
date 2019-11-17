@@ -6,7 +6,16 @@ package il.co.ilrd.string;
 
 public class Main {
 	
-	public static void checkIfPalindrome(String s) {
+	public static void checkIfPalindrome(String s) throws NullPointerException {
+		
+		try {
+			s.toString();
+		}
+		catch (Exception e){
+			System.err.println("this is null.");
+			return;
+		}
+		
 		if (!Strings.isPalindrome(s))
 		{
 			System.out.println(s + " is NOT a palindrome.");
@@ -37,7 +46,7 @@ public class Main {
 		Main.checkIfPalindrome("abaabaa");
 		Main.checkIfPalindrome("odo");
 		Main.checkIfPalindrome("nevven");		
-		Main.checkIfPalindrome("");
+		Main.checkIfPalindrome(null);
 		
 		// printReverse test
 		

@@ -19,15 +19,8 @@ public class LinkedList {
      */
     public void pushFront(Object data) {
     	
-    	Node newNode = new Node(null, data);
-    	
-    	if (this.isEmpty()) {
-    		this.head.next = newNode;
-    	}
-    	else {
-    		newNode.next = head.next;
-    		head.next = newNode;
-    	}
+    	Node oldHead = this.head;
+    	this.head = new Node(oldHead, data);
     }
 
     /**
@@ -39,11 +32,11 @@ public class LinkedList {
         
     	if (!this.isEmpty())
     	{
-    		Object dataToRemove = this.head.next.data;
-    		this.head.next = this.head.next.next;
+    		Object dataToRemove = this.head.data;
+    		this.head = this.head.next;
     		return dataToRemove;
-    		
     	}
+    	
     	return null;
     }
 
@@ -53,7 +46,7 @@ public class LinkedList {
      * @return true if empty, otherwise false.
      */
     public boolean isEmpty() {
-        return (null == this.head.next);
+        return (null == this.head);
     }
 
     /**
