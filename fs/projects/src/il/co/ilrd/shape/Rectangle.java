@@ -47,7 +47,13 @@ public class Rectangle extends Shape {
 	@Override
 	public String toString() {
 		return ("A Rectangle with width=" + this.width + " and length="
-				+ this.length + ", which is subclass of" + super.toString());
+				+ this.length + ", which is subclass of " + super.toString());
 				
+	}
+
+	@Override
+	public double getPerimiter() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

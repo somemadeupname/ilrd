@@ -35,4 +35,9 @@ public class Circle extends Shape {
 	public String toString() {
 		return ("A Circle with radius=" + this.radius + ", which is a subclass of " + super.toString());
 	}
+	@Override
+	public double getPerimiter() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }
