@@ -112,18 +112,12 @@ public class ComplexNumber implements Comparable<ComplexNumber> {
     }
     
     /*
-     *  Returns the conjugate for ComplexNumber @num 
+     *  Returns the distance of @num from the origin 
      */
     private double getRelativeDistance(ComplexNumber num) {
     	
     	return (Math.sqrt(Math.pow(num.getReal(), 2) + Math.pow(num.getImaginary(), 2)));
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        
-    	return (0 == compareTo((ComplexNumber) o));
-    }
+    }   
 
     @Override
     public int hashCode() {
@@ -150,7 +144,26 @@ public class ComplexNumber implements Comparable<ComplexNumber> {
         	return imaginarySign + imaginary + "i"; 
         }
         
-        
         return real + " " + (imaginarySign == "-" ? "-" : "+") + " " + absImaginary + "i";
     }
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		ComplexNumber other = (ComplexNumber) obj;
+		if (this.getReal() != other.getReal()) {
+			return false;
+		}
+		
+		if (this.getImaginary() != other.getImaginary()) {
+			return false;
+		}
+		
+		return true;		
+	}
 }

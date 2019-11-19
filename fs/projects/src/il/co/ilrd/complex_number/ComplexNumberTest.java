@@ -87,7 +87,7 @@ class ComplexNumberTest {
 		expectedResult = createComplexNumber(0,0);
 		actualResult = ComplexNumber.div(num1, num2);
 		
-		assertEquals(expectedResult, actualResult);
+		assertNotEquals(expectedResult, actualResult);
 		
 		realOne = 1.0d;
 		realTwo = 0.0d;
@@ -129,15 +129,4 @@ class ComplexNumberTest {
 		assertNotEquals(num1.hashCode(), num2.hashCode());
 
 	}
-	
-	@Test
-	void testToString() {
-		ComplexNumber num1 = createComplexNumber(-7.0d, 41.0);
-		ComplexNumber num2 = createComplexNumber(+-3.0d, +1.0);
-		
-		System.out.println(num1);
-		System.out.println(num2);
-	}
-
-
 }
