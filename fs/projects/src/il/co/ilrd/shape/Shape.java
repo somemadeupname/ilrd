@@ -1,6 +1,6 @@
 package il.co.ilrd.shape;
 
-public class Shape {
+public abstract class Shape {
 	private String color;
 	private boolean filled;
 	
@@ -12,6 +12,10 @@ public class Shape {
 	Shape(String color, boolean filled) {
 		this.color = color;
 		this.filled = filled;
+	}
+	
+	boolean isFilled() {
+		return this.filled;
 	}
 	
 	public String getColor() {
@@ -30,7 +34,12 @@ public class Shape {
 		this.filled = filled;
 	}
 	
+	
 	public String toString() {
 		return ("A shape with color " + this.color + " and " + (this.filled ? "filled" : "Not filled"));
 	}
+
+	public abstract double getArea();
+	
+	public abstract double getPerimiter();
 }
