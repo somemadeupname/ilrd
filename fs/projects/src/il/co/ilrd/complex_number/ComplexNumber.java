@@ -9,8 +9,7 @@ public class ComplexNumber implements Comparable<ComplexNumber> {
 
     private ComplexNumber() {
         
-    	this.real = 0.0;
-        this.imaginary = 0.0;
+    	this(0.0,0.0);
     }
 
     private ComplexNumber(double real, double imaginary) {
@@ -61,12 +60,18 @@ public class ComplexNumber implements Comparable<ComplexNumber> {
 
     public static ComplexNumber add(ComplexNumber num1, ComplexNumber num2) {
         
-    	return new ComplexNumber(num1.getReal() + num2.getReal(), num1.getImaginary() + num2.getImaginary());
+    	double resultReal = num1.getReal() + num2.getReal();
+    	double resultImaginary = num1.getImaginary() + num2.getImaginary();
+    	
+    	return new ComplexNumber(resultReal,resultImaginary);
     }
 
     public static ComplexNumber sub(ComplexNumber num1, ComplexNumber num2) {
         
-    	return new ComplexNumber(num1.getReal() - num2.getReal(), num1.getImaginary() - num2.getImaginary());
+    	double resultReal = num1.getReal() - num2.getReal();
+    	double resultImaginary = num1.getImaginary() - num2.getImaginary();
+
+    	return new ComplexNumber(resultReal , resultImaginary);
     }
 
     public static ComplexNumber mult(ComplexNumber num1, ComplexNumber num2) {
