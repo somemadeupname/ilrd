@@ -77,7 +77,7 @@ public class VendingMachine {
         INIT {
             @Override
             void init(VendingMachine vm) {
-            	vm.state.handleCurrentState(vm, IDLE);
+            	handleCurrentState(vm, IDLE);
             }
             
             @Override
@@ -107,7 +107,7 @@ public class VendingMachine {
             void insertCoin(VendingMachine vm, int coinValue) {
         		vm.currBalance += coinValue;
         		
-        		vm.state.handleCurrentState(vm, COLLECTING_MONEY);
+        		handleCurrentState(vm, COLLECTING_MONEY);
             }
 
             @Override
@@ -117,21 +117,21 @@ public class VendingMachine {
         		if (!vm.products.contains(product)) {
             		vm.view.output("Product not available");
             		
-            		vm.state.handleCurrentState(vm, COLLECTING_MONEY);
+            		handleCurrentState(vm, COLLECTING_MONEY);
             		return;
             	}
             	
         		else if (vm.currBalance < product.price) {
             		vm.view.output("insufficiant funds. current balance is "
             												  + vm.currBalance);
-            		vm.state.handleCurrentState(vm, COLLECTING_MONEY);
+            		handleCurrentState(vm, COLLECTING_MONEY);
             		return;
             		
         		}
             	else {
             		vm.currBalance -= product.price;
             		vm.view.output("Dispensing product " + product.name);
-            		vm.state.handleCurrentState(vm, TRANSACTION_COMPLETE);
+            		handleCurrentState(vm, TRANSACTION_COMPLETE);
             	}        		
             }
 
@@ -139,7 +139,7 @@ public class VendingMachine {
             	
             	vm.state.returnChange(vm);
             	
-            	vm.state.handleCurrentState(vm, IDLE);
+            	handleCurrentState(vm, IDLE);
             	
             }
 
@@ -168,7 +168,7 @@ public class VendingMachine {
             		
             		vm.state.returnChange(vm);
             		
-            		vm.state.handleCurrentState(vm, IDLE);
+            		handleCurrentState(vm, IDLE);
             	}
             }
             
