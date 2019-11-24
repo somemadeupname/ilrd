@@ -1,9 +1,9 @@
 package il.co.ilrd.vending_machine;
 
 import java.time.LocalTime;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
+
 
 /**
  * 
@@ -28,9 +28,16 @@ public class VendingMachine {
 		this.products = items;
 		this.view = view;
 	}
+	
+	private void printMenu() {
+		for (Product p : products) {
+			System.out.print("Product\t: " + p.name + "\n" +
+							 "Price\t: " + p.price + "\n\n");
+		}
+	}
 
 	/**
-	 * Initializes and invokes VendingMachine to begin state.
+	 * Initializes and invokes VendingMachine.
 	 */
 	public void start() {
 
@@ -52,7 +59,7 @@ public class VendingMachine {
 	}
 
 	/**
-	 * Shutdown the VendingMachine.
+	 * Shuts down the Vending Machine.
 	 */
 	public void shutDown() {
 		state.shutDown(this);
@@ -83,7 +90,10 @@ public class VendingMachine {
 	public void cancel() {
 		state.cancel(this);
 	}
-
+	
+	/**
+	 * Enum which represents the state in which the Vending Mahcine is in.
+	 */
 	private enum State {
 		INIT {
 			@Override
@@ -100,7 +110,7 @@ public class VendingMachine {
 		IDLE {
 			@Override
 			void insertCoin(VendingMachine vm, double coinValue) {
-
+				vm.printMenu();
 				COLLECTING_MONEY.insertCoin(vm, coinValue);
 			}
 
@@ -125,7 +135,7 @@ public class VendingMachine {
 			void chooseProduct(VendingMachine vm, int productIndex) {
 				vm.startTime = LocalTime.now();
 
-				if (productIndex < 0 &&
+				if (productIndex < 0 ||
 						vm.products.size() - 1 < productIndex) {
 					vm.view.accept("Product not available");
 
@@ -133,16 +143,17 @@ public class VendingMachine {
 					return;
 				}
 
-		else if (vm.currBalance < vm.products.indexOf(productIndex).price) {
+				else if (vm.currBalance <
+									vm.products.get(productIndex).price) {
 					vm.view.accept("Insufficient funds. current balance is "
 															 + vm.currBalance);
 					setState(vm, COLLECTING_MONEY);
 					return;
 
 				} else {
-					vm.currBalance -= vm.products.indexOf(productIndex).price;
+					vm.currBalance -= vm.products.get(productIndex).price;
 					vm.view.accept("Dispensing product " +
-										vm.products.indexOf(productIndex).name);
+										vm.products.get(productIndex).name);
 					setState(vm, TRANSACTION_COMPLETE);
 				}
 			}
@@ -192,7 +203,7 @@ public class VendingMachine {
 		};
 
 		/*
-		 * Will initialize Vending machine, change to waitForProduct state
+		 * Will initialize Vending machine, change to COLLECTING_MONEY state
 		 * 
 		 * @param vm - current Vending Machine
 		 */
@@ -201,7 +212,7 @@ public class VendingMachine {
 		}
 
 		/*
-		 * Will shut down Vending machine, change change active flag to false
+		 * Shuts down Vending machine, changes active flag to false
 		 * 
 		 * @param vm - current Vending Machine
 		 */
@@ -216,15 +227,18 @@ public class VendingMachine {
 		}
 
 		/*
-		 * Handles payment transaction, increases current balance, changes state to
-		 * WAIT_FOR_PRODUCT if there is sufficient balance.
+		 * Handles payment transaction, increases current balance, changes
+		 * state to COLLECTING_MONEY if there is sufficient balance.
+		 * 
+		 * @param vm - current Vending Machine
+		 * @param coin - value of coin.
 		 */
 		void insertCoin(VendingMachine vm, double coin) {
 
 		}
 
 		/*
-		 * Changes selected product in vm, changes state to waitForMoney
+		 * Changes selected product in vm, changes state to TRAN
 		 */
 		void chooseProduct(VendingMachine vm, int productIndex) {
 		}
@@ -251,7 +265,7 @@ public class VendingMachine {
 			vm.currBalance = 0;
 		}
 
-		/* Timeouts for Trancaction Complete and Collecting Money states */
+		/* Timeouts for Transaction Complete and Collecting Money states */
 		private final static int TC_TO = 5;
 		private final static int CM_TO = 10;
 	}
@@ -275,21 +289,19 @@ public class VendingMachine {
 
 		@Override
 		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			Product other = (Product) obj;
-			if (name == null) {
-				if (other.name != null)
-					return false;
-			} else if (!name.equals(other.name))
-				return false;
+
+			if (obj instanceof Product) {
+				Product other = (Product) obj;
+				if (name == null) {
+					if (other.name != null) {
+						return false;
+					}
+					else if (!name.equals(other.name)) {
+						return false;
+					}
+				}
+			}
 			return true;
 		}
-
 	}
-
 }
