@@ -44,7 +44,7 @@ class Animal{
 	}
 	
 	@Override
-	protected void finalize() throws Throwable{
+	protected void finalize() throws Throwable {
 		System.out.println("finalize Animal with ID:" + this.ID);
 		super.finalize();
 	}
