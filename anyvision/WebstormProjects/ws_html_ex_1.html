@@ -5,7 +5,38 @@
     <title>Welcome User</title>
 </head>
 <body>
+    <form style="font-size: xx-large" align="center">
+        Username: <input id="name" type="text" name="username" style="font-size: x-large"><br>
+        <button type="button" style="font-size: x-large" onclick="showWelcomeMessage()"> Submit </button>
+        <button type="button" style="font-size: x-large" onclick="presentLastName()"> Present Last Name </button>
+    </form>
 
+    <ul style="list-style: none" id="messagesList"></ul>
 
 </body>
+
+<script>
+    function showWelcomeMessage() {
+        let node = document.createElement("LI");
+        let textnode = document.createTextNode("Well hello there!");
+        node.appendChild(textnode);
+        document.getElementById("messagesList").appendChild(node);
+        saveUsernameToStorage();
+    }
+
+    function saveUsernameToStorage() {
+    // Save data to sessionStorage
+        sessionStorage.setItem("lastEnteredUsername", document.getElementById("name").value);
+        // clear field
+        document.getElementById("name").value = "";
+
+        // Get saved data from sessionStorage
+    }
+    function presentLastName() {
+        let data = sessionStorage.getItem("lastEnteredUsername");
+
+        alert(data);
+    }
+</script>
+
 </html>
