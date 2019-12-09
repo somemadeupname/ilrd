@@ -6,3 +6,7 @@
 !.gitignore
 !makefile
 !*.java
+!*.js
+!*.html
+!*.css
+!*.json
