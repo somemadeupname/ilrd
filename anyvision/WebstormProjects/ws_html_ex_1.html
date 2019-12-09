@@ -26,14 +26,14 @@
 
     function saveUsernameToStorage() {
     // Save data to sessionStorage
-        sessionStorage.setItem("lastEnteredUsername", document.getElementById("name").value);
+        localStorage.setItem("lastEnteredUsername", document.getElementById("name").value);
         // clear field
         document.getElementById("name").value = "";
 
         // Get saved data from sessionStorage
     }
     function presentLastName() {
-        let data = sessionStorage.getItem("lastEnteredUsername");
+        let data = localStorage.getItem("lastEnteredUsername");
 
         alert(data);
     }
