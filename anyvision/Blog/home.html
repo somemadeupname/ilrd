@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .circular--square {
+            border-top-left-radius: 50% 50%;
+            border-top-right-radius: 50% 50%;
+            border-bottom-right-radius: 50% 50%;
+            border-bottom-left-radius: 50% 50%;
+        }
+         .share-icons::after {
+             background-color: lightgrey;
+             width: 44px;
+             border: 0px solid blue;
+             padding: 6px;
+             margin: 4px;
+             content: "";
+             clear: both;
+             display: table;
+         }
+        {
+            box-sizing: border-box;
+        }
+
+        .column {
+            float: left;
+            width: 33.33%;
+            padding: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <section align="center">
+        <img class="circular--square" src="resources/profile_image.gif" width="400" height="330" class="video-circle"/>
+        <br><h1> My name is Shieber<br> I am learning html</h1>
+        <br><br>
+        <div class="share-icons">
+            <div class="column">
+                <a href="https://www.facebook.com/">
+                    <img src="resources/facebook.svg" alt="fb_icon" width="32" height="32" target="_blank"/>
+                </a>
+            </div>
+            <a href="https://www.twitter.com/">
+                <img src="resources/twitter.svg" alt="fb_icon" width="32" height="32" target="_blank"/>
+            </a>
+            <a href="https://www.linkedin.com/">
+                <img src="resources/linkedin.svg" alt="fb_icon" width="32" height="32" target="_blank"/>
+            </a>
+            <a href="https://www.instagram.com/">
+                <img src="resources/instagram.svg" alt="fb_icon" width="32" height="32" target="_blank"/>
+            </a>
+        </div>
+    </section>
+
+</body>
+
+</html>
