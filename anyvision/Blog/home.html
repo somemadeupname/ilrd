@@ -3,59 +3,44 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="home.css">
+    <link rel="stylesheet" href="./material.min.css">
+    <script src="./material.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <title>My Blog</title>
     <style>
-        .circular--square {
-            border-top-left-radius: 50% 50%;
-            border-top-right-radius: 50% 50%;
-            border-bottom-right-radius: 50% 50%;
-            border-bottom-left-radius: 50% 50%;
-        }
-         .share-icons::after {
-             background-color: lightgrey;
-             width: 44px;
-             border: 0px solid blue;
-             padding: 6px;
-             margin: 4px;
-             content: "";
-             clear: both;
-             display: table;
-         }
-        {
-            box-sizing: border-box;
-        }
 
-        .column {
-            float: left;
-            width: 33.33%;
-            padding: 5px;
-        }
     </style>
 </head>
 
 <body>
     <section align="center">
-        <img class="circular--square" src="resources/profile_image.gif" width="400" height="330" class="video-circle"/>
-        <br><h1> My name is Shieber<br> I am learning html</h1>
-        <br><br>
-        <div class="share-icons">
-            <div class="column">
-                <a href="https://www.facebook.com/">
-                    <img src="resources/facebook.svg" alt="fb_icon" width="32" height="32" target="_blank"/>
-                </a>
-            </div>
-            <a href="https://www.twitter.com/">
-                <img src="resources/twitter.svg" alt="fb_icon" width="32" height="32" target="_blank"/>
-            </a>
-            <a href="https://www.linkedin.com/">
-                <img src="resources/linkedin.svg" alt="fb_icon" width="32" height="32" target="_blank"/>
-            </a>
-            <a href="https://www.instagram.com/">
-                <img src="resources/instagram.svg" alt="fb_icon" width="32" height="32" target="_blank"/>
-            </a>
-        </div>
+        <img class="circular--square" src="resources/profile_image.gif" height="195" width="300" class="video-circle"/>
+        <br>
+        <br><h1 style="color: #00bcd4"> My name is Shieber<br> I am learning html</h1>
+        <br>
+            <nav>
+                <a class="nav-link" href="https://www.facebook.com/" target="_blank">
+                    <img src="resources/facebook.svg" alt="fb_icon" width="32" height="32"/></a>
+                <a class="nav-link" href="https://www.twitter.com/" target="_blank">
+                    <img src="resources/twitter.svg" alt="tw_icon" width="32" height="32"/></a>
+                <a class="nav-link" href="https://www.linkedin.com/" target="_blank">
+                    <img src="resources/linkedin.svg" alt="li_icon" width="32" height="32"/></a>
+                <a class="nav-link" href="https://www.instagram.com/" target="_blank">
+                    <img src="resources/instagram.svg" alt="ig_icon" width="32" height="32"/></a>
+            </nav>
     </section>
+    <hr>
 
+    <input class="search-bar" type="text" placeholder="Search..">
+    <!-- Colored FAB button -->
+    <button class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored">
+        <i class="material-icons">add</i>
+    </button>
+
+    <ul id="posts" class="posts">
+
+    </ul>
+    <footer>Made by Shieber. All rights reserved &copy;</footer>
 </body>
-
 </html>
