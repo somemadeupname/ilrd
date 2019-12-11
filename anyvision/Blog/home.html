@@ -14,33 +14,76 @@
 </head>
 
 <body>
-    <section align="center">
-        <img class="circular--square" src="resources/profile_image.gif" height="195" width="300" class="video-circle"/>
+<div>
+    <section id="top-section" align="center" class="mdl-shadow--4dp">
+        <img class="circular--square mdl-shadow--4dp" src="resources/profile_image_back.gif" height="195" width="300"/>
         <br>
-        <br><h1 style="color: #00bcd4"> My name is Shieber<br> I am learning html</h1>
+        <h3 style="color: #010000"><b>My name is Shieber</b><br> I am learning html</h3>
         <br>
-            <nav>
-                <a class="nav-link" href="https://www.facebook.com/" target="_blank">
-                    <img src="resources/facebook.svg" alt="fb_icon" width="32" height="32"/></a>
-                <a class="nav-link" href="https://www.twitter.com/" target="_blank">
-                    <img src="resources/twitter.svg" alt="tw_icon" width="32" height="32"/></a>
-                <a class="nav-link" href="https://www.linkedin.com/" target="_blank">
-                    <img src="resources/linkedin.svg" alt="li_icon" width="32" height="32"/></a>
-                <a class="nav-link" href="https://www.instagram.com/" target="_blank">
-                    <img src="resources/instagram.svg" alt="ig_icon" width="32" height="32"/></a>
-            </nav>
+        <nav>
+            <a class="nav-link" href="https://www.facebook.com/" target="_blank">
+                <img src="resources/facebook.svg" alt="fb_icon" width="32" height="32"/></a>
+            <a class="nav-link" href="https://www.twitter.com/" target="_blank">
+                <img src="resources/twitter.svg" alt="tw_icon" width="32" height="32"/></a>
+            <a class="nav-link" href="https://www.linkedin.com/" target="_blank">
+                <img src="resources/linkedin.svg" alt="li_icon" width="32" height="32"/></a>
+            <a class="nav-link" href="https://www.instagram.com/" target="_blank">
+                <img src="resources/instagram.svg" alt="ig_icon" width="32" height="32"/></a>
+        </nav>
     </section>
-    <hr>
+    <!--    <hr>-->
+    <div id="content-section">
+        <section align="center">
+            <!-- Simple Textfield -->
+            <form action="#">
+                <div class="mdl-textfield mdl-js-textfield">
+                    <input class="mdl-textfield__input" type="text" id="search_box">
+                    <label class="mdl-textfield__label" for="search_box">Search..</label>
+                </div>
+            </form>
+        </section>
+        <section class="posts">
+            <article class="post mdl-shadow--4dp">
+                <h3 align="center">My First Post</h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.Accusantium assumenda atque cumque dolores
 
-    <input class="search-bar" type="text" placeholder="Search..">
-    <!-- Colored FAB button -->
-    <button class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored">
-        <i class="material-icons">add</i>
-    </button>
+                    ducimus ea earum facere, facilis illum ipsam magni minus natus possimus quam ratione rem sapiente
+                    sit soluta
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Libero numquam qui voluptatibus? Eum,
+                    tempora.</p>
+                <button id="share-post-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect"
+                        style="background-color: rgba(120,177,255,0.55)">
+                    <i class="material-icons"></i>
+                </button>
+            </article>
+            <article class="post mdl-shadow--4dp">
+                <h3 align="center">My Second Post</h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.Accusantium assumenda atque cumque dolores
 
-    <ul id="posts" class="posts">
+                    ducimus ea earum facere, facilis illum ipsam magni minus natus possimus quam ratione rem sapiente
+                    sit soluta
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Libero numquam qui voluptatibus? Eum,
+                    tempora.</p>
+            </article>
+            <article class="post mdl-shadow--4dp">
+                <h3 align="center">My Third Post</h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.Accusantium assumenda atque cumque dolores
+                    ducimus ea earum facere, facilis illum ipsam magni minus natus possimus quam ratione rem sapiente
+                    sit soluta
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Libero numquam qui voluptatibus? Eum,
+                    tempora.</p>
+            </article>
 
-    </ul>
-    <footer>Made by Shieber. All rights reserved &copy;</footer>
+        </section>
+        <!-- FAB button with ripple -->
+        <button id="add-post-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect"
+                style="background-color: #FF4059">
+            <i class="material-icons">add</i>
+        </button>
+    </div>
+</div>
+
+
+<footer>Made by Shieber. All rights reserved &copy;</footer>
 </body>
 </html>
