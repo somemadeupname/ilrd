@@ -1,5 +1,5 @@
 body {
-    background-image: url('/resources/ice_cream_wallpaper.jpg');
+    /*background-image: url('/resources/ice_cream_wallpaper.jpg');*/
     /*background-image: url('https://i.pinimg.com/originals/9d/4d/07/9d4d07ca7d591bb3cd3d9f4df2624bbf.jpg');*/
     /*background-image: url('https://www.rafaeldejongh.com/wp-content/uploads/2017/08/Synthwave-Neon-80s-Background-2K.jpg');*/
     /*background-image: url('http://i.imgur.com/HRr3Kkf.jpg');*/
@@ -21,6 +21,11 @@ body {
     position: fixed;
     bottom: 5%;
     right: 5%;
+    background-color: #0d47a1;
+}
+
+#add-post-button:hover {
+    opacity: 70%;
 }
 
 .circular--square {
@@ -33,6 +38,10 @@ body {
     padding: 0 5px;
 }
 
+.nav-link:hover {
+    opacity: 70%;
+}
+
 .search-bar {
     display: block;
     margin-left: auto;
@@ -40,17 +49,30 @@ body {
     padding: 6px;
     margin-top: 8px;
     font-size: 17px;
+
 }
 
 .post {
     background-color: #fce4ec;
-    border: 1px solid #0d47a1;
+    border: 1px solid #7687a1;
     padding: 1%;
     width: 55%;
+    height: 300px;
     margin-top: 14px;
     margin-right: 20%;
     margin-left: 20%;
     border-radius: 25px;
+    overflow: hidden;
+    text-align: justify;
+}
+
+.post p {
+    font-size: large;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+}
+
+.post:hover {
+    overflow: auto;
 }
 
 footer {
@@ -58,12 +80,18 @@ footer {
     margin-left: 40%;
 }
 
+.share-post-button:hover {
+    opacity: 70%;
+    background-color: rgba(12, 18, 59, 0.33);
+}
+
+.add-icon {
+    color: white;
+}
+
 .share-post-button {
-    background-image: url("resources/share-24px.svg");
-    background-position: center;
-    background-repeat: no-repeat;
     left: 95%;
     right: 0;
     bottom: 5%;
-    display: inline-block;
+    background-color: rgba(9, 11, 77, 0.31);
 }
