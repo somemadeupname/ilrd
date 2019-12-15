@@ -1,27 +1,35 @@
 body {
-    /*background-image: url('/resources/ice_cream_wallpaper.jpg');*/
-    /*background-image: url('https://i.pinimg.com/originals/9d/4d/07/9d4d07ca7d591bb3cd3d9f4df2624bbf.jpg');*/
-    /*background-image: url('https://www.rafaeldejongh.com/wp-content/uploads/2017/08/Synthwave-Neon-80s-Background-2K.jpg');*/
-    /*background-image: url('http://i.imgur.com/HRr3Kkf.jpg');*/
-    /*background-image: url('http://wallpapershdnow.com/download.php?f=tv-shows/animation/rick-and-morty/rick-and-morty-background-47.jpg');*/
     background-size: cover;
     background-repeat: no-repeat;
     background-attachment: fixed;
 }
 
-#top-section {
+header {
     background-color: #00acc1;
+}
+
+#top-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    padding-bottom: 10px;
+}
+
+#top-section h3 {
+    text-align: center;
 }
 
 #content-section {
     background-color: #c8e6ff;
+    /*background-image: url("http://getwallpapers.com/wallpaper/full/e/9/4/1021427-cute-ice-cream-wallpaper-2560x1600-for-iphone-5.jpg");*/
 }
 
 #add-post-button {
     position: fixed;
     bottom: 5%;
     right: 5%;
-    background-color: #0d47a1;
+    background-color: #25a0b4;
 }
 
 #add-post-button:hover {
@@ -30,6 +38,8 @@ body {
 
 .circular--square {
     border-radius: 50% 50%;
+    width: 15%;
+    height: 15%;
 }
 
 .nav-link {
@@ -52,18 +62,38 @@ body {
 
 }
 
+.posts {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    padding-bottom: 10px;
+    align-content: space-around;
+}
+
 .post {
     background-color: #fce4ec;
     border: 1px solid #7687a1;
-    padding: 1%;
+    padding: 5px;
     width: 55%;
     height: 300px;
-    margin-top: 14px;
-    margin-right: 20%;
-    margin-left: 20%;
+    padding-top: 14px;
+    margin: 10px;
     border-radius: 25px;
     overflow: hidden;
     text-align: justify;
+}
+
+.post:hover {
+    overflow: auto;
+    margin-right: 20%;
+    margin-left: 20%;
+    border: 1px solid #7687a1;
+    border-radius: 25px;
+}
+
+.post h3 {
+    text-align: center;
 }
 
 .post p {
@@ -71,13 +101,32 @@ body {
     font-family: "Roboto", "Helvetica", "Arial", sans-serif;
 }
 
-.post:hover {
-    overflow: auto;
+.search-bar-section {
+    background-color: #c8e6ff;
+}
+
+#search-bar {
+    width: 52%;
+    margin: auto;
+}
+
+#another-id {
+    width: 400%;
+    margin: auto;
+}
+
+#search-bar:hover {
+    border: 1px #0d47a1;
+}
+
+.mdl-textfield {
+    width: 100%;
 }
 
 footer {
     margin-right: 40%;
     margin-left: 40%;
+    text-align: center;
 }
 
 .share-post-button:hover {

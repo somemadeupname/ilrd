@@ -10,3 +10,8 @@
 !*.html
 !*.css
 !*.json
+!*.svg
+!*.jpg
+!*.gif
+!*.jpeg
+

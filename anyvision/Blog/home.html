@@ -3,50 +3,45 @@
 
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="./material.min.css">
-    <script src="./material.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
     <link rel="stylesheet" type="text/css" href="home.css">
     <title>My Blog</title>
-    <style>
-
-    </style>
 </head>
 
 <body>
 <div>
-    <section id="top-section" align="center" class="mdl-shadow--4dp">
-        <br>
-        <img class="circular--square mdl-shadow--4dp" src="resources/profile_image_back.gif" height="195" width="300"/>
-        <br>
-        <h3><b>My name is Shieber</b><br> I am learning html</h3>
-        <br>
-        <nav>
-            <a class="nav-link" href="https://www.facebook.com/" target="_blank">
-                <img src="resources/facebook.svg" alt="fb_icon" width="32" height="32"/></a>
-            <a class="nav-link" href="https://www.twitter.com/" target="_blank">
-                <img src="resources/twitter.svg" alt="tw_icon" width="32" height="32"/></a>
-            <a class="nav-link" href="https://www.linkedin.com/" target="_blank">
-                <img src="resources/linkedin.svg" alt="li_icon" width="32" height="32"/></a>
-            <a class="nav-link" href="https://www.instagram.com/" target="_blank">
-                <img src="resources/instagram.svg" alt="ig_icon" width="32" height="32"/></a>
-        </nav>
-        <br>
-    </section>
-    <!--    <hr>-->
-    <div id="content-section">
-        <section align="center">
-            <!-- Simple Textfield -->
-            <form action="#">
-                <div class="mdl-textfield mdl-js-textfield">
-                    <input class="mdl-textfield__input" type="text" id="search_box" autocomplete="off">
-                    <label class="mdl-textfield__label" for="search_box">Search..</label>
-                </div>
-            </form>
+    <header>
+        <section id="top-section" class="mdl-shadow--4dp">
+            <br>
+            <img class="circular--square mdl-shadow--4dp" src="resources/profile_image_back.gif" alt="resources/profile_image_back_alt.jpg"/>
+            <h3><b>My name is Shieber</b><br> I am learning html</h3>
+            <nav>
+                <a class="nav-link" href="https://www.facebook.com/" target="_blank">
+                    <img src="resources/facebook.svg" alt="fb_icon" width="32" height="32"/></a>
+                <a class="nav-link" href="https://www.twitter.com/" target="_blank">
+                    <img src="resources/twitter.svg" alt="tw_icon" width="32" height="32"/></a>
+                <a class="nav-link" href="https://www.linkedin.com/" target="_blank">
+                    <img src="resources/linkedin.svg" alt="li_icon" width="32" height="32"/></a>
+                <a class="nav-link" href="https://www.instagram.com/" target="_blank">
+                    <img src="resources/instagram.svg" alt="ig_icon" width="32" height="32"/></a>
+            </nav>
         </section>
+    </header>
+    <section class="search-bar-section">
+        <!-- Simple Textfield -->
+        <form id="search-bar" action="#">
+            <div class="mdl-textfield mdl-js-textfield">
+                <input class="mdl-textfield__input" type="text" id="search_box" autocomplete="off">
+                <label class="mdl-textfield__label" for="search_box">Search..</label>
+            </div>
+        </form>
+    </section>
+    <div id="content-section">
         <section class="posts">
             <article class="post mdl-shadow--4dp">
-                <h3 align="center">My First Post</h3>
+                <h3>My First Post</h3>
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.Accusantium assumenda atque cumque dolores
 
                     ducimus ea earum facere, facilis illum ipsam magni minus natus possimus quam ratione rem sapiente
@@ -89,7 +84,7 @@
                 </button>
             </article>
             <article class="post mdl-shadow--4dp">
-                <h3 align="center">My Second Post</h3>
+                <h3>My Second Post</h3>
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.Accusantium assumenda atque cumque dolores
                     ducimus ea earum facere, facilis illum ipsam magni minus natus possimus quam ratione rem sapiente
                     sit soluta
@@ -105,9 +100,10 @@
                 </button>
             </article>
             <article class="post mdl-shadow--4dp">
-                <h3 align="center">My Third Post</h3>
+                <h3>My Third Post</h3>
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.Accusantium assumenda atque cumque dolores
-                    Lorem ipsum dolor sit amet, consectetur nbsp adipisicing elit. Architecto dolorem laborum odit officiis
+                    Lorem ipsum dolor sit amet, consectetur nbsp adipisicing elit. Architecto dolorem laborum odit
+                    officiis
                     quas. Aut beatae cupiditate distinctio, eos, et harum inventore ipsam itaque maiores nam nobis non
                     quam repellendus, sed similique ut vel eius et facilis id impedit inventore ipsum iusto
                     labore modi molestiae nihiluptates? Commodi consectetur dignissimos dolores enim fugit
@@ -118,7 +114,6 @@
                     <i class="material-icons">share</i>
                 </button>
             </article>
-            <br>
         </section>
         <!-- FAB button with ripple -->
         <button id="add-post-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
