@@ -78,6 +78,8 @@ header {
     width: 55%;
     height: 300px;
     padding-top: 14px;
+    padding-left: 50px;
+    padding-right: 50px;
     margin: 10px;
     border-radius: 25px;
     overflow: hidden;
