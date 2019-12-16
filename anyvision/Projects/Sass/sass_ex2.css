@@ -1,0 +1,17 @@
+@media (max-width: 400px) {
+  body {
+    background-color: red;
+  }
+}
+@media (min-width: 401px) and (max-width: 760px) {
+  body {
+    background-color: blue;
+  }
+}
+@media (min-width: 761px) {
+  body {
+    background-color: yellow;
+  }
+}
+
+/*# sourceMappingURL=sass_ex2.css.map */

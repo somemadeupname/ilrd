@@ -1,0 +1,21 @@
+@mixin small
+  @media (max-width: 400px)
+    @content
+
+@mixin medium
+  @media (min-width: 401px) and (max-width: 760px)
+    @content
+
+@mixin larger
+  @media (min-width: 761px)
+    @content
+
+body
+  @include small
+    background-color: red
+
+  @include medium
+    background-color: blue
+
+  @include larger
+    background-color: yellow

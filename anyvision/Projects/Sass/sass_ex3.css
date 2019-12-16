@@ -1,0 +1,162 @@
+#main-body {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: baseline;
+}
+
+#li1 {
+  background-color: #380000;
+  margin: 10px;
+  height: 70px;
+  width: 70px;
+  text-align: center;
+  line-height: 70px;
+}
+
+#li2 {
+  background-color: #510000;
+  margin: 10px;
+  height: 70px;
+  width: 70px;
+  text-align: center;
+  line-height: 70px;
+}
+
+#li3 {
+  background-color: #6b0000;
+  margin: 10px;
+  height: 70px;
+  width: 70px;
+  text-align: center;
+  line-height: 70px;
+}
+
+#li4 {
+  background-color: #840000;
+  margin: 10px;
+  height: 70px;
+  width: 70px;
+  text-align: center;
+  line-height: 70px;
+}
+
+#li5 {
+  background-color: #9e0000;
+  margin: 10px;
+  height: 70px;
+  width: 70px;
+  text-align: center;
+  line-height: 70px;
+}
+
+#li6 {
+  background-color: #b70000;
+  margin: 10px;
+  height: 70px;
+  width: 70px;
+  text-align: center;
+  line-height: 70px;
+}
+
+#li7 {
+  background-color: #d10000;
+  margin: 10px;
+  height: 70px;
+  width: 70px;
+  text-align: center;
+  line-height: 70px;
+}
+
+#li8 {
+  background-color: #ea0000;
+  margin: 10px;
+  height: 70px;
+  width: 70px;
+  text-align: center;
+  line-height: 70px;
+}
+
+#li9 {
+  background-color: #ff0505;
+  margin: 10px;
+  height: 70px;
+  width: 70px;
+  text-align: center;
+  line-height: 70px;
+}
+
+#li10 {
+  background-color: #ff1e1e;
+  margin: 10px;
+  height: 70px;
+  width: 70px;
+  text-align: center;
+  line-height: 70px;
+}
+
+#li11 {
+  background-color: #ff3838;
+  margin: 10px;
+  height: 70px;
+  width: 70px;
+  text-align: center;
+  line-height: 70px;
+}
+
+#li12 {
+  background-color: #ff5151;
+  margin: 10px;
+  height: 70px;
+  width: 70px;
+  text-align: center;
+  line-height: 70px;
+}
+
+#li13 {
+  background-color: #ff6b6b;
+  margin: 10px;
+  height: 70px;
+  width: 70px;
+  text-align: center;
+  line-height: 70px;
+}
+
+#li14 {
+  background-color: #ff8484;
+  margin: 10px;
+  height: 70px;
+  width: 70px;
+  text-align: center;
+  line-height: 70px;
+}
+
+#li15 {
+  background-color: #ff9e9e;
+  margin: 10px;
+  height: 70px;
+  width: 70px;
+  text-align: center;
+  line-height: 70px;
+}
+
+#li16 {
+  background-color: #ffb7b7;
+  margin: 10px;
+  height: 70px;
+  width: 70px;
+  text-align: center;
+  line-height: 70px;
+}
+
+#li17 {
+  background-color: #ffd1d1;
+  margin: 10px;
+  height: 70px;
+  width: 70px;
+  text-align: center;
+  line-height: 70px;
+}
+
+/*# sourceMappingURL=sass_ex3.css.map */
