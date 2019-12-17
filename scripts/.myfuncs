@@ -28,3 +28,4 @@ alias myfuncs='nano ~/ran-shieber/scripts/.myfuncs'
 alias smyfuncs='source ~/ran-shieber/scripts/.myfuncs'
 
 export LD_LIBRARY_PATH="/home/student0/ran-shieber/ds/pqueue"
+alias gitrm='git rm --cached'
