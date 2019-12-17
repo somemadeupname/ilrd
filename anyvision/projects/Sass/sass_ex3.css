@@ -1,0 +1,179 @@
+#main-body {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: baseline;
+}
+
+#li1 {
+  background-color: #00001b;
+  padding: 30px;
+  margin: 10px;
+  height: 200px;
+  width: 200px;
+  text-align: center;
+  line-height: 200px;
+}
+
+#li2 {
+  background-color: #000034;
+  padding: 30px;
+  margin: 10px;
+  height: 200px;
+  width: 200px;
+  text-align: center;
+  line-height: 200px;
+}
+
+#li3 {
+  background-color: #00004e;
+  padding: 30px;
+  margin: 10px;
+  height: 200px;
+  width: 200px;
+  text-align: center;
+  line-height: 200px;
+}
+
+#li4 {
+  background-color: #000067;
+  padding: 30px;
+  margin: 10px;
+  height: 200px;
+  width: 200px;
+  text-align: center;
+  line-height: 200px;
+}
+
+#li5 {
+  background-color: #000081;
+  padding: 30px;
+  margin: 10px;
+  height: 200px;
+  width: 200px;
+  text-align: center;
+  line-height: 200px;
+}
+
+#li6 {
+  background-color: #00009a;
+  padding: 30px;
+  margin: 10px;
+  height: 200px;
+  width: 200px;
+  text-align: center;
+  line-height: 200px;
+}
+
+#li7 {
+  background-color: #0000b4;
+  padding: 30px;
+  margin: 10px;
+  height: 200px;
+  width: 200px;
+  text-align: center;
+  line-height: 200px;
+}
+
+#li8 {
+  background-color: mediumblue;
+  padding: 30px;
+  margin: 10px;
+  height: 200px;
+  width: 200px;
+  text-align: center;
+  line-height: 200px;
+}
+
+#li9 {
+  background-color: #0000e7;
+  padding: 30px;
+  margin: 10px;
+  height: 200px;
+  width: 200px;
+  text-align: center;
+  line-height: 200px;
+}
+
+#li10 {
+  background-color: #0101ff;
+  padding: 30px;
+  margin: 10px;
+  height: 200px;
+  width: 200px;
+  text-align: center;
+  line-height: 200px;
+}
+
+#li11 {
+  background-color: #1b1bff;
+  padding: 30px;
+  margin: 10px;
+  height: 200px;
+  width: 200px;
+  text-align: center;
+  line-height: 200px;
+}
+
+#li12 {
+  background-color: #3434ff;
+  padding: 30px;
+  margin: 10px;
+  height: 200px;
+  width: 200px;
+  text-align: center;
+  line-height: 200px;
+}
+
+#li13 {
+  background-color: #4e4eff;
+  padding: 30px;
+  margin: 10px;
+  height: 200px;
+  width: 200px;
+  text-align: center;
+  line-height: 200px;
+}
+
+#li14 {
+  background-color: #6767ff;
+  padding: 30px;
+  margin: 10px;
+  height: 200px;
+  width: 200px;
+  text-align: center;
+  line-height: 200px;
+}
+
+#li15 {
+  background-color: #8181ff;
+  padding: 30px;
+  margin: 10px;
+  height: 200px;
+  width: 200px;
+  text-align: center;
+  line-height: 200px;
+}
+
+#li16 {
+  background-color: #9a9aff;
+  padding: 30px;
+  margin: 10px;
+  height: 200px;
+  width: 200px;
+  text-align: center;
+  line-height: 200px;
+}
+
+#li17 {
+  background-color: #b4b4ff;
+  padding: 30px;
+  margin: 10px;
+  height: 200px;
+  width: 200px;
+  text-align: center;
+  line-height: 200px;
+}
+
+/*# sourceMappingURL=sass_ex3.css.map */

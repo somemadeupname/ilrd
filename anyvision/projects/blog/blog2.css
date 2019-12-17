@@ -1,0 +1,141 @@
+body {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+header {
+  background-color: #00acc1;
+}
+
+#top-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  padding-bottom: 10px;
+}
+#top-section h3 {
+  text-align: center;
+}
+
+#content-section {
+  background-color: #c8e6ff;
+}
+
+#add-post-button {
+  position: fixed;
+  bottom: 5%;
+  right: 5%;
+  background-color: #25a0b4;
+}
+#add-post-button:hover {
+  opacity: 70%;
+}
+
+.circular--square {
+  border-radius: 50% 50%;
+  width: 15%;
+  height: 15%;
+}
+
+.nav-link {
+  font-size: 80%;
+  font-weight: bold;
+  padding: 0 5px;
+}
+.nav-link:hover {
+  opacity: 70%;
+}
+
+.search-bar {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 6px;
+  margin-top: 8px;
+  font-size: 17px;
+  border: 10px #000001;
+}
+
+.posts {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  padding-bottom: 10px;
+  align-content: space-around;
+}
+
+.post {
+  background-color: #fce4ec;
+  border: 1px solid #7687a1;
+  padding: 5px;
+  width: 55%;
+  height: 300px;
+  padding-top: 14px;
+  padding-left: 50px;
+  padding-right: 50px;
+  margin: 10px;
+  border-radius: 25px;
+  overflow: hidden;
+  text-align: justify;
+}
+.post:hover {
+  overflow: auto;
+  margin-right: 20%;
+  margin-left: 20%;
+  border: 1px solid #7687a1;
+  border-radius: 25px;
+}
+.post h3 {
+  text-align: center;
+}
+.post p {
+  font-size: large;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+}
+
+.search-bar-section {
+  background-color: #c8e6ff;
+}
+
+#search-bar {
+  width: 52%;
+  margin: auto;
+}
+#search-bar:hover {
+  border: 1px #0d47a1;
+}
+
+#another-id {
+  width: 400%;
+  margin: auto;
+}
+
+.mdl-textfield {
+  width: 100%;
+}
+
+.share-post-button {
+  left: 95%;
+  right: 0;
+  bottom: 5%;
+  background-color: rgba(9, 11, 77, 0.31);
+}
+.share-post-button:hover {
+  opacity: 70%;
+  background-color: rgba(12, 18, 59, 0.33);
+}
+
+.add-icon {
+  color: white;
+}
+
+footer {
+  margin-right: 40%;
+  margin-left: 40%;
+  text-align: center;
+}
+
+/*# sourceMappingURL=blog2.css.map */
