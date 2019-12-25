@@ -5,7 +5,7 @@ body {
 }
 
 header {
-  background-color: #00acc1;
+  background-color: rgba(255, 38, 38, 0.7);
 }
 
 #top-section {
@@ -27,27 +27,39 @@ header {
   position: fixed;
   bottom: 5%;
   right: 5%;
-  background-color: #25a0b4;
+  background-color: #f41d4c;
+  opacity: 70%;
 }
 #add-post-button:hover {
   opacity: 70%;
 }
 
+#new-post-form {
+  display: none;
+  position: absolute;
+  margin: auto;
+  left: 0;
+  right: 0;
+  top: 302px;
+  width: 50%;
+  height: 60%;
+  background-color: #4a002d;
+  border: 1px solid #000001;
+  border-radius: 25px;
+}
+
 .circular--square {
   border-radius: 50% 50%;
-  width: 15%;
-  height: 15%;
+  width: 25%;
+  height: 25%;
 }
 
 .nav-link {
   font-size: 80%;
   font-weight: bold;
   padding: 0 5px;
-}
-.nav-link:hover {
   opacity: 70%;
 }
-
 .search-bar {
   display: block;
   margin-left: auto;
@@ -65,11 +77,24 @@ header {
   justify-content: space-evenly;
   padding-bottom: 10px;
   align-content: space-around;
+  background-color: rgba(249, 37, 76, 0.7);
+}
+
+.new-form-content-textfield {
+  margin: 10px;
+  padding: 30px;
+  background-color: rgba(161, 79, 127, 0.49);
+}
+
+.new-form-content-titlefield {
+  margin: 10px;
+  padding: 30px;
+  background-color: rgba(161, 79, 127, 0.49);
 }
 
 .post {
   background-color: #fce4ec;
-  border: 1px solid #7687a1;
+  border: 1px solid #a14e54;
   padding: 5px;
   width: 55%;
   height: 300px;
@@ -80,15 +105,11 @@ header {
   border-radius: 25px;
   overflow: hidden;
   text-align: justify;
-}
-.post:hover {
   overflow: auto;
   margin-right: 20%;
   margin-left: 20%;
   border: 1px solid #7687a1;
   border-radius: 25px;
-}
-.post h3 {
   text-align: center;
 }
 .post p {
@@ -97,12 +118,13 @@ header {
 }
 
 .search-bar-section {
-  background-color: #c8e6ff;
+  background-color: rgba(249, 37, 76, 0.7);
 }
 
 #search-bar {
   width: 52%;
   margin: auto;
+  color: #000001;
 }
 #search-bar:hover {
   border: 1px #0d47a1;

@@ -16,7 +16,5 @@ console.log(ri.next().value);
 console.log(ri.next().value);
 console.log(ri.next().value);
 
-let defaultRangeIterator = rangeIterator(1, Infinity, 1000);
-
 while (true) { console.log(defaultRangeIterator.next()); }
 
