@@ -1,9 +1,9 @@
 function search(event) {
-  const ENTER = 13;
-  if (event.keyCode === ENTER) {
+  // const ENTER = 'Enter';
+  // if (event.key === 'Enter') {
     let searchQuery = document.getElementById('search_box').value;
     showSearchResults(searchQuery);
-  }
+  // }
 }
 
 function showSearchResults(searchQuery) {
