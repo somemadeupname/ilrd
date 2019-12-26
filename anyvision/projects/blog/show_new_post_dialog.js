@@ -3,4 +3,3 @@ let showFormButton = document.querySelector('#add-post-button');
 showFormButton.addEventListener('click', function () {
   newPostForm.style.display = 'block';
 });
-

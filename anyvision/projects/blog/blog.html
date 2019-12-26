@@ -33,7 +33,7 @@
         <!-- Simple Textfield -->
         <form id="search-bar" action="#">
             <div class="mdl-textfield mdl-js-textfield">
-                <input class="mdl-textfield__input" type="text" id="search_box" autocomplete="off">
+                <input class="mdl-textfield__input" type="text" id="search_box" autocomplete="off" onkeypress="return search(event)">
                 <label class="mdl-textfield__label" for="search_box">Search..</label>
             </div>
         </form>
@@ -56,7 +56,10 @@
                         <textarea class="mdl-textfield__input" type="text" rows= "7" id="new-form-contentfield" ></textarea>
                         <label class="mdl-textfield__label" for="new-form-contentfield"></label>
                     </div>
-                    <!-- Raised button with ripple -->
+                    <!--Raised button with ripple-->
+                    <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
+                        Close
+                    </button>
                     <button onclick="addToLocalStorage()" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
                         Publish
                     </button>
@@ -72,4 +75,5 @@
 <script src="show_new_post_dialog.js"></script>
 <script src="add_post_to_localstorage.js"></script>
 <script src="show_post_nodes.js"></script>
+<script src="search.js"></script>
 </html>
