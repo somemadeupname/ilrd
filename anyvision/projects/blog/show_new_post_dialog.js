@@ -1,5 +1,5 @@
+// TODO make post box move with scroll, dim background around window
 function clearForm() {
-  console.log('called clear form.');
   document.getElementById('new-form-titlefield').value = '';
   document.getElementById('new-form-contentfield').value = '';
 }
