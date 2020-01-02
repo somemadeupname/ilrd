@@ -14,4 +14,4 @@
 !*.jpg
 !*.gif
 !*.jpeg
-
+node_modules
