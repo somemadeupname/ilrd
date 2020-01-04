@@ -1,5 +1,5 @@
 /**
- * Represents a Linked List.
+ * Represents a Singly linked list.
  */
 class LinkedList {
   /**
@@ -11,35 +11,49 @@ class LinkedList {
     this._head = null;
   }
 
+  /**
+   * Checks if list is empty.
+   * @returns {boolean} true if list is empty, false otherwise.
+   */
   isEmpty() {
     return this._size === 0;
   }
 
   /**
    * Size of the list.
-   * @returns {number} size of list.
+   * @returns {number} number of elements in the list.
    */
   size() {
     return this._size;
   }
 
+  /**
+   * Removes the last element added to the list.
+   * @returns {undefined|data} - undefined if list is empty. | data of the removed element.
+   */
   popFront() {
     if (this._head === null) {
       return undefined;
     }
 
     let removedData = this._head.data;
-    this.head = this._head.next;
+    this._head = this._head._next;
     --this._size;
+    return removedData
   }
 
+  /**
+   * Insert data into the list.
+   * @param {*} data - data to be inserted into the list.
+   */
   pushFront(data) {
     this._head = new Node(data, this._head);
+    ++this._size;
   }
 
   /**
    * Find data.
-   * @param data - data to find.
+   * @param {*} data - data to find.
    * @param {function} cmpFunc - compare function for the comparator.
    */
   find(data, cmpFunc) {
@@ -57,8 +71,8 @@ class LinkedList {
     return {
       next: function () {
         if (cur !== null) {
-          const data = cur.data;
-          cur = cur.next;
+          const data = cur._data;
+          cur = cur._next;
           return { value: data, done: false };
         }
 
@@ -70,9 +84,10 @@ class LinkedList {
 
 class Node {
   constructor(data, next) {
-    this.data = data;
-    this.next = null;
+    this._data = data;
+    this._next = null;
   }
 }
 
 module.exports = { LinkedList };
+
