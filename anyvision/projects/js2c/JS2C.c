@@ -426,10 +426,10 @@ int main()
 	
 	//Rectangle + Square
 	{
-		size_t rect1_dimentions[] = {5, 10};
+		size_t rect1_dimensions[] = {5, 10};
 		
 		object_t *rectangle1 = New();
-		RECTANGLE_CTOR.ctor_func(rectangle1, (void *)rect1_dimentions);
+		RECTANGLE_CTOR.ctor_func(rectangle1, (void *)rect1_dimensions);
 		
 		void *func = (rectangle1->proto->object.properties.find("getArea")->second).value;
 		printf("%lu\n",((rectangle_get_area_t)(func))(rectangle1));
