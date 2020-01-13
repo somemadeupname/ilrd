@@ -1,0 +1,31 @@
+{
+  "name": "linked_list",
+  "version": "1.0.0",
+  "description": "",
+  "main": "linked_list_ecma6.js",
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm test",
+      "pre-push": "npm test"
+    }
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "Shieber <ran.shieber1@gmail.com>",
+  "license": "none",
+  "devDependencies": {
+    "eslint": "^6.1.0",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-config-airbnb-standard": "^3.0.1",
+    "eslint-plugin-import": "^2.19.1",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-react": "^7.17.0",
+    "eslint-plugin-react-hooks": "^1.7.0",
+    "husky": "^3.1.0",
+    "jest": "^24.9.0",
+    "jsdoc": "^3.6.3"
+  },
+  "dependencies": {}
+}
