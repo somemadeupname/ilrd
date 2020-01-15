@@ -61,4 +61,6 @@ mainObserver.subscribe(observer3);
 
 document.getElementById('button_obs').addEventListener('click', (e) => {
   mainObserver.notifyAll();
+  const footer = document.getElementById('footer-id');
+  footer.innerHTML = mainObserver.color;
 });

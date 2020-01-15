@@ -1,0 +1,14 @@
+{
+  "name": "jsdoc_test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "linked_list.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jsdoc": "^3.6.3"
+  }
+}

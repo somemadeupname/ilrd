@@ -1,8 +1,7 @@
 // TODO add event listener to replace inline in html
 
-function addToLocalStorage() {
-  let title = document.getElementById('new-form-titlefield').value;
-  let content = document.getElementById('new-form-contentfield').value;
-  window.localStorage.setItem(title, content);
+function addToLocalStorage () {
+  const title = document.getElementById('new-form-titlefield').value;
+  const content = document.getElementById('new-form-contentfield').value;
+  window.localStorage.setItem(Date.now().toString(), JSON.stringify({ title, content }));
 }
-
