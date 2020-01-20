@@ -16,6 +16,7 @@ class Model {
 
   editPost (id, updatedContent) {
     const postToEdit = this.db.getItem(id);
+    // TODO put errors elsewhere?
     if (postToEdit === null) {
       throw Error('Couldn\'t edit post. ID couldn\'t be found');
     }

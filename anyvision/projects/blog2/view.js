@@ -1,7 +1,7 @@
 class View {
   constructor () {
     this.app = this.getElement('root');
-
+    // Create search bar
     this.searchBarSection = this.createElement('section', 'search-bar-section');
     this.searchForm = this.createElement('form', '', 'search-bar');
     this.searchDiv = this.createElement('div', 'mdl-textfield');
@@ -10,21 +10,68 @@ class View {
     this.searchInput.type = 'text';
     this.searchInput.autocomplete = 'off';
     this.searchInput.placeholder = 'Search..'; // TODO i18n
-
     this.searchDiv.append(this.searchInput);
     this.searchForm.append(this.searchDiv);
     this.searchBarSection.append(this.searchForm);
     this.app.append(this.searchBarSection);
-
+    // Create posts section
     this.contentSection = this.createElement('div', '', 'content-section');
     this.postsSection = this.createElement('section', 'posts', 'posts-id');
-
     this.contentSection.append(this.postsSection);
-    this.app.append(this.postsSection);
-
-
-
-
+    // Create add/edit post form
+    this.newPostForm = this.createElement('div', '', 'new-post-form');
+    this.newPostFormForm = this.createElement('form');
+    this.newPostFormFormForm = this.createElement('form');
+    this.newPostFormFormForm.action = '#';
+    this.formTitleField = this.createElement('div', 'mdl-textfield');
+    this.formTitleField.classList.add('mdl-js-textfield');
+    this.formTitleField.classList.add('mdl-textfield--floating-label');
+    this.formTitleField.classList.add('new-form-content-titlefield');
+    this.titleFieldInput = this.createElement('input', 'mdl-textfield__input', 'new-form-titlefield');
+    this.titleFieldInput.type = 'text';
+    this.titleFieldLabel = this.createElement('label', 'mdl-textfield__label');
+    this.titleFieldLabel.for = 'new-form-titlefield';
+    this.titleFieldLabel.textContent = 'Title'; // TODO i18n
+    this.formTitleField.append(this.titleFieldInput);
+    this.formTitleField.append(this.titleFieldLabel);
+    this.newPostFormFormForm.append(this.formTitleField);
+    this.formContentField = this.createElement('div', 'mdl-textfield');
+    this.formContentField.classList.add('mdl-js-textfield');
+    this.formContentField.classList.add('new-form-content-textfield');
+    this.contentFieldTextArea = this.createElement('textarea', 'mdl-textfield__input', 'new-form-contentfield');
+    // this.contentFieldTextArea.type = 'text';
+    this.contentFieldTextArea.rows = '7'; // TODO rethink this
+    this.contentFieldLabel = this.createElement('mdl-textfield__label');
+    this.contentFieldLabel.for = 'new-form-contentfield';
+    this.formContentField.append(this.contentFieldTextArea);
+    this.formContentField.append(this.contentFieldLabel);
+    this.newPostFormFormForm.append(this.formContentField);
+    this.newFormCloseButton = this.createElement('button', 'mdl-button', 'new-form-close-button');
+    this.newFormCloseButton.classList.add('mdl-js-button');
+    this.newFormCloseButton.classList.add('mdl-button--raised');
+    this.newFormCloseButton.classList.add('mdl-js-ripple-effect');
+    this.newFormCloseButton.textContent = 'Close'; // TODO i18n
+    this.newFormPublishButton = this.createElement('button', 'mdl-button', 'new-form-publish-button');
+    this.newFormPublishButton.classList.add('mdl-js-button');
+    this.newFormPublishButton.classList.add('mdl-button--raised');
+    this.newFormPublishButton.classList.add('mdl-js-ripple-effect');
+    this.newFormPublishButton.textContent = 'Publish'; // TODO i18n
+    this.newPostFormForm.append(this.newPostFormFormForm);
+    this.newPostFormForm.append(this.newFormCloseButton);
+    this.newPostFormForm.append(this.newFormPublishButton);
+    this.newPostForm.append(this.newPostFormForm);
+    this.contentSection.append(this.newPostForm);
+    this.app.append(this.contentSection);
+    // Create add post button
+    this.addPostButton = this.createElement('button', 'mdl-button', 'add-post-button');
+    this.addPostButton.classList.add('mdl-js-button');
+    this.addPostButton.classList.add('mdl-button--fab');
+    this.addPostButton.classList.add('mdl-js-ripple-effect');
+    this.addPostButtonSign = this.createElement('i', 'add-icon');
+    this.addPostButtonSign.classList.add('material-icons');
+    this.addPostButtonSign.textContent = 'add';
+    this.addPostButton.append(this.addPostButtonSign);
+    this.app.append(this.addPostButton);
   }
 
   /**
@@ -51,5 +98,5 @@ class View {
   }
 
 }
-
+// TODO for testing purposes
 let view = new View();
