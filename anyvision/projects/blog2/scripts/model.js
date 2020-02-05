@@ -1,9 +1,19 @@
 /**
  * Model to create, read, update and delete via db
  */
-class Model {
+export default class Model {
   constructor () {
     this.db = window.localStorage;
+    this.posts = [];
+  }
+
+  getPosts () {
+    const posts = [];
+    Object.keys(this.db).forEach((key) => {
+      const post = JSON.parse(this.db.getItem(key));
+      posts.push(post);
+    });
+    return posts;
   }
 
   /**

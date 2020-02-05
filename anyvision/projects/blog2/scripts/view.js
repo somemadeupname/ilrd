@@ -1,5 +1,6 @@
-class View {
+export default class View {
   constructor () {
+    // TODO split into smaller functions
     this.app = this.getElement('root');
     // Create search bar
     this.searchBarSection = this.createElement('section', 'search-bar-section');
@@ -92,11 +93,63 @@ class View {
     return element;
   }
 
-  getElement(selector) {
+  getElement (selector) {
     const element = document.querySelector(selector);
     return element;
   }
 
+  bindAddPost (handler) {
+    this.newFormPublishButton.addEventListener('click', (event) => {
+      event.preventDefault();
+
+      if (this._postContent && this._postTitle) {
+        handler(this._postTitle, this._postContent);
+        this._resetFormInput();
+      }
+    });
+  }
+
+  displayAllPosts (posts) {
+    this.clearPosts();
+    posts.forEach((post) => this.displayPost(post));
+  }
+
+  get _postTitle () {
+    return this.titleFieldInput.value;
+  }
+
+  get _postContent () {
+    return this.contentFieldTextArea.value;
+  }
+
+  _resetFormInput () {
+    this.titleFieldInput.value = '';
+    this.contentFieldTextArea.value = '';
+  }
+
+  displayPost (post) {
+    const articleElement = this.createElement('article');
+    articleElement.className = 'post mdl-shadow--4dp';
+    const h3Element = this.createElement('h3');
+    h3Element.textContent = post.title;
+    const pElement = this.createElement('p');
+    pElement.textContent = post.content;
+    const shareButtonElement = this.createElement('button');
+    shareButtonElement.className = 'share-post-button mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect';
+    const materialIconElement = this.createElement('i');
+    materialIconElement.className = 'material-icons';
+    materialIconElement.textContent = 'share';
+    shareButtonElement.append(materialIconElement);
+
+    articleElement.append(h3Element);
+    articleElement.append(pElement);
+    // TODO add share key
+    // articleElement.appendChild(shareButtonElement);
+
+    this.postsSection.append(articleElement);
+  }
+
+  clearPosts () {
+    this.postsSection.innerHTML = '';
+  }
 }
-// TODO for testing purposes
-let view = new View();
