@@ -32,3 +32,9 @@ alias gitrm='git rm --cached'
 
 # Fn keys work as F1-12 and not as volume down up.... by default
 alias fn_toggle='echo 2 | sudo tee /sys/module/hid_apple/parameters/fnmode'
+
+#cd+ls
+cds () {
+    cd $1
+    ls
+}
