@@ -1,0 +1,12 @@
+@import '../../styles/styles.scss';
+
+footer {
+  //margin-right: 40%;
+  //margin-left: 40%;
+  text-align: center;
+  width: 100%;
+  background-color: darken($base-color, 10%);
+  padding-top: 0.5%;
+  padding-bottom: 0.5%;
+  font-size: large;
+}

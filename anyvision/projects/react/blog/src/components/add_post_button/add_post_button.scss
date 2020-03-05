@@ -1,0 +1,7 @@
+@import '../../styles/styles.scss';
+#add-post-button {
+  background-color: darken($base-color, 10%);
+  position: absolute;
+  bottom: 16px;
+  right: 8px;
+}

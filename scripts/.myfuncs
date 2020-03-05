@@ -38,3 +38,11 @@ cds () {
     cd $1
     ls
 }
+
+new_component () {
+    mkdir $1
+    cd $1
+    touch $1.jsx
+    touch $1.scss
+    webstorm $1.jsx $1.scss
+}

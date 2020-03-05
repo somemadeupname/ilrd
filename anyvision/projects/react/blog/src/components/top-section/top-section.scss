@@ -1,0 +1,18 @@
+@import '../../styles/styles.scss';
+
+.top-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  padding-bottom: 10px;
+  background-color: $base-color;
+}
+  .top-section-image {
+    align-content: normal;
+    border-radius: 30%;
+    border: #000001 solid 2px;
+    //box-shadow: 5px 5px #4D4E53;
+    margin: 1%;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  }
